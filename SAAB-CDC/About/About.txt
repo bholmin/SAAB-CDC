@@ -1,0 +1,18 @@
+ 	
+	embedXcode
+	embedXcode+
+	----------------------------------
+	Embedded Computing on Xcode
+	
+	
+	© Rei VILO, 2010-2015
+	All rights reserved	
+	http://embedXcode.weebly.com/
+	
+	
+embedXcode  • May 18, 2015 release 285 • Added support for Teensy LC and updated support for 1.6.1 or 1.7 Arduino IDE plug-ins
+embedXcode+ • May 18, 2015 release 285 • Added support for Teensy LC and updated support for 1.6.1 or 1.7 Arduino IDE plug-ins
+embedXcode Tools • Apr 01, 2015 release 274 • Support for updated Spark Core
+
+	
+	
