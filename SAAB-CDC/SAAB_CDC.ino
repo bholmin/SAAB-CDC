@@ -15,6 +15,7 @@
 // Define variables and constants
 
 int cdc_active = 0;
+int mute = 0;
 
 // Add setup code
 void setup() {
