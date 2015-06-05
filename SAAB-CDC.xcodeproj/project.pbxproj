@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80EF2FD1B2244E800BF40A6 /* main.cpp */; };
+		A82B27981B22649F009B19C3 /* CDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A82B27961B22649F009B19C3 /* CDC.cpp */; };
 		A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */; };
 		AA2A150605135947AA000006 /* abi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000006 /* abi.cpp */; };
 		AA2A150605135947AA000007 /* Arduino.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000007 /* Arduino.h */; };
@@ -519,9 +520,11 @@
 		A80EF36E1B2244E900BF40A6 /* TemplateIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = TemplateIcon.icns; path = Utilities/TemplateIcon.icns; sourceTree = "<group>"; };
 		A80EF36F1B2244E900BF40A6 /* uploader_izmir.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = uploader_izmir.sh; path = Utilities/uploader_izmir.sh; sourceTree = "<group>"; };
 		A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; path = SAAB_CDC.ino; sourceTree = "<group>"; };
-		A80EF3851B225FF400BF40A6 /* CAN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CAN.cpp; path = ../../../../Downloads/CAN/CAN.cpp; sourceTree = "<group>"; };
-		A80EF3861B225FF400BF40A6 /* CAN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CAN.h; path = ../../../../Downloads/CAN/CAN.h; sourceTree = "<group>"; };
-		A80EF3871B225FF400BF40A6 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinout.h; path = ../../../../Downloads/CAN/pinout.h; sourceTree = "<group>"; };
+		A82B27921B2263DC009B19C3 /* CAN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAN.cpp; sourceTree = "<group>"; };
+		A82B27931B2263DC009B19C3 /* CAN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAN.h; sourceTree = "<group>"; };
+		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
+		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDC.cpp; sourceTree = "<group>"; };
+		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
 		AAAA150605135947AA000007 /* Arduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arduino.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000008 /* binary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binary.h; sourceTree = "<group>"; };
@@ -946,9 +949,11 @@
 		A80EF2FC1B2244E800BF40A6 /* SAAB-CDC */ = {
 			isa = PBXGroup;
 			children = (
-				A80EF3851B225FF400BF40A6 /* CAN.cpp */,
-				A80EF3861B225FF400BF40A6 /* CAN.h */,
-				A80EF3871B225FF400BF40A6 /* pinout.h */,
+				A82B27961B22649F009B19C3 /* CDC.cpp */,
+				A82B27971B22649F009B19C3 /* CDC.h */,
+				A82B27921B2263DC009B19C3 /* CAN.cpp */,
+				A82B27931B2263DC009B19C3 /* CAN.h */,
+				A82B27941B2263DC009B19C3 /* pinout.h */,
 				A80EF2FD1B2244E800BF40A6 /* main.cpp */,
 				A80EF2FF1B2244E800BF40A6 /* Makefile */,
 				A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */,
@@ -2769,6 +2774,7 @@
 				AA2A150605135947AA0001D8 /* .cproject in Sources */,
 				AA2A150605135947AA0001DB /* clocks.c in Sources */,
 				AA2A150605135947AA0001DC /* clocks.h in Sources */,
+				A82B27981B22649F009B19C3 /* CDC.cpp in Sources */,
 				AA2A150605135947AA0001DE /* conf_access.h in Sources */,
 				AA2A150605135947AA0001DF /* conf_at45dbx.h in Sources */,
 				AA2A150605135947AA0001E1 /* flash_fw.c in Sources */,

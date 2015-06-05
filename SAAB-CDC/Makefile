@@ -32,7 +32,7 @@ APP_LIBS_LIST = 0
 # default = 0 = none
 #
 #
-USER_LIBS_LIST = 0
+USER_LIBS_LIST = CAN
 
 # List core, application and user's libraries to be excluded
 # For example, WiFi may crash on Arduino 1.0.2, Esplora on Arduino 1.0.3, Firmata on Teensy 3.0,

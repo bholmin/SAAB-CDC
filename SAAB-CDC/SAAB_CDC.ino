@@ -8,6 +8,8 @@
 //
 
 #include "Arduino.h";
+#include "CAN.h";
+#include "CDC.h";
 
 // Include application, user and local libraries
 
