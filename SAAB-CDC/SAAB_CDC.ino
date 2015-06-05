@@ -14,8 +14,11 @@
 
 // Define variables and constants
 
+int cdc_active = 0;
+
 // Add setup code
 void setup() {
+    
 }
 
 // Add loop code
