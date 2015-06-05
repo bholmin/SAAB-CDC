@@ -21,10 +21,16 @@
 # List application Arduino/chipKIT/Digispark/Energia/Maple/Microduino/Teensy/Wiring libraries here
 # default = 0 = none
 #
+# ARDUINO = EEPROM SoftwareSerial SPI Wire SPI Wire Audio 
+#	Bridge Esplora Ethernet Firmata GSM LiquidCrystal 
+#	Robot_Control Robot_Motor RobotIRremote Scheduler SD Servo 
+#	SpacebrewYun Stepper Temboo TFT USBHost WiFi 
+#
 APP_LIBS_LIST = 0
 
 # List user's libraries here 
 # default = 0 = none
+#
 #
 USER_LIBS_LIST = 0
 
@@ -77,4 +83,5 @@ MAKEFILE_PATH  = $(CURRENT_DIR)/Makefiles
 UTILITIES_PATH = $(CURRENT_DIR)/Utilities
 
 include $(MAKEFILE_PATH)/Step1.mk
+
 
