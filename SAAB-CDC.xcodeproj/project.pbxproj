@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80EF2FD1B2244E800BF40A6 /* main.cpp */; };
-		A80EF3031B2244E800BF40A6 /* CDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3021B2244E800BF40A6 /* CDC.cpp */; };
-		A82EF3041B2244E800BF40A6 /* CDC.h in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3041B2244E800BF40A6 /* CDC.h */; };
 		A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */; };
 		AA2A150605135947AA000006 /* abi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000006 /* abi.cpp */; };
 		AA2A150605135947AA000007 /* Arduino.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000007 /* Arduino.h */; };
@@ -419,8 +417,6 @@
 		A80EF2FA1B2244E800BF40A6 /* Index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Index; sourceTree = BUILT_PRODUCTS_DIR; };
 		A80EF2FD1B2244E800BF40A6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A80EF2FF1B2244E800BF40A6 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		A80EF3021B2244E800BF40A6 /* CDC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CDC.cpp; sourceTree = "<group>"; };
-		A80EF3041B2244E800BF40A6 /* CDC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
 		A80EF3061B2244E800BF40A6 /* Sketchbook.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = Sketchbook.txt; path = Sketchbook/Sketchbook.txt; sourceTree = "<group>"; };
 		A80EF3081B2244E900BF40A6 /* 4D Systems PICadillo 35T.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "4D Systems PICadillo 35T.xcconfig"; path = "Configurations/4D Systems PICadillo 35T.xcconfig"; sourceTree = "<group>"; };
 		A80EF3091B2244E900BF40A6 /* Adafruit Pro Trinket 3V-12MHz.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Adafruit Pro Trinket 3V-12MHz.xcconfig"; path = "Configurations/Adafruit Pro Trinket 3V-12MHz.xcconfig"; sourceTree = "<group>"; };
@@ -955,8 +951,6 @@
 				A80EF3871B225FF400BF40A6 /* pinout.h */,
 				A80EF2FD1B2244E800BF40A6 /* main.cpp */,
 				A80EF2FF1B2244E800BF40A6 /* Makefile */,
-				A80EF3021B2244E800BF40A6 /* CDC.cpp */,
-				A80EF3041B2244E800BF40A6 /* CDC.h */,
 				A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */,
 				A80EF3051B2244E800BF40A6 /* Sketchbook */,
 				AAAA150605135947AA000000 /* Resources */,
@@ -2392,8 +2386,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */,
-				A80EF3031B2244E800BF40A6 /* CDC.cpp in Sources */,
-				A82EF3041B2244E800BF40A6 /* CDC.h in Sources */,
 				A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */,
 				AA2A150605135947AA000006 /* abi.cpp in Sources */,
 				AA2A150605135947AA000007 /* Arduino.h in Sources */,
