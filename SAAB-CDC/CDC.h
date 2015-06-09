@@ -3,12 +3,37 @@
 //  SAAB-CDC
 //
 //  Created by Karlis Veilands on 6/5/15.
-//  Copyright (c) 2015 SEK. All rights reserved.
+//
 //
 
-#ifndef __SAAB_CDC__CDC__
-#define __SAAB_CDC__CDC__
+#ifndef CDC_H
+#define CDC_H
 
-#include <stdio.h>
+#include "Arduino.h"
+#include "CAN.h"
 
-#endif /* defined(__SAAB_CDC__CDC__) */
+//----------------------------------------------------------------------------
+// CLASS
+//----------------------------------------------------------------------------
+
+class CDCClass
+{
+public:
+    void open_CAN_bus();
+    void print_bus();
+    
+private:
+    void handle_BT_connection();
+    void handle_RX_frame();
+    void handle_CDC_control();
+    void handle_SID_buttons();
+    void send_CDC_status(boolean event, boolean remote);
+};
+
+//----------------------------------------------------------------------------
+// VARIABLES
+//----------------------------------------------------------------------------
+
+extern CDCClass CDC;
+
+#endif

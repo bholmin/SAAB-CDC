@@ -3,25 +3,23 @@
 //
 // A CD changer emulator for older SAAB cars
 //
-// Author 		Karlis Veilands
-// 				SEK
+// Coded by:    Seth Evans and Emil Malmberg
+// CAN code:    Igor Real
+// 
 //
 
 #include "Arduino.h";
-#include "CAN.h";
 #include "CDC.h";
 
-// Include application, user and local libraries
+CDCClass CDC; //TODO: Check for a better way to do this...
 
 
 // Define variables and constants
 
-int cdc_active = 0;
-int mute = 0;
 
 // Add setup code
 void setup() {
-    
+    CDC.open_CAN_bus();
 }
 
 // Add loop code
