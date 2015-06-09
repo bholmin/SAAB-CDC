@@ -523,7 +523,7 @@
 		A82B27921B2263DC009B19C3 /* CAN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAN.cpp; sourceTree = "<group>"; };
 		A82B27931B2263DC009B19C3 /* CAN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAN.h; sourceTree = "<group>"; };
 		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
-		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDC.cpp; sourceTree = "<group>"; };
+		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDC.cpp; sourceTree = "<group>"; wrapsLines = 0; };
 		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
 		AAAA150605135947AA000007 /* Arduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arduino.h; sourceTree = "<group>"; };
@@ -2886,6 +2886,7 @@
 		A80EF3741B2244E900BF40A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BOARD_PORT = "/dev/tty.usbmodem*";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
