@@ -2,7 +2,7 @@
 //  CDC.cpp
 //  SAAB-CDC
 //
-//  Created by: Emil Malmberg
+//  Created by:  Seth Evans and Emil Malmberg
 //  Refactoring: Karlis Veilands
 //
 //
