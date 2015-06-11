@@ -60,6 +60,11 @@ int power_pin = 7;
 int play_pin = 5;
 int forward_pin = 6;
 int previous_pin = 8;
+int spi_cs_pin = 16;
+int spi_mosi_pin = 17;
+int spi_miso_pin = 18;
+int spi_sck_pin = 19;
+int incomingByte = 0;   // For incoming serial data
 int toggle_shuffle = 1; // TODO: switch to boolean?
 int mute = 0; // TODO: switch to boolean?
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00};
@@ -138,7 +143,15 @@ void CDCClass::print_bus()
 void CDCClass::handle_BT_connection()
 {
     pinMode(power_pin, OUTPUT);
-    digitalWrite(power_pin,LOW);
+//    digitalWrite(power_pin,HIGH);
+//    delay(3000);
+//    digitalWrite(power_pin, LOW);
+    
+    if (Serial.available() > 0) {
+        incomingByte = Serial.read();
+        Serial.print("DEBUG: 'incomingByte' =  ");
+        Serial.println(incomingByte, DEC);
+    }
 }
 
 /**

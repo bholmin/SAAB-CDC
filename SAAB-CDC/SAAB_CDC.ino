@@ -16,12 +16,12 @@ CDCClass CDC; //TODO: Check for a better way to do this...
 
 // Define variables and constants
 
-
 // Add setup code
 void setup() {
-    CDC.open_CAN_bus();
     Serial.begin(9600);
     Serial.println("SAAB CDC Test Code - Jun 2015");
+    CDC.open_CAN_bus();
+    CDC.handle_BT_connection();
 }
 
 // Add loop code
