@@ -98,12 +98,14 @@ void CDCClass::handle_CDC_status()
     // (note though, that we may not send the frame more often than once every 50 ms)
     if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
         CDC.send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
+        Serial.println("DEBUG: Sending CDC status due to CDC command");
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity
     if (millis() - cdc_status_last_send_time > 900) {
         // Send the CDC status message, marked periodical and triggered internally
         CDC.send_CDC_status(false, false);
+        Serial.println("DEBUG: Sending CDC status");
     }
 }
 

@@ -20,6 +20,8 @@ CDCClass CDC; //TODO: Check for a better way to do this...
 // Add setup code
 void setup() {
     CDC.open_CAN_bus();
+    Serial.begin(9600);
+    Serial.println("SAAB CDC Test Code - Jun 2015");
 }
 
 // Add loop code
