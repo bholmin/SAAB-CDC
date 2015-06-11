@@ -20,9 +20,10 @@ class CDCClass
 {
 public:
     void open_CAN_bus();
+    void handle_CDC_status();
     void print_bus();
     
-private:
+//private:
     void handle_BT_connection();
     void handle_RX_frame();
     void handle_CDC_control();

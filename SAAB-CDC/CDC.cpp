@@ -15,7 +15,7 @@
  */
 
 #define CDC_APL_ADR              0x12
-#define CDC_SID_FUNCTION_ID      30 // decimal
+#define CDC_SID_FUNCTION_ID      30 // Decimal
 
 /**
  * Other useful stuff
@@ -29,8 +29,8 @@
  */
 
 #define GENERAL_STATUS_CDC       0x3c8
-#define DISPLAY_RESOURCE_REQ     0x348 // 'stolen' from the IHU since the CDC doesn't send this message
-#define WRITE_TEXT_ON_DISPLAY    0x328 // 'stolen' from the IHU since the CDC doesn't send this message
+#define DISPLAY_RESOURCE_REQ     0x348 // 'Stolen' from the IHU since the CDC doesn't send this message
+#define WRITE_TEXT_ON_DISPLAY    0x328 // 'Stolen' from the IHU since the CDC doesn't send this message
 #define NODE_STATUS_TX           0x6a2
 #define SOUND_REQUEST            0x430
 
@@ -47,15 +47,15 @@
  * Variables:
  */
 
-unsigned long cdc_status_last_send_time = 0; // timer used to ensure we send the CDC status frame in a timely manner
-unsigned long display_request_last_send_time = 0; // timer used to ensure we send the display request frame in a timely manner
-unsigned long write_text_on_display_last_send_time = 0; // timer used to ensure we send the write text on display frame in a timely manner
-unsigned long stop_displaying_name_at = 0; // the time at which we should stop displaying our name in the SID
-boolean cdc_active = false; // true while our module, the simulated CDC, is active
-boolean display_request_granted = true; // true while we are granted the 2nd row of the SID
-boolean display_wanted = false; // true while we actually WANT the display
-boolean cdc_status_resend_needed = false; // true if something has triggered the need to send the CDC status frame as an event
-boolean cdc_status_resend_due_to_cdc_command = false; // true if the need for sending the CDC status frame was triggered by a CDC command
+unsigned long cdc_status_last_send_time = 0; // Timer used to ensure we send the CDC status frame in a timely manner
+unsigned long display_request_last_send_time = 0; // Timer used to ensure we send the display request frame in a timely manner
+unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner
+unsigned long stop_displaying_name_at = 0; // Time at which we should stop displaying our name in the SID
+boolean cdc_active = false; // True while our module, the simulated CDC, is active
+boolean display_request_granted = true; // True while we are granted the 2nd row of the SID
+boolean display_wanted = false; // True while we actually WANT the display
+boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event
+boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command
 int power_pin = 7;
 int play_pin = 5;
 int forward_pin = 6;
@@ -77,12 +77,36 @@ int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB};
  * PUBLIC METHODS
  ******************************************************************************/
 
+/**
+ * Opens CAN bus for communication.
+ */
+
 void CDCClass::open_CAN_bus()
 {
-    CAN.begin(47);  // Saab I-Bus is 47.619kbps
-    CAN_TxMsg.header.rtr = 0;     // this value never changes
-    CAN_TxMsg.header.length = 8;  // this value never changes
+    CAN.begin(47);  // SAAB I-Bus is 47.619kbps
+    CAN_TxMsg.header.rtr = 0;     // This value never changes
+    CAN_TxMsg.header.length = 8;  // This value never changes
 }
+
+/**
+ * Handles CDC status and sends it to IHU as necessary.
+ */
+
+void CDCClass::handle_CDC_status()
+{
+    // If the CDC status frame needs to be sent as an event, do so now
+    // (note though, that we may not send the frame more often than once every 50 ms)
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
+        CDC.send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
+    }
+    
+    // The CDC status frame must be sent with a 1000 ms periodicity
+    if (millis() - cdc_status_last_send_time > 900) {
+        // Send the CDC status message, marked periodical and triggered internally
+        CDC.send_CDC_status(false, false);
+    }
+}
+
 
 /**
  * Prints the contents of CAN bus to serial console.
@@ -91,7 +115,6 @@ void CDCClass::open_CAN_bus()
 void CDCClass::print_bus()
 {
     if (CAN_RxMsg.id==0x348) {
-        //if (CAN_RxMsg.data[0]==0x80) {
         Serial.print(CAN_RxMsg.id,HEX);
         Serial.print(";");
         for (int i = 0; i < 8; i++) {
@@ -124,7 +147,7 @@ void CDCClass::handle_RX_frame()
 {
     switch (CAN_RxMsg.id) {
         case NODE_STATUS_RX:
-            // FIXME: we should check exactly what this network node message is and what the reply should be. For now, go with Seth's original code:
+            // FIXME: We should check exactly what this network node message is and what the reply should be. For now, go with Seth's original code:
             CAN_TxMsg.id = NODE_STATUS_TX;
             for (int c = 0; c < 8; c++) {
                 CAN_TxMsg.data[c] = ninefive_cmd[c];
@@ -139,7 +162,7 @@ void CDCClass::handle_RX_frame()
         case SID_BUTTONS:
             handle_SID_buttons();
             break;
-            
+        /*
         case DISPLAY_RESOURCE_GRANT:
             if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
                 // we have been granted the right to write text to the second row in the SID
@@ -164,6 +187,7 @@ void CDCClass::handle_RX_frame()
                 //someone else has been granted the first row; if we had the grant to the 2nd row, we still have it
             }
             break;
+         */
     }
 }
 
@@ -184,6 +208,7 @@ void CDCClass::handle_CDC_control()
         case 0x24: // Play
             cdc_active = true;
             
+            /*
             // we want to show the module name in the SID for a little while after being activated:
             stop_displaying_name_at = millis() + DISPLAY_NAME_TIMEOUT;
             display_wanted = true;
@@ -206,6 +231,7 @@ void CDCClass::handle_CDC_control()
         case 0x14: // Standby
             cdc_active = false;
             
+            /*
             // now that we're in standby, we don't want the display anymore
             display_wanted = false;
             
@@ -303,7 +329,7 @@ void CDCClass::handle_SID_buttons()
     
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
-        //FIXME: can we really ignore the message if it wasn't sent on event?
+        //FIXME: Can we really ignore the message if it wasn't sent on event?
         return;
     }
     
@@ -341,27 +367,19 @@ void CDCClass::send_CDC_status(boolean event, boolean remote)
 {
     CAN_TxMsg.id = GENERAL_STATUS_CDC;
     
-    byte disc_mode = 0x05; // PLAY, or try 0x0e for "test mode" which might stop the IHU from updating the display?
-    byte track_number = 0xFF;
-    byte random_play = (0x00 << 5);
-    byte disc_repeat = (0x00 << 1);
-    byte track_repeat = 0x01;
-    
-    // byte 0, bit 7: FCI NEW DATA: 0 - sent on basetime, 1 - sent on event
-    // byte 0, bit 6: FCI REMOTE CMD: 0 - status change due to internal operation, 1 - status change due to CDC_COMMAND frame
-    // byte 0, bit 5: FCI DISC PRESENCE VALID: 0 - disc presence signal is not valid, 1 - disc presence signal is valid
-    CAN_TxMsg.data[0] = (event ? 0x01 : 0x00) | (remote ? 0x02 : 0x04) << 5;
+    CAN_TxMsg.data[0] = 0xE0;
     
     // byte 1-2, bits 0-15: DISC PRESENCE: (bitmap) 0 - disc absent, 1 - disc present. Bit 0 is disc 1, bit 1 is disc 2, etc.
-    CAN_TxMsg.data[1] = 0x01;
+    CAN_TxMsg.data[1] = 0xFF;
     CAN_TxMsg.data[2] = 0x01; // we have only one "disc" in the "magazine"
     
     // byte 3, bits 7-4: DISC MODE
     // byte 3, bits 3-0: DISC NUMBER
-    CAN_TxMsg.data[3] = 0x01 | (disc_mode << 4) | 0x01;
+    // CAN_TxMsg.data[3] = 0x05 // PLAY
+    CAN_TxMsg.data[3] = 0x31;
     
     // byte 4: TRACK OR ERROR NUMBER
-    CAN_TxMsg.data[4] = track_number;
+    CAN_TxMsg.data[4] = 0xFF;
     
     // byte 5: MINUTE
     CAN_TxMsg.data[5] = 0xFF;
@@ -370,17 +388,14 @@ void CDCClass::send_CDC_status(boolean event, boolean remote)
     CAN_TxMsg.data[6] = 0xFF;
     
     // byte 7: CHANGER STATUS
-    CAN_TxMsg.data[7] = 0xd0; // CDC is married to this vehicle, and there's a magazine present
-    CAN_TxMsg.data[7] |= random_play | disc_repeat | track_repeat;
+    CAN_TxMsg.data[7] = 0xD0; // CDC is married to this vehicle, and there's a magazine present
     
     // put the frame on the CAN bus:
     CAN.send(&CAN_TxMsg);
     
-    // record the time of sending and reset status variables:
+    // Record the time of sending and reset status variables
     cdc_status_last_send_time = millis();
     cdc_status_resend_needed = false;
     cdc_status_resend_due_to_cdc_command = false;
+    
 }
-
-
-

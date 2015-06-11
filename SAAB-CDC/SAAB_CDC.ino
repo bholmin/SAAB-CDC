@@ -24,4 +24,5 @@ void setup() {
 
 // Add loop code
 void loop() {
+    CDC.handle_CDC_status();
 }
