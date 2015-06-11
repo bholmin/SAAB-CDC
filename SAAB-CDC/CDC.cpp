@@ -155,34 +155,31 @@ void CDCClass::handle_RX_frame()
                 CAN_TxMsg.data[c] = ninefive_cmd[c];
             }
             CAN.send(&CAN_TxMsg);
+            Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
             break;
             
         case CDC_CONTROL:
             handle_CDC_control();
+            Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
             break;
             
         case SID_BUTTONS:
             handle_SID_buttons();
+            Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
             break;
         /*
         case DISPLAY_RESOURCE_GRANT:
             if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
                 // we have been granted the right to write text to the second row in the SID
-                Serial.begin(9600);
                 Serial.println("SID");
-                Serial.end();
                 display_request_granted = true;
             }
             else if (CAN_RxMsg.data[1] == 0x02) {
-                Serial.begin(9600);
                 Serial.println("Someone else has been granted the second row, we need to back down");
-                Serial.end();
                 display_request_granted = false;
             }
             else if (CAN_RxMsg.data[1] == 0x00) {
-                Serial.begin(9600);
                 Serial.println("Someone else has been granted the entire display, we need to back down");
-                Serial.end();
                 display_request_granted = false;
             } 
             else {
@@ -336,26 +333,29 @@ void CDCClass::handle_SID_buttons()
     }
     
     switch (CAN_RxMsg.data[2]) {
-            //case 0x04: // NXT button on wheel
+        case 0x04: // NXT button on wheel
             //for (int j = 0; j < 9; j++) {
             //Serial.write(byte(repeat_cmd[j]));
             //}
-            //break;
+            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+            break;
         case 0x10: // Seek+ button on wheel
             //Serial.println("next_cmd");
-            for (int j = 0; j < 7; j++) {
-                Serial.write(byte(next_cmd[j]));
-            }
+            //for (int j = 0; j < 7; j++) {
+            //Serial.write(byte(next_cmd[j]));
+            //}
+            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             break;
         case 0x08: // Seek- button on wheel
             //Serial.println("prev_cmd");
-            for (int k = 0; k < 7; k++) {
-                Serial.write(byte(prev_cmd[k]));
-            }
+            //for (int k = 0; k < 7; k++) {
+            //Serial.write(byte(prev_cmd[k]));
+            //}
+            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             break;
     }
     delay(3);
-    //Serial.println("Release");
+    Serial.println("DEBUG: 'Button Release' command sent.");
     for (int i = 0; i < 7; i++) {
         Serial.write(byte(button_release_cmd[i]));
     }
