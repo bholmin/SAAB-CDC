@@ -28,19 +28,19 @@
  * TX frames:
  */
 
-#define GENERAL_STATUS_CDC       0x3c8
+#define GENERAL_STATUS_CDC       0x3C8
 #define DISPLAY_RESOURCE_REQ     0x348 // 'Stolen' from the IHU since the CDC doesn't send this message
 #define WRITE_TEXT_ON_DISPLAY    0x328 // 'Stolen' from the IHU since the CDC doesn't send this message
-#define NODE_STATUS_TX           0x6a2
+#define NODE_STATUS_TX           0x6A2
 #define SOUND_REQUEST            0x430
 
 /**
  * RX frames:
  */
 
-#define CDC_CONTROL              0x3c0
+#define CDC_CONTROL              0x3C0
 #define DISPLAY_RESOURCE_GRANT   0x368
-#define NODE_STATUS_RX           0x6a1
+#define NODE_STATUS_RX           0x6A1
 #define SID_BUTTONS              0x290
 
 /**
@@ -56,6 +56,9 @@ boolean display_request_granted = true; // True while we are granted the 2nd row
 boolean display_wanted = false; // True while we actually WANT the display
 boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event
 boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command
+boolean bt_off = true; // Default state of bluetooth module
+boolean bt_on_pairing = false; // True while bluetooth module is on and is in pairing mode
+boolean bt_on_active = false; // True while bluetooth module is on and is paired to a device
 int power_pin = 7;
 int play_pin = 5;
 int forward_pin = 6;
@@ -88,6 +91,7 @@ int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB};
 
 void CDCClass::open_CAN_bus()
 {
+    Serial.println("DEBUG: Opening CAN bus @ 47.619kbps");
     CAN.begin(47);  // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -99,15 +103,18 @@ void CDCClass::open_CAN_bus()
 
 void CDCClass::handle_CDC_status()
 {
+    CDC.handle_RX_frame();
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50))
+    {
         CDC.send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
         Serial.println("DEBUG: Sending CDC status due to CDC command");
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity
-    if (millis() - cdc_status_last_send_time > 900) {
+    if (millis() - cdc_status_last_send_time > 900)
+    {
         // Send the CDC status message, marked periodical and triggered internally
         CDC.send_CDC_status(false, false);
         Serial.println("DEBUG: Sending CDC status");
@@ -121,10 +128,12 @@ void CDCClass::handle_CDC_status()
 
 void CDCClass::print_bus()
 {
-    if (CAN_RxMsg.id==0x348) {
+    if (CAN_RxMsg.id==0x348)
+    {
         Serial.print(CAN_RxMsg.id,HEX);
         Serial.print(";");
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++)
+        {
             Serial.print(CAN_RxMsg.data[i],HEX);
             Serial.print(";");
         }
@@ -144,13 +153,15 @@ void CDCClass::handle_BT_connection()
 {
     pinMode(power_pin, OUTPUT);
 //    digitalWrite(power_pin,HIGH);
-//    delay(3000);
-//    digitalWrite(power_pin, LOW);
+//    delay(6000);
+    digitalWrite(power_pin, LOW);
     
-    if (Serial.available() > 0) {
+    if (Serial.available() > 0)
+    {
+        Serial.println("DEBUG: Serial available.");
         incomingByte = Serial.read();
-        Serial.print("DEBUG: 'incomingByte' =  ");
-        Serial.println(incomingByte, DEC);
+        Serial.println("DEBUG: 'incomingByte' =  ");
+        Serial.print(incomingByte, DEC);
     }
 }
 
@@ -160,46 +171,54 @@ void CDCClass::handle_BT_connection()
 
 void CDCClass::handle_RX_frame()
 {
-    switch (CAN_RxMsg.id) {
-        case NODE_STATUS_RX:
-            // FIXME: We should check exactly what this network node message is and what the reply should be. For now, go with Seth's original code:
-            CAN_TxMsg.id = NODE_STATUS_TX;
-            for (int c = 0; c < 8; c++) {
-                CAN_TxMsg.data[c] = ninefive_cmd[c];
-            }
-            CAN.send(&CAN_TxMsg);
-            Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
-            break;
+    if (CAN.CheckNew())
+    {
+        CAN_TxMsg.data[0]++;
+        CAN.ReadFromDevice(&CAN_RxMsg);
+        switch (CAN_RxMsg.id)
+        {
+            case NODE_STATUS_RX:
+                CAN_TxMsg.id = NODE_STATUS_TX;
+                for (int c = 0; c < 8; c++)
+                {
+                    CAN_TxMsg.data[c] = ninefive_cmd[c];
+                }
+                CAN.send(&CAN_TxMsg);
+                Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
+                break;
             
-        case CDC_CONTROL:
-            handle_CDC_control();
-            Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
-            break;
+            case CDC_CONTROL:
+                handle_CDC_control();
+                Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
+                break;
             
-        case SID_BUTTONS:
-            handle_SID_buttons();
-            Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
-            break;
-        /*
-        case DISPLAY_RESOURCE_GRANT:
-            if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-                // we have been granted the right to write text to the second row in the SID
-                Serial.println("SID");
-                display_request_granted = true;
-            }
-            else if (CAN_RxMsg.data[1] == 0x02) {
-                Serial.println("Someone else has been granted the second row, we need to back down");
-                display_request_granted = false;
-            }
-            else if (CAN_RxMsg.data[1] == 0x00) {
-                Serial.println("Someone else has been granted the entire display, we need to back down");
-                display_request_granted = false;
-            } 
-            else {
-                //someone else has been granted the first row; if we had the grant to the 2nd row, we still have it
-            }
-            break;
-         */
+            case SID_BUTTONS:
+                handle_SID_buttons();
+                Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
+                break;
+            
+            case DISPLAY_RESOURCE_GRANT:
+                if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID))
+                {
+                    Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+                    display_request_granted = true;
+                }
+                else if (CAN_RxMsg.data[1] == 0x02)
+                {
+                    Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+                    display_request_granted = false;
+                }
+                else if (CAN_RxMsg.data[1] == 0x00)
+                {
+                    Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+                    display_request_granted = false;
+                }
+                else
+                {
+                    Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+                }
+                break;
+        }
     }
 }
 
@@ -335,17 +354,18 @@ void CDCClass::handle_CDC_control()
 
 void CDCClass::handle_SID_buttons()
 {
-    if (!cdc_active) {
+    if (!cdc_active)
+    {
         return;
     }
-    
     boolean event = (CAN_RxMsg.data[0] == 0x80);
-    if (!event) {
+    if (!event)
+    {
         //FIXME: Can we really ignore the message if it wasn't sent on event?
         return;
     }
-    
-    switch (CAN_RxMsg.data[2]) {
+    switch (CAN_RxMsg.data[2])
+    {
         case 0x04: // NXT button on wheel
             //for (int j = 0; j < 9; j++) {
             //Serial.write(byte(repeat_cmd[j]));
@@ -369,7 +389,8 @@ void CDCClass::handle_SID_buttons()
     }
     delay(3);
     Serial.println("DEBUG: 'Button Release' command sent.");
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 7; i++)
+    {
         Serial.write(byte(button_release_cmd[i]));
     }
 }

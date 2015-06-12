@@ -21,10 +21,10 @@ void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC Test Code - Jun 2015");
     CDC.open_CAN_bus();
-    CDC.handle_BT_connection();
 }
 
 // Add loop code
 void loop() {
     CDC.handle_CDC_status();
+    CDC.handle_BT_connection();
 }
