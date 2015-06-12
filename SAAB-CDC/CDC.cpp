@@ -238,7 +238,6 @@ void CDCClass::handle_CDC_control()
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // Play
             cdc_active = true;
-            
             /*
             // we want to show the module name in the SID for a little while after being activated:
             stop_displaying_name_at = millis() + DISPLAY_NAME_TIMEOUT;
@@ -434,4 +433,87 @@ void CDCClass::send_CDC_status(boolean event, boolean remote)
     cdc_status_resend_needed = false;
     cdc_status_resend_due_to_cdc_command = false;
     
+}
+
+/**
+ * Sends a request for using the SID, row 2. We may NOT start writing until we've received a grant frame with the correct function ID!
+ */
+
+void CDCClass::send_display_request()
+{
+    CAN_TxMsg.id = DISPLAY_RESOURCE_REQ;
+    CAN_TxMsg.data[0] = CDC_APL_ADR;
+    CAN_TxMsg.data[1] = 2; // 2nd SID row
+    CAN_TxMsg.data[2] = 2; //display_wanted ? 1 /* static (normal) text */ : 5 /* we don't want the display */;
+    CAN_TxMsg.data[3] = CDC_SID_FUNCTION_ID;
+    CAN_TxMsg.data[4] = 0x00; // zero out the rest of the frame as it is only 4 bytes long
+    CAN_TxMsg.data[5] = 0x00;
+    CAN_TxMsg.data[6] = 0x00;
+    CAN_TxMsg.data[7] = 0x00;
+    CAN.send(&CAN_TxMsg);
+    display_request_last_send_time = millis();
+}
+
+/**
+ * Writes the provided text on the SID. This function assumes that we have been granted write access. Do not call it if we haven't!
+ * NOTE the character set used by the SID is slightly nonstandard. "Normal" characters should work fine.
+ */
+
+void CDCClass::write_text_on_display(char text[])
+{
+    if (!text)
+    {
+        return;
+    }
+    
+    // Copy the provided string and make sure we have a new array of the correct length:
+    
+    char txt[15];
+    int i, n;
+    n = strlen(text);
+    n = n > 12 ? 12 : n;
+    for (i = 0; i < n; i++)
+    {
+        txt[i] = text[i];
+    }
+    for (i = n + 1; i < 16; i++)
+    {
+        txt[i] = 0;
+    }
+    
+    Serial.print("n= ");
+    Serial.println(n, DEC);
+    Serial.print("txt ");
+    Serial.println(txt);
+    Serial.print("text ");
+    Serial.println(text);
+    
+    CAN_TxMsg.id = WRITE_TEXT_ON_DISPLAY;
+    
+    CAN_TxMsg.data[0] = 0x42; //TODO check if this is really correct? According to the spec, the 4 shouldn't be there? It's just a normal transport layer sequence numbering?
+    CAN_TxMsg.data[1] = 0x96; // Address of the SID
+    CAN_TxMsg.data[2] = 0x02; // Sent on basetime, writing to row 2
+    CAN_TxMsg.data[3] = txt[0];
+    CAN_TxMsg.data[4] = txt[1];
+    CAN_TxMsg.data[5] = txt[2];
+    CAN_TxMsg.data[6] = txt[3];
+    CAN_TxMsg.data[7] = txt[4];
+    CAN.send(&CAN_TxMsg);
+    
+    CAN_TxMsg.data[0] = 0x01; // message 1
+    CAN_TxMsg.data[3] = txt[5];
+    CAN_TxMsg.data[4] = txt[6];
+    CAN_TxMsg.data[5] = txt[7];
+    CAN_TxMsg.data[6] = txt[8];
+    CAN_TxMsg.data[7] = txt[9];
+    CAN.send(&CAN_TxMsg);
+    
+    CAN_TxMsg.data[0] = 0x00; // message 0
+    CAN_TxMsg.data[3] = txt[10];
+    CAN_TxMsg.data[4] = txt[11];
+    CAN_TxMsg.data[5] = txt[12];
+    CAN_TxMsg.data[6] = txt[13];
+    CAN_TxMsg.data[7] = txt[14];
+    CAN.send(&CAN_TxMsg);
+    write_text_on_display_last_send_time = millis();
 }

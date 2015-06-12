@@ -29,6 +29,8 @@ public:
     void handle_CDC_control();
     void handle_SID_buttons();
     void send_CDC_status(boolean event, boolean remote);
+    void send_display_request();
+    void write_text_on_display(char text[]);
 };
 
 //----------------------------------------------------------------------------
