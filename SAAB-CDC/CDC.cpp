@@ -113,11 +113,11 @@ void CDCClass::handle_CDC_status()
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity
-    if (millis() - cdc_status_last_send_time > 900)
+    if (millis() - cdc_status_last_send_time > 950)
     {
         // Send the CDC status message, marked periodical and triggered internally
         CDC.send_CDC_status(false, false);
-        Serial.println("DEBUG: Sending CDC status");
+        //Serial.println("DEBUG: Sending CDC status");
     }
 }
 
@@ -140,10 +140,6 @@ void CDCClass::print_bus()
         Serial.println("");
     }
 }
-
-/******************************************************************************
- * PRIVATE METHODS
- ******************************************************************************/
 
 /**
  * Handles connection with the BC05B Bluetooth module.
@@ -184,17 +180,17 @@ void CDCClass::handle_RX_frame()
                     CAN_TxMsg.data[c] = ninefive_cmd[c];
                 }
                 CAN.send(&CAN_TxMsg);
-                Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
+                //Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
                 break;
             
             case CDC_CONTROL:
                 handle_CDC_control();
-                Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
+                //Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
                 break;
             
             case SID_BUTTONS:
                 handle_SID_buttons();
-                Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
+                //Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
                 break;
             
             case DISPLAY_RESOURCE_GRANT:
@@ -215,7 +211,7 @@ void CDCClass::handle_RX_frame()
                 }
                 else
                 {
-                    Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+                    //Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
                 }
                 break;
         }
@@ -276,11 +272,13 @@ void CDCClass::handle_CDC_control()
             for (int j = 0; j < 8; j++) {
                 Serial.write(byte(stopipod_cmd[j]));
             }
+            /*
             delay(3);
             //Serial.println("Release");
             for (int i = 0; i < 7; i++) {
                 Serial.write(byte(button_release_cmd[i]));
             }
+            */
             //Serial.println("Radio");
             break;
     }
@@ -490,7 +488,7 @@ void CDCClass::write_text_on_display(char text[])
     
     CAN_TxMsg.id = WRITE_TEXT_ON_DISPLAY;
     
-    CAN_TxMsg.data[0] = 0x42; //TODO check if this is really correct? According to the spec, the 4 shouldn't be there? It's just a normal transport layer sequence numbering?
+    CAN_TxMsg.data[0] = 0x42; //TODO: check if this is really correct? According to the spec, the 4 shouldn't be there? It's just a normal transport layer sequence numbering?
     CAN_TxMsg.data[1] = 0x96; // Address of the SID
     CAN_TxMsg.data[2] = 0x02; // Sent on basetime, writing to row 2
     CAN_TxMsg.data[3] = txt[0];
