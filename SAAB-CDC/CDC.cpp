@@ -147,17 +147,29 @@ void CDCClass::print_bus()
 
 void CDCClass::handle_BT_connection()
 {
-    pinMode(power_pin, OUTPUT);
-//    digitalWrite(power_pin,HIGH);
-//    delay(6000);
-    digitalWrite(power_pin, LOW);
-    
     if (Serial.available() > 0)
     {
         Serial.println("DEBUG: Serial available.");
         incomingByte = Serial.read();
         Serial.println("DEBUG: 'incomingByte' =  ");
-        Serial.print(incomingByte, DEC);
+        Serial.print(incomingByte);
+        switch (incomingByte) {
+            case 'P':
+                digitalWrite(power_pin,HIGH);
+                Serial.println("DEBUG: Power pin high");
+                break;
+            case 'p':
+                digitalWrite(power_pin,LOW);
+                Serial.println("DEBUG: Power pin low");
+                break;
+            case 'y':
+                digitalWrite(play_pin,HIGH);
+                Serial.println("DEBUG: Play pin high");
+                delay(100);
+                digitalWrite(play_pin,LOW);
+                Serial.println("DEBUG: Play Pin low");
+                break;
+        }
     }
 }
 
