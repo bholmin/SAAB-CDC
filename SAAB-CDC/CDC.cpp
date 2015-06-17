@@ -114,27 +114,6 @@ void CDCClass::open_CAN_bus() {
 }
 
 /**
- * Handles CDC status and sends it to IHU as necessary.
- */
-
-void CDCClass::handle_CDC_status() {
-    CDC.handle_RX_frame();
-    // If the CDC status frame needs to be sent as an event, do so now
-    // (note though, that we may not send the frame more often than once every 50 ms)
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
-        CDC.send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
-        Serial.println("DEBUG: Sending CDC status due to CDC command");
-    }
-    
-    // The CDC status frame must be sent with a 1000 ms periodicity
-    if (millis() - cdc_status_last_send_time > 950) {
-        // Send the CDC status message, marked periodical and triggered internally
-        CDC.send_CDC_status(false, false);
-        //Serial.println("DEBUG: Sending CDC status");
-    }
-}
-
-/**
  * Handles connection with the BC05B Bluetooth module.
  */
 
@@ -174,11 +153,7 @@ void CDCClass::handle_RX_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                CAN_TxMsg.id = NODE_STATUS_TX;
-                for (int c = 0; c < 8; c++) {
-                    CAN_TxMsg.data[c] = ninefive_cmd[c];
-                }
-                CAN.send(&CAN_TxMsg);
+                send_can_message(NODE_STATUS_TX, ninefive_cmd);
                 //Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
                 break;
             case CDC_CONTROL:
@@ -226,11 +201,7 @@ void CDCClass::handle_CDC_control() {
             // We want to show the module name in the SID for a little while after being activated:
             stop_displaying_name_at = millis() + DISPLAY_NAME_TIMEOUT;
             display_wanted = true;
-            for (int j = 0; j < 8; j++) {
-                CAN_TxMsg.id = SOUND_REQUEST;
-                CAN_TxMsg.data[j] = beep_cmd[j];
-            }
-            CAN.send(&CAN_TxMsg);
+            send_can_message(SOUND_REQUEST, beep_cmd);
             send_serial_message(playipod_cmd);
             delay(3);
             //Serial.println("DEBUG: 'Button Release' command sent.")
@@ -241,11 +212,7 @@ void CDCClass::handle_CDC_control() {
             // Wow that we're in standby, we don't want the display anymore
             display_wanted = false;
             for (int a = 0; a <=2; a++) {
-                for (int j = 0; j < 8; j++) {
-                    CAN_TxMsg.id = SOUND_REQUEST;
-                    CAN_TxMsg.data[j] = beep_cmd[j];
-                }
-                CAN.send(&CAN_TxMsg);
+                send_can_message(SOUND_REQUEST, beep_cmd);
             }
             send_serial_message(stopipod_cmd);
             delay(3);
@@ -270,7 +237,6 @@ void CDCClass::handle_CDC_control() {
                         send_serial_message(repeat_cmd);
                         break;
                     case 3:
-                        send_serial_message(repeat_cmd);
                         send_serial_message(shuffle_cmd);
                         break;
                 }
@@ -288,7 +254,7 @@ void CDCClass::handle_CDC_control() {
                 send_serial_message(prev_cmd);
                 break;
             default:
-                Serial.print(CAN_RxMsg.data[1]);
+                Serial.print(CAN_RxMsg.data[1],HEX);
                 Serial.println("DEBUG: Unknown SID button message");
         }
         delay(3);
@@ -325,7 +291,7 @@ void CDCClass::handle_SID_buttons() {
             Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             break;
         default:
-            Serial.print(CAN_RxMsg.data[2]);
+            Serial.print(CAN_RxMsg.data[2],HEX);
             Serial.println("DEBUG: Unknown SID button message");
     }
     delay(3);
@@ -334,43 +300,37 @@ void CDCClass::handle_SID_buttons() {
 }
 
 /**
- * Puts the GENERAL_STATUS_CDC frame on the CAN bus
+ * Handles CDC status and sends it to IHU as necessary.
  */
+
+void CDCClass::handle_CDC_status() {
+    handle_RX_frame();
+    // If the CDC status frame needs to be sent as an event, do so now
+    // (note though, that we may not send the frame more often than once every 50 ms)
+    
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
+        send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
+        Serial.println("DEBUG: Sending CDC status due to CDC command");
+    }
+    
+    // The CDC status frame must be sent with a 1000 ms periodicity
+    
+    if (millis() - cdc_status_last_send_time > 950) {
+        // Send the CDC status message, marked periodical and triggered internally
+        send_CDC_status(false, false);
+        //Serial.println("DEBUG: Sending CDC status");
+    }
+}
 
 void CDCClass::send_CDC_status(boolean event, boolean remote)
 {
-    CAN_TxMsg.id = GENERAL_STATUS_CDC;
-    
-    CAN_TxMsg.data[0] = 0xE0;
-    
-    // byte 1-2, bits 0-15: DISC PRESENCE: (bitmap) 0 - disc absent, 1 - disc present. Bit 0 is disc 1, bit 1 is disc 2, etc.
-    CAN_TxMsg.data[1] = 0xFF;
-    CAN_TxMsg.data[2] = 0x01; // we have only one "disc" in the "magazine"
-    
-    // byte 3, bits 7-4: DISC MODE
-    // byte 3, bits 3-0: DISC NUMBER
-    // CAN_TxMsg.data[3] = 0x05 // PLAY
-    CAN_TxMsg.data[3] = 0x31;
-    
-    // byte 4: TRACK OR ERROR NUMBER
-    CAN_TxMsg.data[4] = 0xFF;
-    
-    // byte 5: MINUTE
-    CAN_TxMsg.data[5] = 0xFF;
-    
-    // byte 6: SECOND
-    CAN_TxMsg.data[6] = 0xFF;
-    
-    // byte 7: CHANGER STATUS
-    CAN_TxMsg.data[7] = 0xD0; // CDC is married to this vehicle, and there's a magazine present
-    
-    // put the frame on the CAN bus:
-    CAN.send(&CAN_TxMsg);
+    send_can_message(GENERAL_STATUS_CDC, cdc_status_cmd);
     
     // Record the time of sending and reset status variables
     cdc_status_last_send_time = millis();
     cdc_status_resend_needed = false;
     cdc_status_resend_due_to_cdc_command = false;
+
 }
 
 /**
@@ -401,6 +361,20 @@ void CDCClass::send_serial_message(int *msg) {
         Serial.write(byte(*msg));
         msg++;
     }
+}
+
+/**
+ * Formats and puts a frame on CAN bus
+ */
+
+void CDCClass::send_can_message(byte message_id, int *msg) {
+    CAN_TxMsg.id = message_id;
+    int i = 0;
+    while (msg[i] != -1) {
+        CAN_TxMsg.data[i] = msg[i];
+        i++;
+    }
+    CAN.send(&CAN_TxMsg);
 }
 
 /**
