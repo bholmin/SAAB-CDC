@@ -59,6 +59,7 @@ boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for se
 boolean bt_off = true; // Default state of bluetooth module
 boolean bt_on_pairing = false; // True while bluetooth module is on and is in pairing mode
 boolean bt_on_active = false; // True while bluetooth module is on and is paired to a device
+boolean mute = false;
 int power_pin = 7;
 int play_pin = 5;
 int forward_pin = 6;
@@ -68,8 +69,7 @@ int spi_mosi_pin = 17;
 int spi_miso_pin = 18;
 int spi_sck_pin = 19;
 int incomingByte = 0;   // For incoming serial data
-int toggle_shuffle = 1; // TODO: switch to boolean?
-int mute = 0; // TODO: switch to boolean?
+int toggle_shuffle = 1;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int playipod_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x01,0xF9,-1};
@@ -303,7 +303,6 @@ void CDCClass::handle_SID_buttons() {
  */
 
 void CDCClass::handle_CDC_status() {
-    handle_RX_frame();
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
     
