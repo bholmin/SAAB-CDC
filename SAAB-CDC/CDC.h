@@ -19,7 +19,7 @@
 class CDCClass
 {
 public:
-    void print_bus();
+    void print_can_message();
     void open_CAN_bus();
     void handle_BT_connection();
     void handle_RX_frame();

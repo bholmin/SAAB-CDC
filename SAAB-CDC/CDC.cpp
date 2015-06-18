@@ -88,19 +88,17 @@ int display_request_cmd[] = {CDC_APL_ADR,2,2,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,
  ******************************************************************************/
 
 /**
- * Prints the contents of CAN bus to serial console.
+ * Prints the CAN message to serial output.
  */
 
-void CDCClass::print_bus() {
-    if (CAN_RxMsg.id==0x348) {
-        Serial.print(CAN_RxMsg.id,HEX);
-        Serial.print(";");
-        for (int i = 0; i < 8; i++) {
-            Serial.print(CAN_RxMsg.data[i],HEX);
-            Serial.print(";");
-        }
-        Serial.println("");
+void CDCClass::print_can_message() {
+    Serial.print(CAN_TxMsg.id,HEX);
+    Serial.print(" -> ");
+    for (int i = 0; i < 8; i++) {
+        Serial.print(CAN_TxMsg.data[i],HEX);
+        Serial.print(" ");
     }
+    Serial.println();
 }
 
 /**
@@ -155,7 +153,7 @@ void CDCClass::handle_RX_frame() {
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
                 send_can_message(NODE_STATUS_TX, ninefive_cmd);
-                //Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
+                Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
                 break;
             case CDC_CONTROL:
                 handle_CDC_control();
@@ -365,6 +363,7 @@ void CDCClass::send_can_message(byte message_id, int *msg) {
         i++;
     }
     CAN.send(&CAN_TxMsg);
+    print_can_message();
 }
 
 /**
