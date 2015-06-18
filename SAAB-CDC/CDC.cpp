@@ -21,7 +21,7 @@
  * Other useful stuff
  */
 
-#define MODULE_NAME              "BLUETOOTH"
+#define MODULE_NAME              "iSAAB"
 #define DISPLAY_NAME_TIMEOUT     5000
 
 /**
@@ -81,6 +81,7 @@ int shuffle_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x80,0x7A,-1};
 int repeat_cmd[] = {0xFF,0x55,0x05,0x02,0x00,0x00,0x00,0x01,0xF8,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x01,0x31,0xFF,0xFF,0xFF,0xD0,-1};
+int display_request_cmd[] = {CDC_APL_ADR,2,2,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
 /******************************************************************************
  * PUBLIC METHODS
@@ -322,8 +323,7 @@ void CDCClass::handle_CDC_status() {
     }
 }
 
-void CDCClass::send_CDC_status(boolean event, boolean remote)
-{
+void CDCClass::send_CDC_status(boolean event, boolean remote) {
     send_can_message(GENERAL_STATUS_CDC, cdc_status_cmd);
     
     // Record the time of sending and reset status variables
@@ -337,18 +337,8 @@ void CDCClass::send_CDC_status(boolean event, boolean remote)
  * Sends a request for using the SID, row 2. We may NOT start writing until we've received a grant frame with the correct function ID!
  */
 
-void CDCClass::send_display_request()
-{
-    CAN_TxMsg.id = DISPLAY_RESOURCE_REQ;
-    CAN_TxMsg.data[0] = CDC_APL_ADR;
-    CAN_TxMsg.data[1] = 2; // 2nd SID row
-    CAN_TxMsg.data[2] = 2; //display_wanted ? 1 /* static (normal) text */ : 5 /* we don't want the display */;
-    CAN_TxMsg.data[3] = CDC_SID_FUNCTION_ID;
-    CAN_TxMsg.data[4] = 0x00; // zero out the rest of the frame as it is only 4 bytes long
-    CAN_TxMsg.data[5] = 0x00;
-    CAN_TxMsg.data[6] = 0x00;
-    CAN_TxMsg.data[7] = 0x00;
-    CAN.send(&CAN_TxMsg);
+void CDCClass::send_display_request() {
+    send_can_message(DISPLAY_RESOURCE_REQ, display_request_cmd);
     display_request_last_send_time = millis();
 }
 
@@ -382,10 +372,8 @@ void CDCClass::send_can_message(byte message_id, int *msg) {
  * NOTE the character set used by the SID is slightly nonstandard. "Normal" characters should work fine.
  */
 
-void CDCClass::write_text_on_display(char text[])
-{
-    if (!text)
-    {
+void CDCClass::write_text_on_display(char text[]) {
+    if (!text) {
         return;
     }
     
@@ -395,12 +383,10 @@ void CDCClass::write_text_on_display(char text[])
     int i, n;
     n = strlen(text);
     n = n > 12 ? 12 : n;
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         txt[i] = text[i];
     }
-    for (i = n + 1; i < 16; i++)
-    {
+    for (i = n + 1; i < 16; i++) {
         txt[i] = 0;
     }
     
