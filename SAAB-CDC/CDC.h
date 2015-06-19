@@ -1,8 +1,6 @@
 //
-//  CDC.h
-//  SAAB-CDC
+// Project 		SAAB-CDC
 //
-//  Created by Karlis Veilands on 6/5/15.
 //
 //
 

@@ -1,8 +1,7 @@
 //
-//  CDC.cpp
-//  SAAB-CDC
+//  Project 	 SAAB-CDC
 //
-//  Created by:  Seth Evans and Emil Malmberg
+//  Code:        Seth Evans and Emil Malmberg
 //  Refactoring: Karlis Veilands
 //
 //
@@ -191,7 +190,7 @@ void CDCClass::handle_RX_frame() {
 void CDCClass::handle_IHU_buttons() {
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
-        //FIXME: can we really ignore the message if it wasn't sent on event?
+        // FIXME: can we really ignore the message if it wasn't sent on event?
         return;
     }
     switch (CAN_RxMsg.data[1]) {
@@ -202,7 +201,6 @@ void CDCClass::handle_IHU_buttons() {
             display_wanted = true;
             send_can_message(SOUND_REQUEST, beep_cmd);
             send_serial_message(playipod_cmd);
-            delay(3);
             //Serial.println("DEBUG: 'Button Release' command sent.")
             send_serial_message(button_release_cmd);
             break;
@@ -216,9 +214,7 @@ void CDCClass::handle_IHU_buttons() {
             }
              */
             send_serial_message(stopipod_cmd);
-            delay(3);
             send_serial_message(button_release_cmd);
-            //Serial.println("DEBUG: Radio");
             break;
     }
     if (cdc_active) {
@@ -261,7 +257,6 @@ void CDCClass::handle_IHU_buttons() {
                 Serial.print(CAN_RxMsg.data[1],HEX);
                 //Serial.println("DEBUG: Unknown (for now) message");
         }
-        delay(3);
         //Serial.println("DEBUG: 'Button Release' command sent.")
         send_serial_message(button_release_cmd);
     }
@@ -269,7 +264,7 @@ void CDCClass::handle_IHU_buttons() {
 
 /**
  * Handles the STEERING_WHEEL_BUTTONS frame.
- * TODO connect the SID button events to actions. For now, use Seth's original code:
+ * TODO connect the SID button events to actions.
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
@@ -278,7 +273,7 @@ void CDCClass::handle_steering_wheel_buttons() {
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
-        //FIXME: Can we really ignore the message if it wasn't sent on event?
+        // FIXME: Can we really ignore the message if it wasn't sent on event?
         return;
     }
     switch (CAN_RxMsg.data[2]) {
@@ -299,7 +294,6 @@ void CDCClass::handle_steering_wheel_buttons() {
             //Serial.println("DEBUG: Unknown SID button message");
             break;
     }
-    delay(3);
     //Serial.println("DEBUG: 'Button Release' command sent.");
     send_serial_message(button_release_cmd);
 }
@@ -357,6 +351,7 @@ void CDCClass::send_serial_message(int *msg) {
         Serial.write(byte(*msg));
         msg++;
     }
+    //delay(3); // Not sure if this is needed. Seems to be working fine without this.
 }
 
 /**
@@ -406,7 +401,7 @@ void CDCClass::write_text_on_display(char text[]) {
     
     CAN_TxMsg.id = WRITE_TEXT_ON_DISPLAY;
     
-    CAN_TxMsg.data[0] = 0x42; //TODO: check if this is really correct? According to the spec, the 4 shouldn't be there? It's just a normal transport layer sequence numbering?
+    CAN_TxMsg.data[0] = 0x42; // TODO: check if this is really correct? According to the spec, the 4 shouldn't be there? It's just a normal transport layer sequence numbering?
     CAN_TxMsg.data[1] = 0x96; // Address of the SID
     CAN_TxMsg.data[2] = 0x02; // Sent on basetime, writing to row 2
     CAN_TxMsg.data[3] = txt[0];

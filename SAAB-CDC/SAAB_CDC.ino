@@ -3,8 +3,8 @@
 //
 // A CD changer emulator for older SAAB cars
 //
-// Coded by:    Seth Evans and Emil Malmberg
-// CAN code:    Igor Real
+// Code:       Seth Evans and Emil Malmberg
+// CAN code:   Igor Real
 // 
 //
 
