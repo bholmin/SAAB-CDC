@@ -21,7 +21,7 @@
  * Other useful stuff
  */
 
-#define MODULE_NAME              "iSAAB"
+#define MODULE_NAME              "BT TEST"
 #define DISPLAY_NAME_TIMEOUT     5000
 
 /**
@@ -38,10 +38,10 @@
  * RX frames:
  */
 
-#define CDC_CONTROL              0x3C0
+#define IHU_BUTTONS              0x3C0
 #define DISPLAY_RESOURCE_GRANT   0x368
 #define NODE_STATUS_RX           0x6A1
-#define SID_BUTTONS              0x290
+#define STEERING_WHEEL_BUTTONS   0x290
 
 /**
  * Variables:
@@ -106,7 +106,7 @@ void CDCClass::print_can_message() {
  */
 
 void CDCClass::open_CAN_bus() {
-    Serial.println("DEBUG: Opening CAN bus @ 47.619kbps");
+    //Serial.println("DEBUG: Opening CAN bus @ 47.619kbps");
     CAN.begin(47);  // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -118,25 +118,25 @@ void CDCClass::open_CAN_bus() {
 
 void CDCClass::handle_BT_connection() {
     if (Serial.available() > 0) {
-        Serial.println("DEBUG: Serial available.");
+        //Serial.println("DEBUG: Serial available.");
         incomingByte = Serial.read();
-        Serial.println("DEBUG: 'incomingByte' =  ");
+        //Serial.println("DEBUG: 'incomingByte' =  ");
         Serial.print(incomingByte);
         switch (incomingByte) {
             case 'P':
                 digitalWrite(power_pin,HIGH);
-                Serial.println("DEBUG: Power pin high");
+                //Serial.println("DEBUG: Power pin high");
                 break;
             case 'p':
                 digitalWrite(power_pin,LOW);
-                Serial.println("DEBUG: Power pin low");
+                //Serial.println("DEBUG: Power pin low");
                 break;
             case 'y':
                 digitalWrite(play_pin,HIGH);
-                Serial.println("DEBUG: Play pin high");
+                //Serial.println("DEBUG: Play pin high");
                 delay(100);
                 digitalWrite(play_pin,LOW);
-                Serial.println("DEBUG: Play Pin low");
+                //Serial.println("DEBUG: Play Pin low");
                 break;
         }
     }
@@ -153,27 +153,27 @@ void CDCClass::handle_RX_frame() {
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
                 send_can_message(NODE_STATUS_TX, ninefive_cmd);
-                Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
+                //Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
                 break;
-            case CDC_CONTROL:
-                handle_CDC_control();
-                //Serial.println("DEBUG: Received 'CDC_CONTROL' frame. Handling...");
+            case IHU_BUTTONS:
+                handle_IHU_buttons();
+                //Serial.println("DEBUG: Received 'IHU_BUTTONS' frame. Handling...");
                 break;
-            case SID_BUTTONS:
-                handle_SID_buttons();
-                //Serial.println("DEBUG: Received 'SID_BUTTONS' frame. Handling...");
+            case STEERING_WHEEL_BUTTONS:
+                handle_steering_wheel_buttons();
+                //Serial.println("DEBUG: Received 'STEERING_WHEEL_BUTTONS' frame. Handling...");
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-                    Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+                    //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
                     display_request_granted = true;
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
-                    Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+                    //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
                     display_request_granted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
-                    Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+                    //Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
                     display_request_granted = false;
                 }
                 else {
@@ -185,10 +185,10 @@ void CDCClass::handle_RX_frame() {
 }
 
 /**
- * Handles the CDC_CONTROL frame that the IHU sends us when it wants to control some feature of the CDC.
+ * Handles the IHU_BUTTONS frame that the IHU sends us when it wants to control some feature of the CDC.
  */
 
-void CDCClass::handle_CDC_control() {
+void CDCClass::handle_IHU_buttons() {
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         //FIXME: can we really ignore the message if it wasn't sent on event?
@@ -208,15 +208,17 @@ void CDCClass::handle_CDC_control() {
             break;
         case 0x14: // Standby
             cdc_active = false;
+            /*
             // Wow that we're in standby, we don't want the display anymore
             display_wanted = false;
             for (int a = 0; a <=2; a++) {
                 send_can_message(SOUND_REQUEST, beep_cmd);
             }
+             */
             send_serial_message(stopipod_cmd);
             delay(3);
             send_serial_message(button_release_cmd);
-            Serial.println("DEBUG: Radio");
+            //Serial.println("DEBUG: Radio");
             break;
     }
     if (cdc_active) {
@@ -224,8 +226,8 @@ void CDCClass::handle_CDC_control() {
             case 0x59: // Next_cmd CD
                 send_serial_message(playpauseipod_cmd);
                 break;
-            case 0x76: // Random on/off
-                if (toggle_shuffle > 3) {
+            case 0x76: // Random ON/OFF
+                if (toggle_shuffle > 4) {
                     toggle_shuffle = 1;
                 }
                 switch (toggle_shuffle) {
@@ -236,14 +238,17 @@ void CDCClass::handle_CDC_control() {
                         send_serial_message(repeat_cmd);
                         break;
                     case 3:
+                        send_serial_message(repeat_cmd);
+                        break;
+                    case 4:
                         send_serial_message(shuffle_cmd);
                         break;
                 }
                 toggle_shuffle++;
-            case 0xB1: // Pause OFF
+            case 0xB1: // Pause ON
                 send_serial_message(stopipod_cmd);
                 break;
-            case 0xB0: // Pause ON
+            case 0xB0: // Pause OFF
                 send_serial_message(playipod_cmd);
                 break;
             case 0x35: // Track up
@@ -254,7 +259,7 @@ void CDCClass::handle_CDC_control() {
                 break;
             default:
                 Serial.print(CAN_RxMsg.data[1],HEX);
-                Serial.println("DEBUG: Unknown SID button message");
+                //Serial.println("DEBUG: Unknown (for now) message");
         }
         delay(3);
         //Serial.println("DEBUG: 'Button Release' command sent.")
@@ -263,11 +268,11 @@ void CDCClass::handle_CDC_control() {
 }
 
 /**
- * Handles the SID_BUTTONS frame.
+ * Handles the STEERING_WHEEL_BUTTONS frame.
  * TODO connect the SID button events to actions. For now, use Seth's original code:
  */
 
-void CDCClass::handle_SID_buttons() {
+void CDCClass::handle_steering_wheel_buttons() {
     if (!cdc_active) {
         return;
     }
@@ -279,22 +284,23 @@ void CDCClass::handle_SID_buttons() {
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
             //send_serial_message(repeat_cmd);
-            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+            //Serial.println("DEBUG: 'NXT' button on wheel pressed.");
             break;
         case 0x10: // Seek+ button on wheel
             //send_serial_message(next_cmd);
-            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
+            //Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             break;
         case 0x08: // Seek- button on wheel
-            send_serial_message(prev_cmd);
-            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
+            //send_serial_message(prev_cmd);
+            //Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             break;
         default:
-            Serial.print(CAN_RxMsg.data[2],HEX);
-            Serial.println("DEBUG: Unknown SID button message");
+            //Serial.print(CAN_RxMsg.data[2],HEX);
+            //Serial.println("DEBUG: Unknown SID button message");
+            break;
     }
     delay(3);
-    Serial.println("DEBUG: 'Button Release' command sent.");
+    //Serial.println("DEBUG: 'Button Release' command sent.");
     send_serial_message(button_release_cmd);
 }
 
@@ -303,12 +309,15 @@ void CDCClass::handle_SID_buttons() {
  */
 
 void CDCClass::handle_CDC_status() {
+    
+    handle_RX_frame();
+    
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
     
     if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
         send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
-        Serial.println("DEBUG: Sending CDC status due to CDC command");
+        //Serial.println("DEBUG: Sending CDC status due to CDC command");
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity
@@ -354,7 +363,7 @@ void CDCClass::send_serial_message(int *msg) {
  * Formats and puts a frame on CAN bus
  */
 
-void CDCClass::send_can_message(byte message_id, int *msg) {
+void CDCClass::send_can_message(int message_id, int *msg) {
     CAN_TxMsg.id = message_id;
     int i = 0;
     while (msg[i] != -1) {
@@ -362,7 +371,7 @@ void CDCClass::send_can_message(byte message_id, int *msg) {
         i++;
     }
     CAN.send(&CAN_TxMsg);
-    print_can_message();
+    //print_can_message();
 }
 
 /**
