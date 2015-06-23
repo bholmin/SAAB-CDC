@@ -18,8 +18,9 @@ class CDCClass
 {
 public:
     void print_can_message();
+    void initialize_BT_pins();
     void open_CAN_bus();
-    void handle_BT_connection();
+    void handle_BT_connection(byte action);
     void handle_RX_frame();
     void handle_IHU_buttons();
     void handle_steering_wheel_buttons();
@@ -29,6 +30,8 @@ public:
     void send_serial_message(int *msg);
     void send_can_message(int message_id, int *msg);
     void write_text_on_display(char text[]);
+    
+    void test_bt();
 };
 
 //----------------------------------------------------------------------------

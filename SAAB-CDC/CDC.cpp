@@ -22,6 +22,8 @@
 
 #define MODULE_NAME              "BT TEST"
 #define DISPLAY_NAME_TIMEOUT     5000
+#define BT_POWER_TIMEOUT         3000
+#define BT_PIN_TIMEOUT           50
 
 /**
  * TX frames:
@@ -101,6 +103,23 @@ void CDCClass::print_can_message() {
 }
 
 /**
+ * Initializes pins on ATMEGA328-PU chip for further use with bluetooth module.
+ */
+
+void CDCClass::initialize_BT_pins() {
+    pinMode(power_pin, OUTPUT);
+    pinMode(play_pin, OUTPUT);
+    pinMode(forward_pin, OUTPUT);
+    pinMode(previous_pin, OUTPUT);
+    
+    digitalWrite(power_pin,LOW);
+    digitalWrite(play_pin,LOW);
+    digitalWrite(forward_pin,LOW);
+    digitalWrite(previous_pin,LOW);
+}
+
+
+/**
  * Opens CAN bus for communication.
  */
 
@@ -112,34 +131,63 @@ void CDCClass::open_CAN_bus() {
 }
 
 /**
- * Handles connection with the BC05B Bluetooth module.
+ * Handles actions with the BC05B Bluetooth module.
  */
 
-void CDCClass::handle_BT_connection() {
+void CDCClass::handle_BT_connection(byte action) {
+    switch (action) {
+        case 'P':
+            digitalWrite(power_pin,HIGH);
+            delay(BT_POWER_TIMEOUT);
+            digitalWrite(power_pin,LOW);
+            break;
+        case 'F':
+            digitalWrite(forward_pin,HIGH);
+            delay(BT_PIN_TIMEOUT);
+            digitalWrite(forward_pin,LOW);
+            break;
+        case 'R':
+            digitalWrite(previous_pin,HIGH);
+            delay(BT_PIN_TIMEOUT);
+            digitalWrite(previous_pin,LOW);
+            break;
+    }
+}
+
+/**
+ * Testing of comms with BC05B Bluetooth module.
+ */
+
+void CDCClass::test_bt() {
     if (Serial.available() > 0) {
-        //Serial.println("DEBUG: Serial available.");
-        incomingByte = Serial.read();
-        //Serial.println("DEBUG: 'incomingByte' =  ");
-        Serial.print(incomingByte);
+        int incomingByte = Serial.read();
         switch (incomingByte) {
             case 'P':
                 digitalWrite(power_pin,HIGH);
-                //Serial.println("DEBUG: Power pin high");
-                break;
-            case 'p':
+                Serial.println("Power pin HIGH");
+                delay(BT_POWER_TIMEOUT);
                 digitalWrite(power_pin,LOW);
-                //Serial.println("DEBUG: Power pin low");
+                Serial.println("Power pin LOW");
                 break;
-            case 'y':
-                digitalWrite(play_pin,HIGH);
-                //Serial.println("DEBUG: Play pin high");
-                delay(100);
-                digitalWrite(play_pin,LOW);
-                //Serial.println("DEBUG: Play Pin low");
+            case 'F':
+                digitalWrite(forward_pin,HIGH);
+                Serial.println("Forward pin HIGH");
+                delay(BT_PIN_TIMEOUT);
+                digitalWrite(forward_pin,LOW);
+                Serial.println("Forward pin LOW");
+                break;
+            case 'R':
+                digitalWrite(previous_pin,HIGH);
+                Serial.println("Previous pin HIGH");
+                delay(BT_PIN_TIMEOUT);
+                digitalWrite(previous_pin,LOW);
+                Serial.println("Previous pin LOW");
                 break;
         }
     }
 }
+
+
 
 /**
  * Handles an incoming (RX) frame.
@@ -221,6 +269,7 @@ void CDCClass::handle_IHU_buttons() {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // Next_cmd CD
                 send_serial_message(playpauseipod_cmd);
+                handle_BT_connection('P');
                 break;
             case 0x76: // Random ON/OFF
                 if (toggle_shuffle > 4) {
@@ -249,9 +298,11 @@ void CDCClass::handle_IHU_buttons() {
                 break;
             case 0x35: // Track up
                 send_serial_message(next_cmd);
+                handle_BT_connection('F');
                 break;
             case 0x36: // Track down
                 send_serial_message(prev_cmd);
+                handle_BT_connection('R');
                 break;
             default:
                 Serial.print(CAN_RxMsg.data[1],HEX);
