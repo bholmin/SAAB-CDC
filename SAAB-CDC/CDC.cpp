@@ -82,7 +82,7 @@ int shuffle_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x80,0x7A,-1};
 int repeat_cmd[] = {0xFF,0x55,0x05,0x02,0x00,0x00,0x00,0x01,0xF8,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x01,0x31,0xFF,0xFF,0xFF,0xD0,-1};
-int display_request_cmd[] = {CDC_APL_ADR,2,2,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
+int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
 /******************************************************************************
  * PUBLIC METHODS
@@ -135,6 +135,7 @@ void CDCClass::open_CAN_bus() {
  */
 
 void CDCClass::handle_BT_connection(int pin, unsigned long timeout) {
+    initialize_BT_pins();
     digitalWrite(pin,HIGH);
     delay(timeout);
     digitalWrite(pin,LOW);
@@ -185,32 +186,29 @@ void CDCClass::handle_RX_frame() {
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
                 send_can_message(NODE_STATUS_TX, ninefive_cmd);
-                //Serial.println("DEBUG: Received 'NODE_STATUS_RX' frame. Replying with '6A2'.");
                 break;
             case IHU_BUTTONS:
                 handle_IHU_buttons();
-                //Serial.println("DEBUG: Received 'IHU_BUTTONS' frame. Handling...");
                 break;
             case STEERING_WHEEL_BUTTONS:
                 handle_steering_wheel_buttons();
-                //Serial.println("DEBUG: Received 'STEERING_WHEEL_BUTTONS' frame. Handling...");
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-                    //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+                    // Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
                     display_request_granted = true;
                     write_text_on_display(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
-                    //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+                    // Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
                     display_request_granted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
-                    //Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+                    // Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
                     display_request_granted = false;
                 }
                 else {
-                    //Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+                    // Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
                 }
                 break;
         }
@@ -228,38 +226,28 @@ void CDCClass::handle_IHU_buttons() {
         return;
     }
     switch (CAN_RxMsg.data[1]) {
-        case 0x24: // Play
+        case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
-            // We want to show the module name in the SID for a little while after being activated:
-            stop_displaying_name_at = millis() + DISPLAY_NAME_TIMEOUT;
-            display_wanted = true;
             send_can_message(SOUND_REQUEST, beep_cmd);
             send_serial_message(playipod_cmd);
-            //Serial.println("DEBUG: 'Button Release' command sent.")
             send_serial_message(button_release_cmd);
-            handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
+            // handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
             break;
-        case 0x14: // Standby
+        case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
-            /*
-            // Wow that we're in standby, we don't want the display anymore
             display_wanted = false;
-            for (int a = 0; a <=2; a++) {
-                send_can_message(SOUND_REQUEST, beep_cmd);
-            }
-             */
             send_serial_message(stopipod_cmd);
             send_serial_message(button_release_cmd);
-            handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
+            // handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
             break;
     }
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // Next_cmd CD
-                // send_serial_message(playpauseipod_cmd);
-                handle_BT_connection(power_pin, BT_POWER_TIMEOUT);
+                send_serial_message(playpauseipod_cmd);
+                // handle_BT_connection(power_pin, BT_POWER_TIMEOUT);
                 break;
-            case 0x76: // Random ON/OFF
+            case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 if (toggle_shuffle > 4) {
                     toggle_shuffle = 1;
                 }
@@ -286,17 +274,15 @@ void CDCClass::handle_IHU_buttons() {
                 break;
             case 0x35: // Track up
                 send_serial_message(next_cmd);
-                handle_BT_connection(forward_pin, BT_PIN_TIMEOUT);
+                // handle_BT_connection(forward_pin, BT_PIN_TIMEOUT);
                 break;
             case 0x36: // Track down
                 send_serial_message(prev_cmd);
-                handle_BT_connection(previous_pin, BT_PIN_TIMEOUT);
+                // handle_BT_connection(previous_pin, BT_PIN_TIMEOUT);
                 break;
             default:
-                Serial.print(CAN_RxMsg.data[1],HEX);
-                //Serial.println("DEBUG: Unknown (for now) message");
+                break;
         }
-        //Serial.println("DEBUG: 'Button Release' command sent.")
         send_serial_message(button_release_cmd);
     }
 }
@@ -333,7 +319,6 @@ void CDCClass::handle_steering_wheel_buttons() {
             //Serial.println("DEBUG: Unknown SID button message");
             break;
     }
-    //Serial.println("DEBUG: 'Button Release' command sent.");
     send_serial_message(button_release_cmd);
 }
 
@@ -350,15 +335,12 @@ void CDCClass::handle_CDC_status() {
     
     if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
         send_CDC_status(true, cdc_status_resend_due_to_cdc_command);
-        //Serial.println("DEBUG: Sending CDC status due to CDC command");
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity
     
     if (millis() - cdc_status_last_send_time > 950) {
-        // Send the CDC status message, marked periodical and triggered internally
         send_CDC_status(false, false);
-        //Serial.println("DEBUG: Sending CDC status");
     }
 }
 
@@ -390,7 +372,6 @@ void CDCClass::send_serial_message(int *msg) {
         Serial.write(byte(*msg));
         msg++;
     }
-    //delay(3); // Not sure if this is needed. Seems to be working fine without this.
 }
 
 /**
@@ -405,7 +386,6 @@ void CDCClass::send_can_message(int message_id, int *msg) {
         i++;
     }
     CAN.send(&CAN_TxMsg);
-    //print_can_message();
 }
 
 /**
@@ -430,13 +410,6 @@ void CDCClass::write_text_on_display(char text[]) {
     for (i = n + 1; i < 16; i++) {
         txt[i] = 0;
     }
-    
-    Serial.print("n= ");
-    Serial.println(n, DEC);
-    Serial.print("txt ");
-    Serial.println(txt);
-    Serial.print("text ");
-    Serial.println(text);
     
     CAN_TxMsg.id = WRITE_TEXT_ON_DISPLAY;
     
@@ -465,5 +438,6 @@ void CDCClass::write_text_on_display(char text[]) {
     CAN_TxMsg.data[6] = txt[13];
     CAN_TxMsg.data[7] = txt[14];
     CAN.send(&CAN_TxMsg);
+    
     write_text_on_display_last_send_time = millis();
 }
