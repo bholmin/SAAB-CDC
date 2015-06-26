@@ -61,9 +61,9 @@ boolean bt_off = true; // Default state of bluetooth module
 boolean bt_on_pairing = false; // True while bluetooth module is on and is in pairing mode
 boolean bt_on_active = false; // True while bluetooth module is on and is paired to a device
 boolean mute = false;
-int power_pin = 7;
 int play_pause_pin = 5;
 int forward_pin = 6;
+int power_pin = 7;
 int previous_pin = 8;
 int spi_cs_pin = 16;
 int spi_mosi_pin = 17;
@@ -135,11 +135,9 @@ void CDCClass::open_CAN_bus() {
  */
 
 void CDCClass::handle_BT_connection(int pin, unsigned long timeout) {
-    
     digitalWrite(pin,HIGH);
     delay(timeout);
     digitalWrite(pin,LOW);
-
 }
 
 /**
@@ -201,6 +199,7 @@ void CDCClass::handle_RX_frame() {
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
                     //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
                     display_request_granted = true;
+                    write_text_on_display(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
                     //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");

@@ -28,4 +28,5 @@ void setup() {
 void loop() {
     CDC.handle_CDC_status();
     CDC.test_bt();
+    CDC.send_display_request();
 }
