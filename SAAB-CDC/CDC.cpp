@@ -135,6 +135,7 @@ void CDCClass::open_CAN_bus() {
  */
 
 void CDCClass::handle_BT_connection(int pin, unsigned long timeout) {
+    CDC.initialize_BT_pins();
     digitalWrite(pin,HIGH);
     delay(timeout);
     digitalWrite(pin,LOW);
