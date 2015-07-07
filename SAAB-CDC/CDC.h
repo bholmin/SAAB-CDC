@@ -20,7 +20,7 @@ public:
     void print_can_message();
     void initialize_BT_pins();
     void open_CAN_bus();
-    void handle_BT_connection(int pin, unsigned long timeout);
+    void handle_BT_connection(int pin);
     void handle_RX_frame();
     void handle_IHU_buttons();
     void handle_steering_wheel_buttons();

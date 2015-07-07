@@ -21,9 +21,7 @@
  */
 
 #define MODULE_NAME              "BT TEST"
-#define DISPLAY_NAME_TIMEOUT     5000 //
-#define BT_POWER_TIMEOUT         3000 // In milliseconds
-#define BT_PIN_TIMEOUT           100  //
+#define DISPLAY_NAME_TIMEOUT     5000 // In milliseconds
 
 /**
  * TX frames:
@@ -63,7 +61,7 @@ boolean bt_on_active = false; // True while bluetooth module is on and is paired
 boolean mute = false;
 int play_pause_pin = 5;
 int forward_pin = 6;
-int power_pin = 7;
+int pairing_pin = 7;
 int previous_pin = 8;
 int spi_cs_pin = 16;
 int spi_mosi_pin = 17;
@@ -107,12 +105,12 @@ void CDCClass::print_can_message() {
  */
 
 void CDCClass::initialize_BT_pins() {
-    pinMode(power_pin, OUTPUT);
+    pinMode(pairing_pin, OUTPUT);
     pinMode(play_pause_pin, OUTPUT);
     pinMode(forward_pin, OUTPUT);
     pinMode(previous_pin, OUTPUT);
     
-    digitalWrite(power_pin,LOW);
+    digitalWrite(pairing_pin,LOW);
     digitalWrite(play_pause_pin,LOW);
     digitalWrite(forward_pin,LOW);
     digitalWrite(previous_pin,LOW);
@@ -134,10 +132,9 @@ void CDCClass::open_CAN_bus() {
  * Handles actions with the BC05B Bluetooth module.
  */
 
-void CDCClass::handle_BT_connection(int pin, unsigned long timeout) {
+void CDCClass::handle_BT_connection(int pin) {
     CDC.initialize_BT_pins();
     digitalWrite(pin,HIGH);
-    delay(timeout);
     digitalWrite(pin,LOW);
 }
 
@@ -151,22 +148,22 @@ void CDCClass::test_bt() {
         switch (incomingByte) {
             case 'P':
                 Serial.println("Power pin HIGH");
-                handle_BT_connection(power_pin, BT_POWER_TIMEOUT);
+                handle_BT_connection(pairing_pin);
                 Serial.println("Power pin LOW");
                 break;
             case 'Y':
                 Serial.println("Play/Pause pin HIGH");
-                handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
+                handle_BT_connection(play_pause_pin);
                 Serial.println("Play/Pause pin LOW");
                 break;
             case 'F':
                 Serial.println("Forward pin HIGH");
-                handle_BT_connection(forward_pin, BT_PIN_TIMEOUT);
+                handle_BT_connection(forward_pin);
                 Serial.println("Forward pin LOW");
                 break;
             case 'R':
                 Serial.println("Previous pin HIGH");
-                handle_BT_connection(previous_pin, BT_PIN_TIMEOUT);
+                handle_BT_connection(previous_pin);
                 Serial.println("Previous pin LOW");
                 break;
         }
@@ -230,22 +227,22 @@ void CDCClass::handle_IHU_buttons() {
             cdc_active = true;
             send_can_message(SOUND_REQUEST, beep_cmd);
             send_serial_message(playipod_cmd);
-            send_serial_message(button_release_cmd);
-            handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
+            handle_BT_connection(play_pause_pin);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            send_serial_message(stopipod_cmd);
-            send_serial_message(button_release_cmd);
-            handle_BT_connection(play_pause_pin, BT_PIN_TIMEOUT);
+            //send_serial_message(stopipod_cmd);
+            handle_BT_connection(play_pause_pin);
             break;
     }
+    send_serial_message(button_release_cmd);
+    
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // Next_cmd CD
                 // send_serial_message(playpauseipod_cmd);
-                handle_BT_connection(power_pin, BT_POWER_TIMEOUT);
+                handle_BT_connection(pairing_pin);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 if (toggle_shuffle > 4) {
@@ -253,32 +250,32 @@ void CDCClass::handle_IHU_buttons() {
                 }
                 switch (toggle_shuffle) {
                     case 1:
-                        send_serial_message(repeat_cmd);
+                        //send_serial_message(repeat_cmd);
                         break;
                     case 2:
-                        send_serial_message(repeat_cmd);
+                        //send_serial_message(repeat_cmd);
                         break;
                     case 3:
-                        send_serial_message(repeat_cmd);
+                        //send_serial_message(repeat_cmd);
                         break;
                     case 4:
-                        send_serial_message(shuffle_cmd);
+                        //send_serial_message(shuffle_cmd);
                         break;
                 }
                 toggle_shuffle++;
             case 0xB1: // Pause ON
-                send_serial_message(stopipod_cmd);
+                //send_serial_message(stopipod_cmd);
                 break;
             case 0xB0: // Pause OFF
-                send_serial_message(playipod_cmd);
+                //send_serial_message(playipod_cmd);
                 break;
             case 0x35: // Track up
-                send_serial_message(next_cmd);
-                handle_BT_connection(forward_pin, BT_PIN_TIMEOUT);
+                //send_serial_message(next_cmd);
+                handle_BT_connection(forward_pin);
                 break;
             case 0x36: // Track down
-                send_serial_message(prev_cmd);
-                handle_BT_connection(previous_pin, BT_PIN_TIMEOUT);
+                //send_serial_message(prev_cmd);
+                handle_BT_connection(previous_pin);
                 break;
             default:
                 break;
