@@ -512,7 +512,6 @@
 		A80EF3631B2244E900BF40A6 /* Teensy2.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Teensy2.mk; path = Makefiles/Teensy2.mk; sourceTree = "<group>"; };
 		A80EF3641B2244E900BF40A6 /* Teensy3.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Teensy3.mk; path = Makefiles/Teensy3.mk; sourceTree = "<group>"; };
 		A80EF3651B2244E900BF40A6 /* Avrdude.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Avrdude.mk; path = Makefiles/Avrdude.mk; sourceTree = "<group>"; };
-		A80EF3671B2244E900BF40A6 /* About.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = About.txt; path = About/About.txt; sourceTree = "<group>"; };
 		A80EF3691B2244E900BF40A6 /* reset_maple.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = reset_maple.py; path = Utilities/reset_maple.py; sourceTree = "<group>"; };
 		A80EF36A1B2244E900BF40A6 /* reset_1200.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = reset_1200.py; path = Utilities/reset_1200.py; sourceTree = "<group>"; };
 		A80EF36C1B2244E900BF40A6 /* embedXcode_check */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = embedXcode_check; path = Utilities/embedXcode_check; sourceTree = "<group>"; };
@@ -961,7 +960,6 @@
 				AAAA150605135947AA000000 /* Resources */,
 				A80EF3071B2244E900BF40A6 /* Configurations */,
 				A80EF34A1B2244E900BF40A6 /* Makefiles */,
-				A80EF3661B2244E900BF40A6 /* About */,
 				A80EF3681B2244E900BF40A6 /* Utilities */,
 			);
 			path = "SAAB-CDC";
@@ -1080,14 +1078,6 @@
 				A80EF3651B2244E900BF40A6 /* Avrdude.mk */,
 			);
 			name = Makefiles;
-			sourceTree = "<group>";
-		};
-		A80EF3661B2244E900BF40A6 /* About */ = {
-			isa = PBXGroup;
-			children = (
-				A80EF3671B2244E900BF40A6 /* About.txt */,
-			);
-			name = About;
 			sourceTree = "<group>";
 		};
 		A80EF3681B2244E900BF40A6 /* Utilities */ = {
