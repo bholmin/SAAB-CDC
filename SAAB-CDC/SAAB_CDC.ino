@@ -5,6 +5,7 @@
 //
 // Code:       Seth Evans and Emil Malmberg
 // CAN code:   Igor Real
+// SPI code:   Cristian Maglie
 // 
 //
 
