@@ -8,8 +8,6 @@
 #define CDC_H
 
 #include "Arduino.h"
-#include "CAN.h"
-#include "SPI.h"
 
 //----------------------------------------------------------------------------
 // CLASS

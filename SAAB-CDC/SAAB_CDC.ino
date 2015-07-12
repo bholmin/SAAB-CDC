@@ -8,9 +8,7 @@
 // 
 //
 
-#include "Arduino.h";
 #include "CDC.h";
-#include "SPI.h";
 
 CDCClass CDC; //TODO: Check for a better way to do this...
 
