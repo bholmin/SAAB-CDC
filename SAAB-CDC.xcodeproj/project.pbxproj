@@ -524,6 +524,8 @@
 		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
 		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CDC.cpp; sourceTree = "<group>"; tabWidth = 4; wrapsLines = 0; };
 		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
+		A87705441B5265B100CF941D /* SPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPI.cpp; sourceTree = "<group>"; };
+		A87705451B5265B100CF941D /* SPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPI.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
 		AAAA150605135947AA000007 /* Arduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arduino.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000008 /* binary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binary.h; sourceTree = "<group>"; };
@@ -948,6 +950,8 @@
 		A80EF2FC1B2244E800BF40A6 /* SAAB-CDC */ = {
 			isa = PBXGroup;
 			children = (
+				A87705441B5265B100CF941D /* SPI.cpp */,
+				A87705451B5265B100CF941D /* SPI.h */,
 				A82B27961B22649F009B19C3 /* CDC.cpp */,
 				A82B27971B22649F009B19C3 /* CDC.h */,
 				A82B27921B2263DC009B19C3 /* CAN.cpp */,

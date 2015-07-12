@@ -10,6 +10,7 @@
 
 #include "Arduino.h";
 #include "CDC.h";
+#include "SPI.h";
 
 CDCClass CDC; //TODO: Check for a better way to do this...
 
@@ -20,11 +21,11 @@ CDCClass CDC; //TODO: Check for a better way to do this...
 void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC Test Code - July 2015");
-    CDC.open_CAN_bus();
+    CDC.open_can_bus();
 }
 
 // Add loop code
 void loop() {
-    CDC.handle_CDC_status();
+    CDC.handle_cdc_status();
     CDC.test_bt();
 }
