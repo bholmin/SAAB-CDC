@@ -21,6 +21,7 @@ public:
     void open_can_bus();
     void handle_bt_connection(int pin, unsigned long timeout);
     void test_bt();
+    void test_spi();
     void handle_rx_frame();
     void handle_ihu_buttons();
     void handle_steering_wheel_buttons();

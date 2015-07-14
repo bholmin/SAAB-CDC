@@ -22,7 +22,7 @@
  */
 
 #define MODULE_NAME              "BT TEST"
-#define BT_PIN_TIMEOUT           100  //
+#define BT_PIN_TIMEOUT           5  //
 #define BT_ENABLE_TIMEOUT        3000 // In milliseconds
 #define DISPLAY_NAME_TIMEOUT     5000 //
 
@@ -68,7 +68,6 @@ int bt_forward_pin = 6;
 int bt_switch_pin = 7;
 int bt_previous_pin = 8;
 int bt_spi_cs_pin = 16;
-int bt_spi_mosi_pin = 17;
 int bt_spi_miso_pin = 18;
 int bt_spi_sck_pin = 19;
 int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
@@ -114,14 +113,12 @@ void CDCClass::initialize_atmel_pins() {
     pinMode(bt_forward_pin,OUTPUT);
     pinMode(bt_previous_pin,OUTPUT);
     pinMode(bt_spi_cs_pin,OUTPUT);
-    pinMode(bt_spi_mosi_pin,OUTPUT);
     pinMode(bt_spi_miso_pin,INPUT);
     
     digitalWrite(bt_switch_pin,LOW);
     digitalWrite(bt_play_pause_pin,LOW);
     digitalWrite(bt_forward_pin,LOW);
     digitalWrite(bt_previous_pin,LOW);
-    digitalWrite(bt_spi_mosi_pin,LOW);
     digitalWrite(bt_spi_cs_pin,LOW);
 }
 
@@ -159,7 +156,7 @@ void CDCClass::test_bt() {
         switch (incomingByte) {
             case 'P':
                 Serial.println("Power pin HIGH");
-                handle_bt_connection(bt_switch_pin,BT_PIN_TIMEOUT);
+                handle_bt_connection(bt_switch_pin,BT_ENABLE_TIMEOUT);
                 Serial.println("Power pin LOW");
                 break;
             case 'Y':
@@ -177,11 +174,21 @@ void CDCClass::test_bt() {
                 handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
                 Serial.println("Previous pin LOW");
                 break;
+            case 'S':
+                test_spi();
+                break;
         }
     }
 }
 
+/**
+ * Testing of SPI code.
+ */
 
+void CDCClass::test_spi() {
+    SPI.begin();
+    SPI.end();
+}
 
 /**
  * Handles an incoming (RX) frame.
