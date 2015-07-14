@@ -22,7 +22,9 @@
  */
 
 #define MODULE_NAME              "BT TEST"
-#define DISPLAY_NAME_TIMEOUT     5000 // In milliseconds
+#define BT_PIN_TIMEOUT           100  //
+#define BT_ENABLE_TIMEOUT        3000 // In milliseconds
+#define DISPLAY_NAME_TIMEOUT     5000 //
 
 /**
  * TX frames:
@@ -51,6 +53,7 @@ unsigned long cdc_status_last_send_time = 0; // Timer used to ensure we send the
 unsigned long display_request_last_send_time = 0; // Timer used to ensure we send the display request frame in a timely manner.
 unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner.
 unsigned long stop_displaying_name_at = 0; // Time at which we should stop displaying our name in the SID.
+unsigned long bt_pin_timer = 0; // Timer used for bluetooth so we don't hold off the rest of the code with delays.
 boolean cdc_active = false; // True while our module, the simulated CDC, is active.
 boolean display_request_granted = true; // True while we are granted the 2nd row of the SID.
 boolean display_wanted = false; // True while we actually WANT the display.
@@ -138,8 +141,11 @@ void CDCClass::open_can_bus() {
  * Handles actions with the BC05B Bluetooth module.
  */
 
-void CDCClass::handle_bt_connection(int pin) {
-    digitalWrite(pin,HIGH);
+void CDCClass::handle_bt_connection(int pin, unsigned long timeout) {
+    bt_pin_timer = (millis() + timeout);
+    while (millis() < bt_pin_timer) {
+        digitalWrite(pin,HIGH);
+    }
     digitalWrite(pin,LOW);
 }
 
@@ -153,22 +159,22 @@ void CDCClass::test_bt() {
         switch (incomingByte) {
             case 'P':
                 Serial.println("Power pin HIGH");
-                handle_bt_connection(bt_switch_pin);
+                handle_bt_connection(bt_switch_pin,BT_PIN_TIMEOUT);
                 Serial.println("Power pin LOW");
                 break;
             case 'Y':
                 Serial.println("Play/Pause pin HIGH");
-                handle_bt_connection(bt_play_pause_pin);
+                handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
                 Serial.println("Play/Pause pin LOW");
                 break;
             case 'F':
                 Serial.println("Forward pin HIGH");
-                handle_bt_connection(bt_forward_pin);
+                handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
                 Serial.println("Forward pin LOW");
                 break;
             case 'R':
                 Serial.println("Previous pin HIGH");
-                handle_bt_connection(bt_previous_pin);
+                handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
                 Serial.println("Previous pin LOW");
                 break;
         }
@@ -231,23 +237,23 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, beep_cmd);
-            send_serial_message(playipod_cmd);
-            handle_bt_connection(bt_play_pause_pin);
+            //send_serial_message(playipod_cmd);
+            handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
             //send_serial_message(stopipod_cmd);
-            handle_bt_connection(bt_play_pause_pin);
+            handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
     }
-    send_serial_message(button_release_cmd);
+    //send_serial_message(button_release_cmd);
     
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // Next_cmd CD
                 // send_serial_message(playpauseipod_cmd);
-                handle_bt_connection(bt_switch_pin);
+                handle_bt_connection(bt_switch_pin,BT_ENABLE_TIMEOUT);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 if (toggle_shuffle > 4) {
@@ -276,16 +282,16 @@ void CDCClass::handle_ihu_buttons() {
                 break;
             case 0x35: // Track up
                 //send_serial_message(next_cmd);
-                handle_bt_connection(bt_forward_pin);
+                handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
                 break;
             case 0x36: // Track down
                 //send_serial_message(prev_cmd);
-                handle_bt_connection(bt_previous_pin);
+                handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
                 break;
             default:
                 break;
         }
-        send_serial_message(button_release_cmd);
+        //send_serial_message(button_release_cmd);
     }
 }
 
@@ -321,7 +327,7 @@ void CDCClass::handle_steering_wheel_buttons() {
             //Serial.println("DEBUG: Unknown SID button message");
             break;
     }
-    send_serial_message(button_release_cmd);
+    //send_serial_message(button_release_cmd);
 }
 
 /**
