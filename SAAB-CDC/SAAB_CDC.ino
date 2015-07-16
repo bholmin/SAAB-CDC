@@ -26,5 +26,5 @@ void setup() {
 // Add loop code
 void loop() {
     CDC.handle_cdc_status();
-    CDC.test_bt();
+//    CDC.test_bt();
 }
