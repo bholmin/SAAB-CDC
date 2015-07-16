@@ -8,7 +8,6 @@
 
 #include "CDC.h"
 #include "CAN.h"
-#include "SPI.h"
 
 /**
  * Various constants used for identifying the CDC
@@ -174,20 +173,8 @@ void CDCClass::test_bt() {
                 handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
                 Serial.println("Previous pin LOW");
                 break;
-            case 'S':
-                test_spi();
-                break;
         }
     }
-}
-
-/**
- * Testing of SPI code.
- */
-
-void CDCClass::test_spi() {
-    SPI.begin();
-    SPI.end();
 }
 
 /**
