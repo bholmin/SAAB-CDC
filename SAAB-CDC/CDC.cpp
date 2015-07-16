@@ -6,6 +6,7 @@
 //
 //
 
+#include "Arduino.h"
 #include "CDC.h"
 #include "CAN.h"
 
