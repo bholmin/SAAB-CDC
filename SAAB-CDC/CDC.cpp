@@ -67,9 +67,6 @@ int bt_play_pause_pin = 5;
 int bt_forward_pin = 6;
 int bt_switch_pin = 7;
 int bt_previous_pin = 8;
-int bt_spi_cs_pin = 16;
-int bt_spi_miso_pin = 18;
-int bt_spi_sck_pin = 19;
 int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
 int toggle_shuffle = 1;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
@@ -112,14 +109,11 @@ void CDCClass::initialize_atmel_pins() {
     pinMode(bt_play_pause_pin,OUTPUT);
     pinMode(bt_forward_pin,OUTPUT);
     pinMode(bt_previous_pin,OUTPUT);
-    pinMode(bt_spi_cs_pin,OUTPUT);
-    pinMode(bt_spi_miso_pin,INPUT);
     
     digitalWrite(bt_switch_pin,LOW);
     digitalWrite(bt_play_pause_pin,LOW);
     digitalWrite(bt_forward_pin,LOW);
     digitalWrite(bt_previous_pin,LOW);
-    digitalWrite(bt_spi_cs_pin,LOW);
 }
 
 
@@ -232,22 +226,19 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, beep_cmd);
-            //send_serial_message(playipod_cmd);
             handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            //send_serial_message(stopipod_cmd);
             handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
     }
-    //send_serial_message(button_release_cmd);
+//    send_serial_message(button_release_cmd);
     
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // Next_cmd CD
-                // send_serial_message(playpauseipod_cmd);
                 handle_bt_connection(bt_switch_pin,BT_ENABLE_TIMEOUT);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
@@ -256,37 +247,35 @@ void CDCClass::handle_ihu_buttons() {
                 }
                 switch (toggle_shuffle) {
                     case 1:
-                        //send_serial_message(repeat_cmd);
+//                        send_serial_message(repeat_cmd);
                         break;
                     case 2:
-                        //send_serial_message(repeat_cmd);
+//                        send_serial_message(repeat_cmd);
                         break;
                     case 3:
-                        //send_serial_message(repeat_cmd);
+//                        send_serial_message(repeat_cmd);
                         break;
                     case 4:
-                        //send_serial_message(shuffle_cmd);
+//                        send_serial_message(shuffle_cmd);
                         break;
                 }
                 toggle_shuffle++;
             case 0xB1: // Pause ON
-                //send_serial_message(stopipod_cmd);
+                handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
                 break;
             case 0xB0: // Pause OFF
-                //send_serial_message(playipod_cmd);
+                handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
                 break;
             case 0x35: // Track up
-                //send_serial_message(next_cmd);
                 handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
                 break;
             case 0x36: // Track down
-                //send_serial_message(prev_cmd);
                 handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
                 break;
             default:
                 break;
         }
-        //send_serial_message(button_release_cmd);
+//        send_serial_message(button_release_cmd);
     }
 }
 
@@ -322,7 +311,7 @@ void CDCClass::handle_steering_wheel_buttons() {
             //Serial.println("DEBUG: Unknown SID button message");
             break;
     }
-    //send_serial_message(button_release_cmd);
+//    send_serial_message(button_release_cmd);
 }
 
 /**
