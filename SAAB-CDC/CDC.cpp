@@ -67,6 +67,7 @@ int bt_play_pause_pin = 5;
 int bt_forward_pin = 6;
 int bt_switch_pin = 7;
 int bt_previous_pin = 8;
+int bc05b_spi_cs_pin = 9;
 int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
 int toggle_shuffle = 1;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
@@ -109,11 +110,13 @@ void CDCClass::initialize_atmel_pins() {
     pinMode(bt_play_pause_pin,OUTPUT);
     pinMode(bt_forward_pin,OUTPUT);
     pinMode(bt_previous_pin,OUTPUT);
+    pinMode(bc05b_spi_cs_pin,OUTPUT);
     
     digitalWrite(bt_switch_pin,LOW);
     digitalWrite(bt_play_pause_pin,LOW);
     digitalWrite(bt_forward_pin,LOW);
     digitalWrite(bt_previous_pin,LOW);
+    digitalWrite(bc05b_spi_cs_pin,HIGH);
 }
 
 

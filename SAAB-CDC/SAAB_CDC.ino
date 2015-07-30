@@ -20,6 +20,7 @@ CDCClass CDC; //TODO: Check for a better way to do this...
 void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC Test Code - July 2015");
+    CDC.initialize_atmel_pins();
     CDC.open_can_bus();
 }
 
