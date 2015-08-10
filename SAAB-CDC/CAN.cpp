@@ -92,9 +92,47 @@ void CANClass::begin(uint16_t speed)
   	switch(speed)
 	{
     		case 47:
+            /* Original CNF values
       		mcp2515_write_register(CNF1,0xC7);
       		mcp2515_write_register(CNF2,0xBE);
       		mcp2515_write_register(CNF3,0x04);
+            */
+            
+            /*
+            // Version 1
+            mcp2515_write_register(CNF1,0xC7);
+            mcp2515_write_register(CNF2,0xB5);
+            mcp2515_write_register(CNF3,0x06);
+            
+            
+            // Version 2
+            mcp2515_write_register(CNF1,0x06);
+            mcp2515_write_register(CNF2,0xBE);
+            mcp2515_write_register(CNF3,0x07);
+            */
+            
+            // Version 3
+            mcp2515_write_register(CNF1,0x07);
+            mcp2515_write_register(CNF2,0xAD);
+            mcp2515_write_register(CNF3,0x07);
+            
+            /*
+            // Version 4
+            mcp2515_write_register(CNF1,0x0B);
+            mcp2515_write_register(CNF2,0x9B);
+            mcp2515_write_register(CNF3,0x04);
+            
+            // Version 5
+            mcp2515_write_register(CNF1,0x0D);
+            mcp2515_write_register(CNF2,0x9A);
+            mcp2515_write_register(CNF3,0x03);
+            
+            // Version 6
+            mcp2515_write_register(CNF1,0x14);
+            mcp2515_write_register(CNF2,0x89);
+            mcp2515_write_register(CNF3,0x02);
+            */
+            
 		#if (DEBUGMODE==1)
 			Serial.println("Speed=47.619Kps");
 		#endif

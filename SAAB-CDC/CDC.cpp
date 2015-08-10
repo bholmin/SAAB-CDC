@@ -22,7 +22,7 @@
  */
 
 #define MODULE_NAME              "BT TEST"
-#define BT_PIN_TIMEOUT           5  //
+#define BT_PIN_TIMEOUT           100  //
 #define BT_ENABLE_TIMEOUT        3000 // In milliseconds
 #define DISPLAY_NAME_TIMEOUT     5000 //
 
@@ -56,19 +56,18 @@ unsigned long stop_displaying_name_at = 0; // Time at which we should stop displ
 unsigned long bt_pin_timer = 0; // Timer used for bluetooth so we don't hold off the rest of the code with delays.
 boolean cdc_active = false; // True while our module, the simulated CDC, is active.
 boolean display_request_granted = true; // True while we are granted the 2nd row of the SID.
-boolean display_wanted = false; // True while we actually WANT the display.
+boolean display_wanted = false; // True while we actually want the display.
 boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event.
 boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command.
 boolean bt_discoverable = true; // Bluetooth module is on and discoverable. Default state.
 boolean bt_connectable = false; // True while bluetooth module is on and is in connectable.
 boolean bt_paired = false; // True while bluetooth module is on and is paired to a device.
 boolean mute = false;
+int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
 int bt_play_pause_pin = 5;
 int bt_forward_pin = 6;
 int bt_switch_pin = 7;
 int bt_previous_pin = 8;
-int bc05b_spi_cs_pin = 9;
-int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
 int toggle_shuffle = 1;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
@@ -88,10 +87,10 @@ int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00
  ******************************************************************************/
 
 /**
- * Prints the CAN frame to serial output.
+ * DEBUG: Prints the CAN TX frame to serial output
  */
 
-void CDCClass::print_can_frame() {
+void CDCClass::print_can_tx_frame() {
     Serial.print(CAN_TxMsg.id,HEX);
     Serial.print(" -> ");
     for (int i = 0; i < 8; i++) {
@@ -102,7 +101,21 @@ void CDCClass::print_can_frame() {
 }
 
 /**
- * Initializes pins on ATMEGA328-PU chip for further use.
+ * DEBUG: Prints the CAN RX frame to serial output
+ */
+
+void CDCClass::print_can_rx_frame() {
+    Serial.print(CAN_RxMsg.id,HEX);
+    Serial.print(" -> ");
+    for (int i = 0; i < 8; i++) {
+        Serial.print(CAN_RxMsg.data[i],HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+}
+
+/**
+ * Initializes pins on ATMEGA328-PU chip
  */
 
 void CDCClass::initialize_atmel_pins() {
@@ -110,18 +123,16 @@ void CDCClass::initialize_atmel_pins() {
     pinMode(bt_play_pause_pin,OUTPUT);
     pinMode(bt_forward_pin,OUTPUT);
     pinMode(bt_previous_pin,OUTPUT);
-    pinMode(bc05b_spi_cs_pin,OUTPUT);
     
     digitalWrite(bt_switch_pin,LOW);
     digitalWrite(bt_play_pause_pin,LOW);
     digitalWrite(bt_forward_pin,LOW);
     digitalWrite(bt_previous_pin,LOW);
-    digitalWrite(bc05b_spi_cs_pin,HIGH);
 }
 
 
 /**
- * Opens CAN bus for communication.
+ * Opens CAN bus for communication
  */
 
 void CDCClass::open_can_bus() {
@@ -132,7 +143,7 @@ void CDCClass::open_can_bus() {
 }
 
 /**
- * Handles actions with the BC05B Bluetooth module.
+ * Handles actions with the BC05B Bluetooth module
  */
 
 void CDCClass::handle_bt_connection(int pin, unsigned long timeout) {
@@ -144,7 +155,7 @@ void CDCClass::handle_bt_connection(int pin, unsigned long timeout) {
 }
 
 /**
- * Testing of comms with BC05B Bluetooth module.
+ * DEBUG: Testing of comms with BC05B Bluetooth module
  */
 
 void CDCClass::test_bt() {
@@ -176,7 +187,7 @@ void CDCClass::test_bt() {
 }
 
 /**
- * Handles an incoming (RX) frame.
+ * Handles an incoming (RX) frame
  */
 
 void CDCClass::handle_rx_frame() {
@@ -216,10 +227,11 @@ void CDCClass::handle_rx_frame() {
 }
 
 /**
- * Handles the IHU_BUTTONS frame that the IHU sends us when it wants to control some feature of the CDC.
+ * Handles the IHU_BUTTONS frame that the IHU sends us when it wants to control some feature of the CDC
  */
 
 void CDCClass::handle_ihu_buttons() {
+
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // FIXME: can we really ignore the message if it wasn't sent on event?
@@ -241,9 +253,15 @@ void CDCClass::handle_ihu_buttons() {
     
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
+
             case 0x59: // Next_cmd CD
+                handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
+                break;
+            
+            case 0x84: // SEEK button long press on IHU
                 handle_bt_connection(bt_switch_pin,BT_ENABLE_TIMEOUT);
                 break;
+                
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 if (toggle_shuffle > 4) {
                     toggle_shuffle = 1;
@@ -263,6 +281,7 @@ void CDCClass::handle_ihu_buttons() {
                         break;
                 }
                 toggle_shuffle++;
+         
             case 0xB1: // Pause ON
                 handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
                 break;
@@ -283,8 +302,8 @@ void CDCClass::handle_ihu_buttons() {
 }
 
 /**
- * Handles the STEERING_WHEEL_BUTTONS frame.
- * TODO connect the SID button events to actions.
+ * Handles the STEERING_WHEEL_BUTTONS frame
+ * TODO connect the SID button events to actions
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
@@ -318,7 +337,7 @@ void CDCClass::handle_steering_wheel_buttons() {
 }
 
 /**
- * Handles CDC status and sends it to IHU as necessary.
+ * Handles CDC status and sends it to IHU as necessary
  */
 
 void CDCClass::handle_cdc_status() {
@@ -334,8 +353,17 @@ void CDCClass::handle_cdc_status() {
     
     // The CDC status frame must be sent with a 1000 ms periodicity
     
-    if (millis() - cdc_status_last_send_time > 950) {
+    /* DEBUG
+     unsigned long t = millis();
+     unsigned long d = t - cdc_status_last_send_time;
+     if (d > 850) {
+     send_cdc_status(false, false);
+     //Serial.println(d);
+     */
+
+    if (millis() - cdc_status_last_send_time > 850) {
         send_cdc_status(false, false);
+    
     }
 }
 

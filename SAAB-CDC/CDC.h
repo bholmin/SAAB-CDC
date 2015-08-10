@@ -14,7 +14,8 @@
 class CDCClass
 {
 public:
-    void print_can_frame();
+    void print_can_tx_frame();
+    void print_can_rx_frame();
     void initialize_atmel_pins();
     void open_can_bus();
     void handle_bt_connection(int pin, unsigned long timeout);
