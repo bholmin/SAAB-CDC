@@ -351,7 +351,7 @@ void CDCClass::handle_cdc_status() {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
     
-    // The CDC status frame must be sent with a 1000 ms periodicity
+    // The CDC status frame must be sent with a 1000 ms periodicity.
     
     /* DEBUG
      unsigned long t = millis();
