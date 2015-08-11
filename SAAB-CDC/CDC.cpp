@@ -252,6 +252,7 @@ void CDCClass::handle_ihu_buttons() {
 //    send_serial_message(button_release_cmd);
     
     if (cdc_active) {
+        print_can_rx_frame();
         switch (CAN_RxMsg.data[1]) {
 
             case 0x59: // Next_cmd CD
@@ -284,15 +285,19 @@ void CDCClass::handle_ihu_buttons() {
          
             case 0xB1: // Pause ON
                 handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
+                Serial.println("DEBUG: IHU Pause ON.");
                 break;
             case 0xB0: // Pause OFF
                 handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
+                Serial.println("DEBUG: IHU Pause OFF.");
                 break;
             case 0x35: // Track up
                 handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
+                Serial.println("DEBUG: IHU Track Up.");
                 break;
             case 0x36: // Track down
                 handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
+                Serial.println("DEBUG: IHU Track Down.");
                 break;
             default:
                 break;
@@ -307,6 +312,7 @@ void CDCClass::handle_ihu_buttons() {
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
+    print_can_rx_frame();
     if (!cdc_active) {
         return;
     }
@@ -318,22 +324,22 @@ void CDCClass::handle_steering_wheel_buttons() {
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
             //send_serial_message(repeat_cmd);
-            //Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
             handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
         case 0x10: // Seek+ button on wheel
             //send_serial_message(next_cmd);
-            //Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
+            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
             break;
         case 0x08: // Seek- button on wheel
             //send_serial_message(prev_cmd);
-            //Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
+            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
             break;
         default:
             //Serial.print(CAN_RxMsg.data[2],HEX);
-            //Serial.println("DEBUG: Unknown SID button message");
+            Serial.println("DEBUG: Unknown SID button message");
             break;
     }
 //    send_serial_message(button_release_cmd);
