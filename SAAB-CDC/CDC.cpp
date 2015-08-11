@@ -319,14 +319,17 @@ void CDCClass::handle_steering_wheel_buttons() {
         case 0x04: // NXT button on wheel
             //send_serial_message(repeat_cmd);
             //Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+            handle_bt_connection(bt_play_pause_pin,BT_PIN_TIMEOUT);
             break;
         case 0x10: // Seek+ button on wheel
             //send_serial_message(next_cmd);
             //Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
+            handle_bt_connection(bt_forward_pin,BT_PIN_TIMEOUT);
             break;
         case 0x08: // Seek- button on wheel
             //send_serial_message(prev_cmd);
             //Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
+            handle_bt_connection(bt_previous_pin,BT_PIN_TIMEOUT);
             break;
         default:
             //Serial.print(CAN_RxMsg.data[2],HEX);
