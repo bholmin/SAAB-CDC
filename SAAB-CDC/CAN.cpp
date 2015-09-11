@@ -352,7 +352,7 @@ uint8_t CANClass::ReadFromDevice(msgCAN *message)
 		Serial.println("-- START uint8_t ReadFromDevice(msgCAN *message) --");
 	#endif
 
-	static uint8_t previousBuffer;
+//	static uint8_t previousBuffer;
 
 	// read status
 	uint8_t status = mcp2515_read_status(SPI_RX_STATUS);
@@ -366,7 +366,9 @@ uint8_t CANClass::ReadFromDevice(msgCAN *message)
 		Serial.println( ((status & 0b11000000)>>6)&0b00000011,BIN);
 	#endif
 
-	if ( (((status & 0b11000000)>>6)&0b00000011) >2 )
+/* This piece of code sometimes causes us to read from the wrong buffer
+ 
+ if ( (((status & 0b11000000)>>6)&0b00000011) >2 )
 	{
 		addr=SPI_READ_RX | (previousBuffer++ & 0x01)<<2;
 		
@@ -379,8 +381,10 @@ uint8_t CANClass::ReadFromDevice(msgCAN *message)
 
 		#endif
 	}
-	else if (bit_is_set(status,6)) 
-	{
+	else
+ */
+    if (bit_is_set(status,6))
+    {
 		// message in buffer 0
 		addr = SPI_READ_RX;
 
