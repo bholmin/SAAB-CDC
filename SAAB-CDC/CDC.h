@@ -18,7 +18,7 @@ public:
     void print_can_rx_frame();
     void initialize_atmel_pins();
     void open_can_bus();
-    void handle_bt_connection(int pin, unsigned long timeout);
+    void start_bt_signal(int pin, unsigned long timeout);
     void test_bt();
     void handle_rx_frame();
     void handle_ihu_buttons();
@@ -29,6 +29,7 @@ public:
     void send_serial_message(int *msg);
     void send_can_frame(int message_id, int *msg);
     void write_text_on_display(char text[]);
+    void update_bt_signal();
 };
 
 //----------------------------------------------------------------------------

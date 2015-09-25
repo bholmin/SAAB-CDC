@@ -112,9 +112,9 @@ void CANClass::begin(uint16_t speed)
             */
             
             // Version 3
-            mcp2515_write_register(CNF1,0x07);
-            mcp2515_write_register(CNF2,0xAD);
-            mcp2515_write_register(CNF3,0x07);
+            mcp2515_write_register(CNF1,0x4B);
+            mcp2515_write_register(CNF2,0xF1);
+            mcp2515_write_register(CNF3,0x03);
             
             /*
             // Version 4
@@ -216,11 +216,13 @@ void CANClass::begin(uint16_t speed)
   	mcp2515_write_register( RXM1EID8, 0 );
   	mcp2515_write_register( RXM1EID0, 0 );
 
-  	//Encender el led de la placa conectado a RX1BF cuando hay una msje en el buffer
-  	mcp2515_write_register( BFPCTRL, 0b00001010 );
+  	//Encender el led de la placa conectado a RX0BF/RX1BF cuando hay una msje en el buffer
+  	mcp2515_write_register( BFPCTRL, 0b00001111 );
 
   	//Pasar el MCP2515 a modo normal y One Shot Mode 0b00001000
-  	mcp2515_write_register(CANCTRL, (1<<OSM));
+    // OSM switched off
+    
+  	mcp2515_write_register(CANCTRL, 0);
 
 	//Inicializo buffer
 	_CAN_RX_BUFFER.head=0;
@@ -432,6 +434,7 @@ uint8_t CANClass::ReadFromDevice(msgCAN *message)
 	}
 	SET(MCP2515_CS);
 	
+    /*
 	// clear interrupt flag
 	if (bit_is_set(status, 6)) {
 		mcp2515_bit_modify(CANINTF, (1<<RX0IF), 0);
@@ -439,6 +442,7 @@ uint8_t CANClass::ReadFromDevice(msgCAN *message)
 	else {
 		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
 	}
+     */
 
 
 

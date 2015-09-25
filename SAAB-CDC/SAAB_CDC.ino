@@ -18,7 +18,7 @@ CDCClass CDC; //TODO: Check for a better way to do this...
 // Add setup code
 void setup() {
     Serial.begin(9600);
-    Serial.println("SAAB CDC Test Code - August 2015");
+    Serial.println("SAAB CDC - September 2015");
     CDC.initialize_atmel_pins();
     CDC.open_can_bus();
 }
@@ -26,5 +26,6 @@ void setup() {
 // Add loop code
 void loop() {
     CDC.handle_cdc_status();
-    //CDC.test_bt();
+    CDC.update_bt_signal();
+    // CDC.test_bt();
 }
