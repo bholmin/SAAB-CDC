@@ -10,6 +10,7 @@
 		A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80EF2FD1B2244E800BF40A6 /* main.cpp */; };
 		A82B27981B22649F009B19C3 /* CDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A82B27961B22649F009B19C3 /* CDC.cpp */; };
 		A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */; };
+		A8CE2F321BB61A84001E71F0 /* RN52.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8CE2F311BB61A84001E71F0 /* RN52.cpp */; settings = {ASSET_TAGS = (); }; };
 		AA2A150605135947AA000006 /* abi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000006 /* abi.cpp */; };
 		AA2A150605135947AA000007 /* Arduino.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000007 /* Arduino.h */; };
 		AA2A150605135947AA000008 /* binary.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150605135947AA000008 /* binary.h */; };
@@ -524,6 +525,8 @@
 		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
 		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CDC.cpp; sourceTree = "<group>"; tabWidth = 4; wrapsLines = 0; };
 		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
+		A8CE2F301BB61A3E001E71F0 /* RN52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52.h; sourceTree = "<group>"; };
+		A8CE2F311BB61A84001E71F0 /* RN52.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52.cpp; sourceTree = "<group>"; };
 		AAAA150605135947AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
 		AAAA150605135947AA000007 /* Arduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arduino.h; sourceTree = "<group>"; };
 		AAAA150605135947AA000008 /* binary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binary.h; sourceTree = "<group>"; };
@@ -948,6 +951,8 @@
 		A80EF2FC1B2244E800BF40A6 /* SAAB-CDC */ = {
 			isa = PBXGroup;
 			children = (
+				A8CE2F311BB61A84001E71F0 /* RN52.cpp */,
+				A8CE2F301BB61A3E001E71F0 /* RN52.h */,
 				A82B27961B22649F009B19C3 /* CDC.cpp */,
 				A82B27971B22649F009B19C3 /* CDC.h */,
 				A82B27921B2263DC009B19C3 /* CAN.cpp */,
@@ -2758,6 +2763,7 @@
 				AA2A150605135947AA0001CD /* parsetools.h in Sources */,
 				AA2A150605135947AA0001CE /* Usb.cpp in Sources */,
 				AA2A150605135947AA0001CF /* Usb.h in Sources */,
+				A8CE2F321BB61A84001E71F0 /* RN52.cpp in Sources */,
 				AA2A150605135947AA0001D0 /* usb_ch9.h in Sources */,
 				AA2A150605135947AA0001D4 /* wifi_dnld.hex in Sources */,
 				AA2A150605135947AA0001D5 /* wifiHD.hex in Sources */,
