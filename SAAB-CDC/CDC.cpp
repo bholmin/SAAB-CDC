@@ -1,14 +1,8 @@
-//
-//  Project 	 SAAB-CDC
-//
-//  Code:        Seth Evans and Emil Malmberg
-//  Refactoring: Karlis Veilands
-//
-//
 
 #include "Arduino.h"
 #include "CDC.h"
 #include "CAN.h"
+#include "RN52.h"
 
 /**
  * Various constants used for identifying the CDC
@@ -22,9 +16,7 @@
  */
 
 #define MODULE_NAME              "BT TEST"
-#define BT_PIN_TIMEOUT           10  //
-#define BT_ENABLE_TIMEOUT        3000 // In milliseconds
-#define DISPLAY_NAME_TIMEOUT     5000 //
+#define DISPLAY_NAME_TIMEOUT     5000 // Milliseconds
 
 /**
  * TX frames:
@@ -53,28 +45,13 @@ unsigned long cdc_status_last_send_time = 0; // Timer used to ensure we send the
 unsigned long display_request_last_send_time = 0; // Timer used to ensure we send the display request frame in a timely manner.
 unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner.
 unsigned long stop_displaying_name_at = 0; // Time at which we should stop displaying our name in the SID.
-unsigned long bt_pin_timer = 0; // Timer used for bluetooth so we don't hold off the rest of the code with delays.
 boolean cdc_active = false; // True while our module, the simulated CDC, is active.
 boolean display_request_granted = true; // True while we are granted the 2nd row of the SID.
 boolean display_wanted = false; // True while we actually want the display.
 boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event.
 boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command.
-boolean mute = false;
-int incomingByte = 0; // Checks the serial console for input. For debugging purposes.
-int bt_play_pause_pin = 11;
-int bt_forward_pin = 12;
-int bt_switch_pin = 13;
-int bt_previous_pin = 14;
-int toggle_shuffle = 1;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
-int playipod_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x01,0xF9,-1};
-int playpauseipod_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x01,0xFA,-1};
-int stopipod_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x02,0xF8,-1};
-int next_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x08,0xF3,-1};
-int prev_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x10,0xEB,-1};
-int shuffle_cmd[] = {0xFF,0x55,0x04,0x02,0x00,0x00,0x80,0x7A,-1};
-int repeat_cmd[] = {0xFF,0x55,0x05,0x02,0x00,0x00,0x00,0x01,0xF8,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x01,0x31,0xFF,0xFF,0xFF,0xD0,-1};
 int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
@@ -112,90 +89,16 @@ void CDCClass::print_can_rx_frame() {
 }
 
 /**
- * Initializes pins on ATMEGA328-PU chip
- */
-
-void CDCClass::initialize_atmel_pins() {
-    pinMode(bt_switch_pin,OUTPUT);
-    pinMode(bt_play_pause_pin,OUTPUT);
-    pinMode(bt_forward_pin,OUTPUT);
-    pinMode(bt_previous_pin,OUTPUT);
-    
-    digitalWrite(bt_switch_pin,LOW);
-    digitalWrite(bt_play_pause_pin,LOW);
-    digitalWrite(bt_forward_pin,LOW);
-    digitalWrite(bt_previous_pin,LOW);
-}
-
-
-/**
  * Opens CAN bus for communication
  */
 
 void CDCClass::open_can_bus() {
-    //Serial.println("DEBUG: Opening CAN bus @ 47.619kbps");
+    #if (DEBUGMODE==1)
+        Serial.println("DEBUG: Initializing CAN bus @ 47.619kbps");
+    #endif
     CAN.begin(47);  // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
-}
-
-/**
- * Handles actions with the BC05B Bluetooth module
- */
-
-void CDCClass::start_bt_signal(int pin, unsigned long timeout) {
-    bt_pin_timer = (millis() + timeout);
-    digitalWrite(pin,HIGH);
-}
-
-void CDCClass::update_bt_signal() {
-    if ((bt_pin_timer != 0) && (millis() > bt_pin_timer)) {
-        digitalWrite(bt_switch_pin,LOW);
-        digitalWrite(bt_play_pause_pin,LOW);
-        digitalWrite(bt_forward_pin,LOW);
-        digitalWrite(bt_previous_pin,LOW);
-        bt_pin_timer = 0;
-    }
-}
-
-/**
- * DEBUG: Testing of comms with BC05B Bluetooth module
- */
-
-void CDCClass::test_bt() {
-    if (Serial.available() > 0) {
-        int incomingByte = Serial.read();
-        switch (incomingByte) {
-            case 'P':
-                Serial.println("Power pin HIGH");
-                start_bt_signal(bt_switch_pin,BT_ENABLE_TIMEOUT);
-                Serial.println("Power pin LOW");
-                break;
-            case 'Y':
-                Serial.println("Play/Pause pin HIGH");
-                start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
-                Serial.println("Play/Pause pin LOW");
-                break;
-            case 'F':
-                Serial.println("Forward pin HIGH");
-                start_bt_signal(bt_forward_pin,BT_PIN_TIMEOUT);
-                Serial.println("Forward pin LOW");
-                break;
-            case 'R':
-                Serial.println("Previous pin HIGH");
-                start_bt_signal(bt_previous_pin,BT_PIN_TIMEOUT);
-                Serial.println("Previous pin LOW");
-                break;
-            case 'C':
-                Serial.println("Entering BT command mode");
-                digitalWrite(A3,LOW);
-                break;
-            case 'c':
-                Serial.println("Leaving BT command mode");
-                digitalWrite(A3,HIGH);
-                break;
-        }
-    }
 }
 
 /**
@@ -218,20 +121,28 @@ void CDCClass::handle_rx_frame() {
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-                    // Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+                    #if (DEBUGMODE==1)
+                        Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+                    #endif
                     display_request_granted = true;
                     write_text_on_display(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
-                    // Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+                    #if (DEBUGMODE==1)
+                        Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+                    #endif
                     display_request_granted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
-                    // Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+                    #if (DEBUGMODE==1)
+                        Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+                    #endif
                     display_request_granted = false;
                 }
                 else {
-                    // Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+                    #if (DEBUGMODE==1)
+                        Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+                    #endif
                 }
                 break;
         }
@@ -243,7 +154,10 @@ void CDCClass::handle_rx_frame() {
  */
 
 void CDCClass::handle_ihu_buttons() {
-
+    #if (DEBUGMODE==1)
+        print_can_rx_frame();
+    #endif
+    
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // FIXME: can we really ignore the message if it wasn't sent on event?
@@ -253,70 +167,51 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, beep_cmd);
-            start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
+            RN52.start_connecting();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             if (cdc_active) {
                 cdc_active = false;
                 display_wanted = false;
-                start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
+                RN52.start_disconnecting();
             }
             break;
+        default:
+            break;
     }
-//    send_serial_message(button_release_cmd);
     
     if (cdc_active) {
-//        print_can_rx_frame();
+        #if (DEBUGMODE==1)
+            print_can_rx_frame();
+        #endif
         switch (CAN_RxMsg.data[1]) {
-
-            case 0x59: // Next_cmd CD
-                start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
+            case 0x59: // NXT
+                RN52.write(PLAYPAUSE);
                 break;
-            
+                
             case 0x84: // SEEK button long press on IHU
-                start_bt_signal(bt_switch_pin,BT_ENABLE_TIMEOUT);
+                RN52.write(CONNECT);
                 break;
                 
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
-                if (toggle_shuffle > 4) {
-                    toggle_shuffle = 1;
-                }
-                switch (toggle_shuffle) {
-                    case 1:
-//                        send_serial_message(repeat_cmd);
-                        break;
-                    case 2:
-//                        send_serial_message(repeat_cmd);
-                        break;
-                    case 3:
-//                        send_serial_message(repeat_cmd);
-                        break;
-                    case 4:
-//                        send_serial_message(shuffle_cmd);
-                        break;
-                }
-                toggle_shuffle++;
-         
+                RN52.write(VOLUP);
+                break;
+                
             case 0xB1: // Pause ON
-                start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
-//                Serial.println("DEBUG: IHU Pause ON.");
+                
                 break;
             case 0xB0: // Pause OFF
-                start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
-//                Serial.println("DEBUG: IHU Pause OFF.");
+                
                 break;
-            case 0x35: // Track up
-                start_bt_signal(bt_forward_pin,BT_PIN_TIMEOUT);
-//                Serial.println("DEBUG: IHU Track Up.");
+            case 0x35: // Track +
+                RN52.write(NEXTTRACK);
                 break;
-            case 0x36: // Track down
-                start_bt_signal(bt_previous_pin,BT_PIN_TIMEOUT);
-//                Serial.println("DEBUG: IHU Track Down.");
+            case 0x36: // Track -
+                RN52.write(PREVTRACK);
                 break;
             default:
                 break;
         }
-//        send_serial_message(button_release_cmd);
     }
 }
 
@@ -326,7 +221,9 @@ void CDCClass::handle_ihu_buttons() {
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
-//    print_can_rx_frame();
+    #if (DEBUGMODE==1)
+        print_can_rx_frame();
+    #endif
     if (!cdc_active) {
         return;
     }
@@ -335,30 +232,29 @@ void CDCClass::handle_steering_wheel_buttons() {
         // FIXME: Can we really ignore the message if it wasn't sent on event?
         return;
     }
-    /*
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
-            //send_serial_message(repeat_cmd);
-            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
-            start_bt_signal(bt_play_pause_pin,BT_PIN_TIMEOUT);
+            #if (DEBUGMODE==1)
+                Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+            #endif
             break;
         case 0x10: // Seek+ button on wheel
-            //send_serial_message(next_cmd);
-            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
-            start_bt_signal(bt_forward_pin,BT_PIN_TIMEOUT);
+            #if (DEBUGMODE==1)
+                Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
+            #endif
             break;
         case 0x08: // Seek- button on wheel
-            //send_serial_message(prev_cmd);
-            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
-            start_bt_signal(bt_previous_pin,BT_PIN_TIMEOUT);
+            #if (DEBUGMODE==1)
+                Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
+            #endif
             break;
         default:
-            //Serial.print(CAN_RxMsg.data[2],HEX);
-            Serial.println("DEBUG: Unknown SID button message");
+            #if (DEBUGMODE==1)
+                Serial.print(CAN_RxMsg.data[2],HEX);
+                Serial.println("DEBUG: Unknown button message");
+            #endif
             break;
     }
-//    send_serial_message(button_release_cmd);
-     */
 }
 
 /**
@@ -378,17 +274,9 @@ void CDCClass::handle_cdc_status() {
     
     // The CDC status frame must be sent with a 1000 ms periodicity.
     
-    /* DEBUG
-     unsigned long t = millis();
-     unsigned long d = t - cdc_status_last_send_time;
-     if (d > 850) {
-     send_cdc_status(false, false);
-     //Serial.println(d);
-     */
-
     if (millis() - cdc_status_last_send_time > 850) {
         send_cdc_status(false, false);
-    
+        
     }
 }
 
@@ -399,7 +287,7 @@ void CDCClass::send_cdc_status(boolean event, boolean remote) {
     cdc_status_last_send_time = millis();
     cdc_status_resend_needed = false;
     cdc_status_resend_due_to_cdc_command = false;
-
+    
 }
 
 /**

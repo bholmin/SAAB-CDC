@@ -26,7 +26,7 @@
 #	Robot_Control Robot_Motor RobotIRremote Scheduler SD Servo 
 #	SpacebrewYun Stepper Temboo TFT USBHost WiFi 
 #
-APP_LIBS_LIST = 0
+APP_LIBS_LIST = SoftwareSerial.h
 
 # List user's libraries here 
 # default = 0 = none
@@ -65,7 +65,7 @@ USER_LIBS_LIST = 0
 # SERIAL_BAUDRATE for the serial console, 9600 by default
 # Uncomment and specify another speed
 #
-#SERIAL_BAUDRATE = 115200
+SERIAL_BAUDRATE = 115200
 
 
 # Miscellaneous

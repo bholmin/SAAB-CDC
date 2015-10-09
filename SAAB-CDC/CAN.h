@@ -1,3 +1,4 @@
+
 #ifndef CAN_H
 #define CAN_H
 
@@ -16,52 +17,52 @@
 
 class CANClass
 {
-	public:
-		typedef struct
-		{
-			uint16_t id;
-			struct 
-			{
-				int8_t rtr : 1;
-				uint8_t length : 4;
-			} header;
-			uint8_t data[8];
-		} msgCAN;
-
-
-		void begin(uint16_t speed);
-		uint8_t send(msgCAN *message);
-		uint8_t ReadFromDevice(msgCAN *message);
-		uint8_t CheckNew(void);
-		void SetMode(uint8_t mode); 
-		void SetFilters(uint16_t *Filters,uint16_t *Masks);
-
-		//Buffer
-		void store(msgCAN *message);
-		uint8_t available(void);
-		void read(msgCAN *message);	
-		
-
-
-	private:
-		uint8_t spi_putc( uint8_t data );
-		void mcp2515_write_register( uint8_t adress, uint8_t data );
-		uint8_t mcp2515_read_status(uint8_t type);
-		void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
-		uint8_t mcp2515_check_free_buffer(void);
-		uint8_t mcp2515_read_register(uint8_t adress);
-		
-		
-		#define  RX_CAN_BUFFER_SIZE  10
-		typedef struct {
-			msgCAN 	buffer[RX_CAN_BUFFER_SIZE];
-			uint8_t 	head;
-			uint8_t 	tail;
-		}RX_CAN_BUFFER;		
-		RX_CAN_BUFFER    _CAN_RX_BUFFER;
-	
-
-		
+public:
+    typedef struct
+    {
+        uint16_t id;
+        struct
+        {
+            int8_t rtr : 1;
+            uint8_t length : 4;
+        } header;
+        uint8_t data[8];
+    } msgCAN;
+    
+    
+    void begin(uint16_t speed);
+    uint8_t send(msgCAN *message);
+    uint8_t ReadFromDevice(msgCAN *message);
+    uint8_t CheckNew(void);
+    void SetMode(uint8_t mode);
+    void SetFilters(uint16_t *Filters,uint16_t *Masks);
+    
+    //Buffer
+    void store(msgCAN *message);
+    uint8_t available(void);
+    void read(msgCAN *message);
+    
+    
+    
+private:
+    uint8_t spi_putc( uint8_t data );
+    void mcp2515_write_register( uint8_t adress, uint8_t data );
+    uint8_t mcp2515_read_status(uint8_t type);
+    void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
+    uint8_t mcp2515_check_free_buffer(void);
+    uint8_t mcp2515_read_register(uint8_t adress);
+    
+    
+#define  RX_CAN_BUFFER_SIZE  10
+    typedef struct {
+        msgCAN 	buffer[RX_CAN_BUFFER_SIZE];
+        uint8_t 	head;
+        uint8_t 	tail;
+    }RX_CAN_BUFFER;
+    RX_CAN_BUFFER    _CAN_RX_BUFFER;
+    
+    
+    
 };
 
 //----------------------------------------------------------------------------
@@ -74,7 +75,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 
 
 //----------------------------------------------------------------------------
-// MACROS 
+// MACROS
 //----------------------------------------------------------------------------
 
 #define	RESET(x)		_XRS(x)
@@ -246,7 +247,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define RXB1D6      0x7C
 #define RXB1D7      0x7D
 
-//BFPCTRL 
+//BFPCTRL
 #define B1BFS	5
 #define B0BFS	4
 #define B1BFE	3
@@ -254,7 +255,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define B1BFM	1
 #define B0BFM	0
 
-//TXRTSCTRL 
+//TXRTSCTRL
 #define B2RTS	5
 #define B1RTS	4
 #define B0RTS	3
@@ -262,7 +263,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define B1RTSM	1
 #define B0RTSM	0
 
-//CANSTAT 
+//CANSTAT
 #define OPMOD2	7
 #define OPMOD1	6
 #define OPMOD0	5
@@ -270,7 +271,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define ICOD1	2
 #define ICOD0	1
 
-//CANCTRL 
+//CANCTRL
 #define REQOP2	7
 #define REQOP1	6
 #define REQOP0	5
@@ -280,13 +281,13 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define CLKPRE1	1
 #define CLKPRE0	0
 
-//CNF3 
+//CNF3
 #define WAKFIL	6
 #define PHSEG22	2
 #define PHSEG21	1
 #define PHSEG20	0
 
-//CNF2 
+//CNF2
 #define BTLMODE	7
 #define SAM		6
 #define PHSEG12	5
@@ -296,7 +297,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define PHSEG1	1
 #define PHSEG0	0
 
-//CNF1 
+//CNF1
 #define SJW1	7
 #define SJW0	6
 #define BRP5	5
@@ -306,7 +307,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define BRP1	1
 #define BRP0	0
 
-//CANINTE 
+//CANINTE
 #define MERRE	7
 #define WAKIE	6
 #define ERRIE	5
@@ -316,7 +317,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define RX1IE	1
 #define RX0IE	0
 
-//CANINTF 
+//CANINTF
 #define MERRF	7
 #define WAKIF	6
 #define ERRIF	5
@@ -326,7 +327,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define RX1IF	1
 #define RX0IF	0
 
-//EFLG 
+//EFLG
 #define RX1OVR	7
 #define RX0OVR	6
 #define TXB0	5
@@ -336,7 +337,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define RXWAR	1
 #define EWARN	0
 
-//TXBnCTRL (n = 0, 1, 2) 
+//TXBnCTRL (n = 0, 1, 2)
 #define ABTF	6
 #define MLOA	5
 #define TXERR	4
@@ -344,7 +345,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define TXP1	1
 #define TXP0	0
 
-//RXB0CTRL 
+//RXB0CTRL
 #define RXM1	6
 #define RXM0	5
 #define RXRTR	3
@@ -352,7 +353,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define BUKT1	1
 #define FILHIT0	0
 
-//TXBnSIDL (n = 0, 1) 
+//TXBnSIDL (n = 0, 1)
 #define	EXIDE	3
 
 
@@ -361,7 +362,7 @@ extern CANClass::msgCAN CAN_RxMsg;
 #define FILHIT2		2
 #define FILHIT1		1
 
-//RXBnSIDL (n = 0, 1) 
+//RXBnSIDL (n = 0, 1)
 #define	SRR		4
 #define	IDE		3
 
