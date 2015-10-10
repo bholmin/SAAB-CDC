@@ -194,7 +194,7 @@ void CDCClass::handle_ihu_buttons() {
                 break;
                 
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
-                RN52.write(VOLUP);
+                RN52.write(ASSISTANT);
                 break;
                 
             case 0xB1: // Pause ON

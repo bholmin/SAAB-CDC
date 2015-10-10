@@ -13,7 +13,9 @@
 #define DISCONNECT  "@,1"
 #define REBOOT      "R,1"
 #define VOLUP       "AV+"
+#define MAXVOLUME   "SS,0F"
 #define GETSTATUS   "Q"
+#define ASSISTANT   "P"
 
 //----------------------------------------------------------------------------
 // CLASS

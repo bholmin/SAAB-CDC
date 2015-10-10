@@ -101,15 +101,17 @@ void RN52Class::update() {
                 connection_attempts_remaining--;
             }
             if (connection_attempts_remaining == 0) {
-                volup();
+                write(MAXVOLUME);
+                // volup();
             }
         }
         
+        /*
         else if ((volume_up_times_needed > 0) && status_connected) {
             write(VOLUP);
             volume_up_times_needed--;
         }
-        
+        */
         else if (digitalRead(BT_STATUS_PIN) == LOW) {
             write(GETSTATUS);
             waiting_for_status = true;
