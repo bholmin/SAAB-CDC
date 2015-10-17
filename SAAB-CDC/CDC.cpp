@@ -17,6 +17,7 @@
 
 #define MODULE_NAME              "BT TEST"
 #define DISPLAY_NAME_TIMEOUT     5000 // Milliseconds
+#define DEBUGMODE                0 // 1 = Output debug to serial port; 0 = No output
 
 /**
  * TX frames:
@@ -170,44 +171,39 @@ void CDCClass::handle_ihu_buttons() {
             RN52.start_connecting();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
-            if (cdc_active) {
-                cdc_active = false;
-                display_wanted = false;
-                RN52.start_disconnecting();
+            cdc_active = false;
+            display_wanted = false;
+            RN52.start_disconnecting();
+            break;
             }
-            break;
-        default:
-            break;
-    }
-    
     if (cdc_active) {
         #if (DEBUGMODE==1)
             print_can_rx_frame();
         #endif
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
-                RN52.write(PLAYPAUSE);
+                // RN52.write(PLAYPAUSE);
                 break;
-                
             case 0x84: // SEEK button long press on IHU
                 RN52.write(CONNECT);
                 break;
-                
-            case 0x76: // Random ON/OFF (Long press of CD/RDM button)
-                RN52.write(ASSISTANT);
+            case 0X88: // > 2 sec long press of SEEK button on IHU
+                RN52.write(DISCONNECT);
                 break;
-                
+            case 0x76: // Random ON/OFF (Long press of CD/RDM button)
+                RN52.write(VOLUP);
+                break;
             case 0xB1: // Pause ON
-                
+                // N/A for now
                 break;
             case 0xB0: // Pause OFF
-                
+                // N/A for now
                 break;
             case 0x35: // Track +
-                RN52.write(NEXTTRACK);
+                // RN52.write(NEXTTRACK);
                 break;
             case 0x36: // Track -
-                RN52.write(PREVTRACK);
+                // RN52.write(PREVTRACK);
                 break;
             default:
                 break;
@@ -237,16 +233,19 @@ void CDCClass::handle_steering_wheel_buttons() {
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'NXT' button on wheel pressed.");
             #endif
+            RN52.write(PLAYPAUSE);
             break;
         case 0x10: // Seek+ button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             #endif
+            RN52.write(NEXTTRACK);
             break;
         case 0x08: // Seek- button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             #endif
+            RN52.write(PREVTRACK);
             break;
         default:
             #if (DEBUGMODE==1)

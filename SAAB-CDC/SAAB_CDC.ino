@@ -20,7 +20,6 @@
 #include "Arduino.h"
 #include "CDC.h"
 #include "RN52.h"
-#define DEBUGMODE 0 // 1 = Output debug to serial port; 0 = No output
 
 CDCClass CDC;
 RN52Class RN52;
@@ -38,15 +37,4 @@ void setup() {
 void loop() {
     CDC.handle_cdc_status();
     RN52.update();
-    #if (DEBUGMODE==1) // Enabling serial input to program RN52.
-        if (Serial.available() > 0) {
-            char in_char[2];
-            in_char[0] = Serial.read();
-            in_char[1] = 0;
-            RN52.write(in_char);
-        }
-        if (RN52.read()) {
-            Serial.println(RN52.in_buffer);
-        }
-    #endif
 }
