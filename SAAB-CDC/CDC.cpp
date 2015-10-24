@@ -156,6 +156,7 @@ void CDCClass::handle_rx_frame() {
  */
 
 void CDCClass::handle_ihu_buttons() {
+    print_can_rx_frame();
     #if (DEBUGMODE==1)
         print_can_rx_frame();
     #endif
@@ -219,6 +220,7 @@ void CDCClass::handle_ihu_buttons() {
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
+    print_can_rx_frame();
     #if (DEBUGMODE==1)
         print_can_rx_frame();
     #endif
