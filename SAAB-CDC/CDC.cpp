@@ -185,7 +185,7 @@ void CDCClass::handle_ihu_buttons() {
         #endif
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
-                RN52.write(PLAYPAUSE);
+                //RN52.write(PLAYPAUSE);
                 break;
             case 0x84: // SEEK button long press on IHU
                 RN52.write(CONNECT);
@@ -203,10 +203,10 @@ void CDCClass::handle_ihu_buttons() {
                 // N/A for now
                 break;
             case 0x35: // Track +
-                RN52.write(NEXTTRACK);
+                //RN52.write(NEXTTRACK);
                 break;
             case 0x36: // Track -
-                RN52.write(PREVTRACK);
+                //RN52.write(PREVTRACK);
                 break;
             default:
                 break;
@@ -242,16 +242,19 @@ void CDCClass::handle_steering_wheel_buttons() {
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'NXT' button on wheel pressed.");
             #endif
+            RN52.write(PLAYPAUSE);
             break;
         case 0x10: // Seek+ button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             #endif
+            RN52.write(NEXTTRACK);
             break;
         case 0x08: // Seek- button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             #endif
+            RN52.write(PREVTRACK);
             break;
         case 0x40: // Vol+ button on wheel
             #if (DEBUGMODE==1)
