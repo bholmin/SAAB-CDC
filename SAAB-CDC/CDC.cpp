@@ -51,6 +51,7 @@ boolean display_request_granted = true; // True while we are granted the 2nd row
 boolean display_wanted = false; // True while we actually want the display.
 boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event.
 boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command.
+int volup_counter = 0;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
@@ -169,6 +170,7 @@ void CDCClass::handle_ihu_buttons() {
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, beep_cmd);
             RN52.start_connecting();
+            volup_counter = 0;
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
@@ -182,7 +184,7 @@ void CDCClass::handle_ihu_buttons() {
         #endif
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
-                // RN52.write(PLAYPAUSE);
+                RN52.write(PLAYPAUSE);
                 break;
             case 0x84: // SEEK button long press on IHU
                 RN52.write(CONNECT);
@@ -200,10 +202,10 @@ void CDCClass::handle_ihu_buttons() {
                 // N/A for now
                 break;
             case 0x35: // Track +
-                // RN52.write(NEXTTRACK);
+                RN52.write(NEXTTRACK);
                 break;
             case 0x36: // Track -
-                // RN52.write(PREVTRACK);
+                RN52.write(PREVTRACK);
                 break;
             default:
                 break;
@@ -225,27 +227,38 @@ void CDCClass::handle_steering_wheel_buttons() {
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
-        // FIXME: Can we really ignore the message if it wasn't sent on event?
-        return;
+        switch (CAN_RxMsg.data[4]) {
+            case 0x04: // Long press of NXT button on wheel
+                RN52.write(ASSISTANT);
+                break;
+            default:
+                break;
+        }
     }
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'NXT' button on wheel pressed.");
             #endif
-            RN52.write(PLAYPAUSE);
             break;
         case 0x10: // Seek+ button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
             #endif
-            RN52.write(NEXTTRACK);
             break;
         case 0x08: // Seek- button on wheel
             #if (DEBUGMODE==1)
                 Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             #endif
-            RN52.write(PREVTRACK);
+            break;
+        case 0x40: // Vol+ button on wheel
+            #if (DEBUGMODE==1)
+                Serial.println("DEBUG: 'Vol+' button on wheel pressed.");
+            #endif
+            if (volup_counter < 5) {
+                RN52.write(VOLUP);
+                volup_counter++;
+            }
             break;
         default:
             #if (DEBUGMODE==1)
