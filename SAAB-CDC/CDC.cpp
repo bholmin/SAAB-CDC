@@ -233,6 +233,8 @@ void CDCClass::handle_steering_wheel_buttons() {
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
+        // Possible long press of a button has occured. We need to handle this.
+        
         /*
         switch (CAN_RxMsg.data[4]) {
             case 0x04: // Long press of NXT button on wheel
@@ -243,6 +245,7 @@ void CDCClass::handle_steering_wheel_buttons() {
         
         }
          */
+        
     return;
     }
     switch (CAN_RxMsg.data[2]) {
