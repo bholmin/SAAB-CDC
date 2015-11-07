@@ -228,13 +228,17 @@ void CDCClass::handle_steering_wheel_buttons() {
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
+        /*
         switch (CAN_RxMsg.data[4]) {
             case 0x04: // Long press of NXT button on wheel
                 RN52.write(ASSISTANT);
                 break;
             default:
                 break;
+        
         }
+         */
+    return;
     }
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
