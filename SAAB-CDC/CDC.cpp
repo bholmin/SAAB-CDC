@@ -55,7 +55,7 @@ int volup_counter = 0;
 int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
-int cdc_status_cmd[] = {0xE0,0xFF,0x01,0x31,0xFF,0xFF,0xFF,0xD0,-1};
+int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0x05,0x10,0x15,0xD0,-1};
 int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
 /******************************************************************************
@@ -81,13 +81,13 @@ void CDCClass::print_can_tx_frame() {
  */
 
 void CDCClass::print_can_rx_frame() {
-    Serial.print(CAN_RxMsg.id,HEX);
-    Serial.print(" -> ");
-    for (int i = 0; i < 8; i++) {
-        Serial.print(CAN_RxMsg.data[i],HEX);
-        Serial.print(" ");
-    }
-    Serial.println();
+        Serial.print(CAN_RxMsg.id,HEX);
+        Serial.print(" -> ");
+        for (int i = 0; i < 8; i++) {
+            Serial.print(CAN_RxMsg.data[i],HEX);
+            Serial.print(" ");
+        }
+        Serial.println();
 }
 
 /**
@@ -111,7 +111,6 @@ void CDCClass::handle_rx_frame() {
     if (CAN.CheckNew()) {
         CAN_TxMsg.data[0]++;
         CAN.ReadFromDevice(&CAN_RxMsg);
-        print_can_rx_frame();
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
                 send_can_frame(NODE_STATUS_TX, ninefive_cmd);
@@ -186,6 +185,12 @@ void CDCClass::handle_ihu_buttons() {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
                 RN52.write(PLAYPAUSE);
+                break;
+            case 0x45: // SEEK+ button long press on 9-3 IHU
+                RN52.write(CONNECT);
+                break;
+            case 0x46: // SEEK- button long press on 9-3 IHU
+                RN52.write(DISCONNECT);
                 break;
             case 0x84: // SEEK button long press on IHU
                 RN52.write(CONNECT);
