@@ -16,7 +16,9 @@
  */
 
 #define MODULE_NAME              "BT TEST"
+#define LAST_EVENT_IN_TIMEOUT    2000 // Milliseconds
 #define DISPLAY_NAME_TIMEOUT     5000 // Milliseconds
+#define NODE_STATUS_TX_MSG_SIZE  4  // Defines how many messages do we need to reply with to '6A1'
 #define DEBUGMODE                0 // 1 = Output debug to serial port; 0 = No output
 
 /**
@@ -46,13 +48,31 @@ unsigned long cdc_status_last_send_time = 0; // Timer used to ensure we send the
 unsigned long display_request_last_send_time = 0; // Timer used to ensure we send the display request frame in a timely manner.
 unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner.
 unsigned long stop_displaying_name_at = 0; // Time at which we should stop displaying our name in the SID.
+unsigned long last_icoming_event_time =0;
 boolean cdc_active = false; // True while our module, the simulated CDC, is active.
 boolean display_request_granted = true; // True while we are granted the 2nd row of the SID.
 boolean display_wanted = false; // True while we actually want the display.
 boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event.
 boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command.
-int volup_counter = 0;
-int ninefive_cmd[] = {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1};
+int can_rx_event_counter;
+int ninefive_poweron_cmd[NODE_STATUS_TX_MSG_SIZE][9] = {
+    {0x32,0x00,0x00,0x03,0x01,0x02,0x00,0x00,-1},
+    {0x42,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
+    {0x52,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
+    {0x62,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1}
+};
+int ninefive_active_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+    {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1},
+    {0x42,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
+    {0x52,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
+    {0x62,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
+};
+int ninefive_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+    {0x32,0x00,0x00,0x19,0x01,0x00,0x00,0x00,-1},
+    {0x42,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
+    {0x52,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
+    {0x62,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1}
+};
 int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0x05,0x10,0x15,0xD0,-1};
@@ -113,7 +133,23 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                send_can_frame(NODE_STATUS_TX, ninefive_cmd);
+                switch (CAN_RxMsg.data[3] & 0x0F){
+                    case (0x3):
+                        for (int i = 0; i < 4; i++) {
+                            send_can_frame(NODE_STATUS_TX, ninefive_poweron_cmd[i]);
+                        }
+                        break;
+                    case (0x2):
+                        for (int i = 0; i < 4; i++) {
+                        send_can_frame(NODE_STATUS_TX, ninefive_active_cmd[i]);
+                        }
+                        break;
+                    case (0x8):
+                        for (int i = 0; i < 4; i++) {
+                        send_can_frame(NODE_STATUS_TX, ninefive_powerdown_cmd[i]);
+                        }
+                        break;
+                }
                 break;
             case IHU_BUTTONS:
                 handle_ihu_buttons();
@@ -170,7 +206,6 @@ void CDCClass::handle_ihu_buttons() {
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, beep_cmd);
             RN52.start_connecting();
-            volup_counter = 0;
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
@@ -234,19 +269,21 @@ void CDCClass::handle_steering_wheel_buttons() {
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // Possible long press of a button has occured. We need to handle this.
-        
-        /*
+        if (millis() - last_icoming_event_time > LAST_EVENT_IN_TIMEOUT) {
+            can_rx_event_counter = 0;
+        }
+        can_rx_event_counter++;
+        last_icoming_event_time = millis();
         switch (CAN_RxMsg.data[4]) {
             case 0x04: // Long press of NXT button on wheel
-                RN52.write(ASSISTANT);
+                if (can_rx_event_counter == 5) {
+                    RN52.write(ASSISTANT);
+                }
                 break;
             default:
                 break;
-        
         }
-         */
-        
-    return;
+        return;
     }
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
@@ -266,15 +303,6 @@ void CDCClass::handle_steering_wheel_buttons() {
                 Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
             #endif
             //RN52.write(PREVTRACK);
-            break;
-        case 0x40: // Vol+ button on wheel
-            #if (DEBUGMODE==1)
-                Serial.println("DEBUG: 'Vol+' button on wheel pressed.");
-            #endif
-            if (volup_counter < 5) {
-                RN52.write(VOLUP);
-                volup_counter++;
-            }
             break;
         default:
             #if (DEBUGMODE==1)

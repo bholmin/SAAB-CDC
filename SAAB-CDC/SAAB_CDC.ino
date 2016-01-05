@@ -30,7 +30,7 @@ void setup() {
     RN52.uart_begin();
     CDC.open_can_bus();
     Serial.begin(115200);
-    Serial.println("SAAB CDC v2.0 - November 2015");
+    Serial.println("SAAB CDC v2.0 - January 2016");
 }
 
 // Main loop
