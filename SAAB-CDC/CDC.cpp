@@ -133,6 +133,7 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
+            /*
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
                         for (int i = 0; i < NODE_STATUS_TX_MSG_SIZE; i++) {
@@ -150,6 +151,7 @@ void CDCClass::handle_rx_frame() {
                         }
                         break;
                 }
+                */
                 break;
             case IHU_BUTTONS:
                 handle_ihu_buttons();
