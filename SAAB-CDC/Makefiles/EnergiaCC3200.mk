@@ -3,16 +3,16 @@
 # ----------------------------------
 # Embedded Computing on Xcode
 #
-# Copyright © Rei VILO, 2010-2015
+# Copyright © Rei VILO, 2010-2016
 # http://embedxcode.weebly.com
 # All rights reserved
 #
 #
-# Last update: May 18, 2015 release 289
+# Last update: Nov 25, 2015 release 4.0.5
 
 
 
-# Energia LaunchPad Stellaris and Tiva C specifics
+# Energia LaunchPad CC3200 specifics
 # ----------------------------------
 #
 APPLICATION_PATH := $(ENERGIA_PATH)
@@ -20,7 +20,7 @@ ENERGIA_RELEASE  := $(shell tail -c2 $(APPLICATION_PATH)/lib/version.txt)
 ARDUINO_RELEASE  := $(shell head -c4 $(APPLICATION_PATH)/lib/version.txt | tail -c3)
 
 ifeq ($(shell if [[ '$(ENERGIA_RELEASE)' -ge '14' ]] ; then echo 1 ; else echo 0 ; fi ),0)
-    WARNING_MESSAGE = 'ENERGIA 14 OR LATER REQUIRED'
+    WARNING_MESSAGE = Energia 14 or later is required.
 endif
 
 PLATFORM         := Energia
@@ -40,26 +40,39 @@ UPLOADER_OPTS =
 #
 UPLOADER_COMMAND = prog
 
-APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/lm4f/bin
-CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/cc3200/cores/cc3200
-APP_LIB_PATH     := $(APPLICATION_PATH)/hardware/cc3200/libraries
-BOARDS_TXT       := $(APPLICATION_PATH)/hardware/cc3200/boards.txt
+APP_TOOLS_PATH  := $(APPLICATION_PATH)/hardware/tools/lm4f/bin
+CORE_LIB_PATH   := $(APPLICATION_PATH)/hardware/cc3200/cores/cc3200
+APP_LIB_PATH    := $(APPLICATION_PATH)/hardware/cc3200/libraries
+BOARDS_TXT      := $(APPLICATION_PATH)/hardware/cc3200/boards.txt
 
-BUILD_CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/cc3200/cores/cc3200/driverlib
-BUILD_CORE_LIBS_LIST = $(subst .h,,$(subst $(BUILD_CORE_LIB_PATH)/,,$(wildcard $(BUILD_CORE_LIB_PATH)/*.h))) # */
 
-BUILD_CORE_C_SRCS    = $(wildcard $(BUILD_CORE_LIB_PATH)/*.c) # */
+## Not so clean Energia implementation for CC3200 non-EMT
+## Take cores/cc3200 but not the sub-folders...
+##
+#CORE_LIBS_LIST   = $(subst .h,,$(subst $(CORE_LIB_PATH)/,,$(wildcard $(CORE_LIB_PATH)/*.h))) # */
+#CORE_C_SRCS      = $(wildcard $(CORE_LIB_PATH)/*.c) # */
+#CORE_CPP_SRCS    = $(filter-out %/$(EXCLUDE_LIST),$(wildcard $(CORE_LIB_PATH)/*.cpp)) # */
+#CORE_OBJ_FILES   = $(CORE_C_SRCS:.c=.c.o) $(CORE_CPP_SRCS:.cpp=.cpp.o)
+#CORE_OBJS        = $(patsubst $(CORE_LIB_PATH)/%,$(OBJDIR)/%,$(CORE_OBJ_FILES))
+#
+## ...except cores/cc3200/avr
+##
+#BUILD_CORE_LIB_PATH  = $(CORE_LIB_PATH)/avr
+#BUILD_CORE_LIBS_LIST = $(subst .h,,$(subst $(BUILD_CORE_LIB_PATH)/,,$(wildcard $(BUILD_CORE_LIB_PATH)/*.h))) # */
+#BUILD_CORE_C_SRCS    = $(wildcard $(BUILD_CORE_LIB_PATH)/*.c) # */
+#BUILD_CORE_CPP_SRCS = $(filter-out %program.cpp %main.cpp,$(wildcard $(BUILD_CORE_LIB_PATH)/*.cpp)) # */
+#BUILD_CORE_OBJ_FILES  = $(BUILD_CORE_C_SRCS:.c=.c.o) $(BUILD_CORE_CPP_SRCS:.cpp=.cpp.o)
+#BUILD_CORE_OBJS       = $(patsubst $(BUILD_CORE_LIB_PATH)/%,$(OBJDIR)/%,$(BUILD_CORE_OBJ_FILES))
+#
+#CORE_LIBS_LOCK = 1
+#
 
-BUILD_CORE_CPP_SRCS = $(filter-out %program.cpp %main.cpp,$(wildcard $(BUILD_CORE_LIB_PATH)/*.cpp)) # */
-
-BUILD_CORE_OBJ_FILES  = $(BUILD_CORE_C_SRCS:.c=.c.o) $(BUILD_CORE_CPP_SRCS:.cpp=.cpp.o)
-BUILD_CORE_OBJS       = $(patsubst $(BUILD_CORE_LIB_PATH)/%,$(OBJDIR)/%,$(BUILD_CORE_OBJ_FILES))
 
 # Sketchbook/Libraries path
 # wildcard required for ~ management
 # ?ibraries required for libraries and Libraries
 #
-ifeq ($(USER_PATH)/Library/Energia/preferences.txt,)
+ifeq ($(USER_LIBRARY_DIR)/Energia/preferences.txt,)
     $(error Error: run Energia once and define the sketchbook path)
 endif
 
@@ -90,20 +103,126 @@ SIZE    = $(APP_TOOLS_PATH)/arm-none-eabi-size
 NM      = $(APP_TOOLS_PATH)/arm-none-eabi-nm
 
 
+# Horrible patch for core libraries
+# ----------------------------------
+#
+# If driverlib/libdriverlib.a is available, exclude driverlib/
+#
+CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/cc3200/cores/cc3200
+
+CORE_A   = $(CORE_LIB_PATH)/driverlib/libdriverlib.a
+
+BUILD_CORE_LIB_PATH = $(shell find $(CORE_LIB_PATH) -type d)
+ifneq ($(wildcard $(CORE_A)),)
+    BUILD_CORE_LIB_PATH := $(filter-out %/driverlib,$(BUILD_CORE_LIB_PATH))
+endif
+
+BUILD_CORE_CPP_SRCS = $(filter-out %program.cpp %main.cpp,$(foreach dir,$(BUILD_CORE_LIB_PATH),$(wildcard $(dir)/*.cpp))) # */
+BUILD_CORE_C_SRCS   = $(foreach dir,$(BUILD_CORE_LIB_PATH),$(wildcard $(dir)/*.c)) # */
+
+BUILD_CORE_OBJ_FILES  = $(BUILD_CORE_C_SRCS:.c=.c.o) $(BUILD_CORE_CPP_SRCS:.cpp=.cpp.o)
+BUILD_CORE_OBJS       = $(patsubst $(APPLICATION_PATH)/%,$(OBJDIR)/%,$(BUILD_CORE_OBJ_FILES))
+
+CORE_LIBS_LOCK = 1
+# ----------------------------------
+
+# Horrible patch for Ethernet library
+# ----------------------------------
+#
+# APPlication Arduino/chipKIT/Digispark/Energia/Maple/Microduino/Teensy/Wiring sources
+#
+APP_LIB_PATH     := $(APPLICATION_PATH)/hardware/cc3200/libraries
+
+ifneq ($(APP_LIBS_LIST),0)
+e1100    = $(foreach dir,$(APP_LIB_PATH),$(patsubst %,$(dir)/%,$(APP_LIBS_LIST)))
+e1100   += $(foreach dir,$(APP_LIB_PATH),$(patsubst %,$(dir)/%/utility,$(APP_LIBS_LIST)))
+
+APP_LIB_CPP_SRC = $(foreach dir,$(e1100),$(wildcard $(dir)/*.cpp)) # */
+APP_LIB_C_SRC   = $(foreach dir,$(e1100),$(wildcard $(dir)/*.c)) # */
+APP_LIB_H_SRC   = $(foreach dir,$(e1100),$(wildcard $(dir)/*.h)) # */
+
+APP_LIB_OBJS     = $(patsubst $(APPLICATION_PATH)/%.cpp,$(OBJDIR)/%.cpp.o,$(APP_LIB_CPP_SRC))
+APP_LIB_OBJS    += $(patsubst $(APPLICATION_PATH)/%.c,$(OBJDIR)/%.c.o,$(APP_LIB_C_SRC))
+
+BUILD_APP_LIBS_LIST = $(subst $(APP_LIB_PATH)/, ,$(APP_LIB_CPP_SRC))
+BUILD_APP_LIB_PATH  = $(e1100) $(foreach dir,$(APP_LIB_PATH),$(patsubst %,$(dir)/%,$(APP_LIBS_LIST)))
+endif
+
+APP_LIBS_LOCK = 1
+# ----------------------------------
+
+
 BOARD    = $(call PARSE_BOARD,$(BOARD_TAG),board)
 LDSCRIPT = $(call PARSE_BOARD,$(BOARD_TAG),ldscript)
 VARIANT  = $(call PARSE_BOARD,$(BOARD_TAG),build.variant)
 VARIANT_PATH = $(APPLICATION_PATH)/hardware/cc3200/variants/$(VARIANT)
 
-OPTIMISATION   = -Os
+    OPTIMISATION   = -Os
 
 MCU_FLAG_NAME   = mcpu
-EXTRA_LDFLAGS   = -nostartfiles -nostdlib -T$(CORE_LIB_PATH)/$(LDSCRIPT) -Wl,--gc-sections
-EXTRA_LDFLAGS  += -Wl,--entry=ResetISR -mthumb
-EXTRA_LDFLAGS  += $(CORE_LIB_PATH)/driverlib/libdriverlib.a
 
-EXTRA_CPPFLAGS  = $(addprefix -D, $(PLATFORM_TAG)) -I$(VARIANT_PATH)
-EXTRA_CPPFLAGS += -fno-exceptions -fno-rtti -mthumb $(OPTIMISATION) -MMD
+INCLUDE_PATH     = $(CORE_LIB_PATH)
+INCLUDE_PATH    += $(VARIANT_PATH)
+INCLUDE_PATH    += $(APPLICATION_PATH)/hardware/tools/cc3200/include
+INCLUDE_PATH    += $(CORE_LIB_PATH)/inc
+#INCLUDE_PATH    += $(APPLICATION_PATH)/hardware/cc3200/cores/cc3200/driverlib
+INCLUDE_PATH    += $(BUILD_APP_LIB_PATH)
 
+
+# Required for correct sprintf()
+#
+FIRST_O_IN_A     = $$(find . -name wiring.c.o)
+
+
+# Flags for gcc, g++ and linker
+# ----------------------------------
+#
+# Common CPPFLAGS for gcc, g++, assembler and linker
+#
+CPPFLAGS     = $(OPTIMISATION) $(WARNING_FLAGS)
+CPPFLAGS    += -ffunction-sections -fdata-sections -mthumb -MMD
+CPPFLAGS    += -$(MCU_FLAG_NAME)=$(MCU) -DF_CPU=$(F_CPU)
+CPPFLAGS    += $(addprefix -I, $(INCLUDE_PATH))
+CPPFLAGS    += $(addprefix -D, $(PLATFORM_TAG))
+
+# Specific CFLAGS for gcc only
+# gcc uses CPPFLAGS and CFLAGS
+#
+CFLAGS       = #
+
+# Specific CXXFLAGS for g++ only
+# g++ uses CPPFLAGS and CXXFLAGS
+#
+CXXFLAGS    = -fno-exceptions -fno-rtti
+
+# Specific ASFLAGS for gcc assembler only
+# gcc assembler uses CPPFLAGS and ASFLAGS
+#
+ASFLAGS      = --asm_extension=S
+
+# Specific LDFLAGS for linker only
+# linker uses CPPFLAGS and LDFLAGS
+#
+LDFLAGS      = $(OPTIMISATION) $(WARNING_FLAGS)
+LDFLAGS     += -nostartfiles -nostdlib -Wl,--gc-sections
+LDFLAGS     += -T $(CORE_LIB_PATH)/$(LDSCRIPT)
+LDFLAGS     += -Wl,--entry=ResetISR -mthumb
+LDFLAGS     += -$(MCU_FLAG_NAME)=$(MCU) -DF_CPU=$(F_CPU)
+##LDFLAGS     += $(addprefix -I, $(INCLUDE_PATH))
+#LDFLAGS     += $(CORE_A) -LBuilds -lm -lc -lgcc -lm
+
+# Specific OBJCOPYFLAGS for objcopy only
+# objcopy uses OBJCOPYFLAGS only
+#
 OBJCOPYFLAGS  = -Obinary # -v
+
+# Target
+#
 TARGET_HEXBIN = $(TARGET_BIN)
+
+
+# Commands
+# ----------------------------------
+#
+COMMAND_LINK = $(CXX) $(LDFLAGS) $(OUT_PREPOSITION)$@ $(SYSTEM_OBJS) $(LOCAL_OBJS) $(TARGET_A) $(CORE_A) -LBuilds -lm -lc -lgcc -lm
+

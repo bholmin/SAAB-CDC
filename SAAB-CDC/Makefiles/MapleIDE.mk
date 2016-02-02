@@ -3,15 +3,15 @@
 # ----------------------------------
 # Embedded Computing on Xcode
 #
-# Copyright © Rei VILO, 2010-2015
+# Copyright © Rei VILO, 2010-2016
 # http://embedxcode.weebly.com
 # All rights reserved
 #
 #
-# Last update: Apr 28, 2013 release 47
+# Last update: May 28, 2015 release 290
 
 # MAPLE SUPPORT IS PUT ON HOLD
-WARNING_MESSAGE = 'MAPLE SUPPORT IS PUT ON HOLD'
+WARNING_MESSAGE = Maple support is put on hold.
 
 
 # Leaflabs Maple specifics
@@ -26,6 +26,7 @@ WARNING_MESSAGE = 'MAPLE SUPPORT IS PUT ON HOLD'
 #
 #
 PLATFORM         := MapleIDE
+BUILD_CORE       = $(call PARSE_BOARD,$(BOARD_TAG),build.core)
 PLATFORM_TAG      = MAPLE_IDE EMBEDXCODE=$(RELEASE_NOW)
 APPLICATION_PATH := $(MAPLE_PATH)
 
@@ -44,12 +45,12 @@ BOARDS_TXT       := $(APPLICATION_PATH)/hardware/leaflabs/boards.txt
 # wildcard required for ~ management
 # ?ibraries required for libraries and Libraries
 #
-ifeq ($(USER_PATH)/Library/MapleIDE/preferences.txt,)
+ifeq ($(USER_LIBRARY_DIR)/MapleIDE/preferences.txt,)
     $(error Error: run MapleIDE once and define the sketchbook path)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
-    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(USER_PATH)/Library/MapleIDE/preferences.txt | cut -d = -f 2)
+    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(USER_LIBRARY_DIR)/MapleIDE/preferences.txt | cut -d = -f 2)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
@@ -95,12 +96,21 @@ EXTRA_CPPFLAGS += -DERROR_LED_PORT=$(call PARSE_BOARD,$(BOARD_TAG),build.error_l
 EXTRA_CPPFLAGS += -DERROR_LED_PIN=$(call PARSE_BOARD,$(BOARD_TAG),build.error_led_pin)
 EXTRA_CPPFLAGS += $(addprefix -D, $(PLATFORM_TAG))
     
-OBJCOPYFLAGS  = -v -Obinary 
+# Specific OBJCOPYFLAGS for objcopy only
+# objcopy uses OBJCOPYFLAGS only
+#
+OBJCOPYFLAGS  = -v -Obinary
+
+# Target
+#
 TARGET_HEXBIN = $(TARGET_BIN)
 
 MAX_RAM_SIZE = $(call PARSE_BOARD,$(BOARD_TAG),upload.ram.maximum_size)
 
 
-
+# Commands
+# ----------------------------------
+#
+COMMAND_LINK = $(CXX) $(LDFLAGS) $(OUT_PREPOSITION)$@ $(LOCAL_OBJS) $(TARGET_A) -L$(OBJDIR)
 
 
