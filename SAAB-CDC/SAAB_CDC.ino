@@ -6,7 +6,7 @@
  Credits:
 
  Hardware design: Seth Evans (http://bluesaab.blogspot.com)
- Initial code: Seth Evans and Emil Malmberg
+ Initial code: Seth Evans and Emil Fors
  CAN code: Igor Real (http://secuduino.blogspot.com)
  Information on SAAB I-Bus: Tomi Liljemark (http://pikkupossu.1g.fi/tomi/projects/i-bus/i-bus.html)
  Additions/bug fixes: Karlis Veilands and Girts Linde
@@ -30,7 +30,7 @@ void setup() {
     RN52.uart_begin();
     CDC.open_can_bus();
     Serial.begin(115200);
-    Serial.println("SAAB CDC v2.0 - January 2016");
+    Serial.println("SAAB CDC v2.0 - February 2016");
 }
 
 // Main loop

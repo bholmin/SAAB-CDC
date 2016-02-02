@@ -3,11 +3,11 @@
 # ----------------------------------
 # Embedded Computing on Xcode
 #
-# Copyright © Rei VILO, 2010-2015
+# Copyright © Rei VILO, 2010-2016
 # All rights reserved
 # http://embedxcode.weebly.com
 #
-# Last update: Mar 20, 2015 release 270
+# Last update: Jul 31, 2015 release 300
 
 
 # Libraries
@@ -21,12 +21,12 @@
 # List application Arduino/chipKIT/Digispark/Energia/Maple/Microduino/Teensy/Wiring libraries here
 # default = 0 = none
 #
-# ARDUINO = EEPROM SoftwareSerial SPI Wire SPI Wire Audio 
-#	Bridge Esplora Ethernet Firmata GSM LiquidCrystal 
-#	Robot_Control Robot_Motor RobotIRremote Scheduler SD Servo 
-#	SpacebrewYun Stepper Temboo TFT USBHost WiFi 
+# ARDUINO : AVR = EEPROM HID SoftwareSerial SPI Wire 
+# ARDUINO = Bridge Esplora Ethernet Firmata GSM 
+#	LiquidCrystal Robot_Control Robot_Motor RobotIRremote SD Servo 
+#	SpacebrewYun Stepper Temboo TFT WiFi 
 #
-APP_LIBS_LIST = SoftwareSerial.h
+APP_LIBS_LIST = 0
 
 # List user's libraries here 
 # default = 0 = none
@@ -77,7 +77,8 @@ CURRENT_DIR   := $(shell echo '$(CURRENT_DIR)' | sed 's/ /\\\ /g')
 
 # C-compliant project name
 #
-PROJECT_NAME_AS_IDENTIFIER = SAAB_CDC
+PROJECT_NAME_AS_IDENTIFIER = SAAB-CDC
+SKETCH_EXTENSION = ino
 
 MAKEFILE_PATH  = $(CURRENT_DIR)/Makefiles
 UTILITIES_PATH = $(CURRENT_DIR)/Utilities
