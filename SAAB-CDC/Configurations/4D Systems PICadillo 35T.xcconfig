@@ -8,7 +8,7 @@
 //  Embedded Computing on Xcode
 //
 //  Created by 	Rei Vilo on Sep 29, 2014
-//  Copyright   (c) 2010-2015 http://embedxcode.weebly.com
+//  Copyright   (c) 2010-2016 http://embedxcode.weebly.com
 //  Licence     All rigths reserved
 //
 // Last update: Aug 08, 2014 release 173
@@ -26,7 +26,7 @@ BOARD_PORT = /dev/tty.usbserial*
 // References for Xcode code-sense
 // See Boards.txt for <tag>.build.mcu=<GCC_PREPROCESSOR_DEFINITIONS>
 //
-GCC_PREPROCESSOR_DEFINITIONS = __32MX795F512L__ MPIDE
+GCC_PREPROCESSOR_DEFINITIONS = __32MX795F512L__ MPIDE CHIPKIT
 
 // Specify the full path and name of the application
 // with /Contents/Resources/Java/** after

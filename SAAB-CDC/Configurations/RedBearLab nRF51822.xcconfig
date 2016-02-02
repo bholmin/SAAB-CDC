@@ -8,16 +8,17 @@
 //  Embedded Computing on Xcode
 //
 //  Created by 	Rei Vilo on Sep 20, 2014
-//  Copyright   (c) 2010-2015 http://embedxcode.weebly.com
+//  Copyright   (c) 2010-2016 http://embedxcode.weebly.com
 //  Licence     All rigths reserved
 //
-// Last update: Oct 31, 2014 release 222
+// Last update: Oct 22, 2014 release 310
 
 
 // Board identifier
 // See Boards.txt for <tag>.name=Arduino Uno (16 MHz)
 //
-BOARD_TAG  = RedBearLab
+//BOARD_TAG  = RedBearLab
+BOARD_TAG  = nRF51822
 
 // Port (optionnal)
 // most common are /dev/tty.usbserial*, /dev/tty.usbmodem* or /dev/tty.uart*
