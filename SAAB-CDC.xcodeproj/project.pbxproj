@@ -23,23 +23,14 @@
 		A80EF30A1B2244E900BF40A6 /* Adafruit Pro Trinket 5V-16MHz.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Adafruit Pro Trinket 5V-16MHz.xcconfig"; path = "Configurations/Adafruit Pro Trinket 5V-16MHz.xcconfig"; sourceTree = "<group>"; };
 		A80EF30B1B2244E900BF40A6 /* Adafruit Trinket 3V-8MHz.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Adafruit Trinket 3V-8MHz.xcconfig"; path = "Configurations/Adafruit Trinket 3V-8MHz.xcconfig"; sourceTree = "<group>"; };
 		A80EF30C1B2244E900BF40A6 /* Adafruit Trinket 5V-16MHz.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Adafruit Trinket 5V-16MHz.xcconfig"; path = "Configurations/Adafruit Trinket 5V-16MHz.xcconfig"; sourceTree = "<group>"; };
-		A80EF30D1B2244E900BF40A6 /* Arduino Due.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Due.xcconfig"; path = "Configurations/Arduino Due.xcconfig"; sourceTree = "<group>"; };
 		A80EF30E1B2244E900BF40A6 /* Arduino Duemilanove.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Duemilanove.xcconfig"; path = "Configurations/Arduino Duemilanove.xcconfig"; sourceTree = "<group>"; };
 		A80EF30F1B2244E900BF40A6 /* Arduino Leonardo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Leonardo.xcconfig"; path = "Configurations/Arduino Leonardo.xcconfig"; sourceTree = "<group>"; };
 		A80EF3101B2244E900BF40A6 /* Arduino Mega 2560.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Mega 2560.xcconfig"; path = "Configurations/Arduino Mega 2560.xcconfig"; sourceTree = "<group>"; };
 		A80EF3111B2244E900BF40A6 /* Arduino Micro.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Micro.xcconfig"; path = "Configurations/Arduino Micro.xcconfig"; sourceTree = "<group>"; };
-		A80EF3121B2244E900BF40A6 /* Arduino Pro with ATmega328-3.3V.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Pro with ATmega328-3.3V.xcconfig"; path = "Configurations/Arduino Pro with ATmega328-3.3V.xcconfig"; sourceTree = "<group>"; };
-		A80EF3131B2244E900BF40A6 /* Arduino Pro with ATmega328-5V.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Pro with ATmega328-5V.xcconfig"; path = "Configurations/Arduino Pro with ATmega328-5V.xcconfig"; sourceTree = "<group>"; };
-		A80EF3141B2244E900BF40A6 /* Arduino Mini with ATmega168.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Mini with ATmega168.xcconfig"; path = "Configurations/Arduino Mini with ATmega168.xcconfig"; sourceTree = "<group>"; };
-		A80EF3151B2244E900BF40A6 /* Arduino Mini with ATmega328.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Mini with ATmega328.xcconfig"; path = "Configurations/Arduino Mini with ATmega328.xcconfig"; sourceTree = "<group>"; };
-		A80EF3161B2244E900BF40A6 /* Arduino Nano with ATmega168.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Nano with ATmega168.xcconfig"; path = "Configurations/Arduino Nano with ATmega168.xcconfig"; sourceTree = "<group>"; };
-		A80EF3171B2244E900BF40A6 /* Arduino Nano with ATmega328.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Nano with ATmega328.xcconfig"; path = "Configurations/Arduino Nano with ATmega328.xcconfig"; sourceTree = "<group>"; };
 		A80EF3181B2244E900BF40A6 /* Arduino Robot Control.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Robot Control.xcconfig"; path = "Configurations/Arduino Robot Control.xcconfig"; sourceTree = "<group>"; };
 		A80EF3191B2244E900BF40A6 /* Arduino Robot Motor.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Robot Motor.xcconfig"; path = "Configurations/Arduino Robot Motor.xcconfig"; sourceTree = "<group>"; };
 		A80EF31A1B2244E900BF40A6 /* Arduino Uno.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Uno.xcconfig"; path = "Configurations/Arduino Uno.xcconfig"; sourceTree = "<group>"; };
 		A80EF31B1B2244E900BF40A6 /* Arduino Yun.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Yun.xcconfig"; path = "Configurations/Arduino Yun.xcconfig"; sourceTree = "<group>"; };
-		A80EF31C1B2244E900BF40A6 /* Arduino Zero Pro (Native USB Port).xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Zero Pro (Native USB Port).xcconfig"; path = "Configurations/Arduino Zero Pro (Native USB Port).xcconfig"; sourceTree = "<group>"; };
-		A80EF31D1B2244E900BF40A6 /* Arduino Zero Pro (Programming Port).xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Arduino Zero Pro (Programming Port).xcconfig"; path = "Configurations/Arduino Zero Pro (Programming Port).xcconfig"; sourceTree = "<group>"; };
 		A80EF31E1B2244E900BF40A6 /* chipKIT DP32.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "chipKIT DP32.xcconfig"; path = "Configurations/chipKIT DP32.xcconfig"; sourceTree = "<group>"; };
 		A80EF31F1B2244E900BF40A6 /* chipKIT Max32.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "chipKIT Max32.xcconfig"; path = "Configurations/chipKIT Max32.xcconfig"; sourceTree = "<group>"; };
 		A80EF3201B2244E900BF40A6 /* chipKIT uC32.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "chipKIT uC32.xcconfig"; path = "Configurations/chipKIT uC32.xcconfig"; sourceTree = "<group>"; };
@@ -50,29 +41,14 @@
 		A80EF3251B2244E900BF40A6 /* DFRobot Wido.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "DFRobot Wido.xcconfig"; path = "Configurations/DFRobot Wido.xcconfig"; sourceTree = "<group>"; };
 		A80EF3261B2244E900BF40A6 /* Digispark Tiny Core.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Digispark Tiny Core.xcconfig"; path = "Configurations/Digispark Tiny Core.xcconfig"; sourceTree = "<group>"; };
 		A80EF3271B2244E900BF40A6 /* ESP8266.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = ESP8266.xcconfig; path = Configurations/ESP8266.xcconfig; sourceTree = "<group>"; };
-		A80EF3281B2244E900BF40A6 /* NodeMCU Board.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "NodeMCU Board.xcconfig"; path = "Configurations/NodeMCU Board.xcconfig"; sourceTree = "<group>"; };
-		A80EF3291B2244E900BF40A6 /* Experimeter Board with MSP430FR5739.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Experimeter Board with MSP430FR5739.xcconfig"; path = "Configurations/Experimeter Board with MSP430FR5739.xcconfig"; sourceTree = "<group>"; };
 		A80EF32A1B2244E900BF40A6 /* Intel Edison.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Intel Edison.xcconfig"; path = "Configurations/Intel Edison.xcconfig"; sourceTree = "<group>"; };
 		A80EF32B1B2244E900BF40A6 /* Intel Galileo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Intel Galileo.xcconfig"; path = "Configurations/Intel Galileo.xcconfig"; sourceTree = "<group>"; };
 		A80EF32C1B2244E900BF40A6 /* Intel Galileo Gen2.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Intel Galileo Gen2.xcconfig"; path = "Configurations/Intel Galileo Gen2.xcconfig"; sourceTree = "<group>"; };
-		A80EF32D1B2244E900BF40A6 /* LaunchPad MSP432.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad MSP432.xcconfig"; path = "Configurations/LaunchPad MSP432.xcconfig"; sourceTree = "<group>"; };
-		A80EF32E1B2244E900BF40A6 /* LaunchPad WiFi with CC3200.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad WiFi with CC3200.xcconfig"; path = "Configurations/LaunchPad WiFi with CC3200.xcconfig"; sourceTree = "<group>"; };
-		A80EF32F1B2244E900BF40A6 /* LaunchPad Stellaris with LM4F120.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad Stellaris with LM4F120.xcconfig"; path = "Configurations/LaunchPad Stellaris with LM4F120.xcconfig"; sourceTree = "<group>"; };
-		A80EF3301B2244E900BF40A6 /* LaunchPad Tiva C with TM4C123.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad Tiva C with TM4C123.xcconfig"; path = "Configurations/LaunchPad Tiva C with TM4C123.xcconfig"; sourceTree = "<group>"; };
-		A80EF3311B2244E900BF40A6 /* LaunchPad Tiva C with TM4C129.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad Tiva C with TM4C129.xcconfig"; path = "Configurations/LaunchPad Tiva C with TM4C129.xcconfig"; sourceTree = "<group>"; };
-		A80EF3321B2244E900BF40A6 /* LaunchPad with MSP430G2553.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad with MSP430G2553.xcconfig"; path = "Configurations/LaunchPad with MSP430G2553.xcconfig"; sourceTree = "<group>"; };
-		A80EF3331B2244E900BF40A6 /* LaunchPad with MSP430G2231.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad with MSP430G2231.xcconfig"; path = "Configurations/LaunchPad with MSP430G2231.xcconfig"; sourceTree = "<group>"; };
-		A80EF3341B2244E900BF40A6 /* LaunchPad with MSP430G2452.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad with MSP430G2452.xcconfig"; path = "Configurations/LaunchPad with MSP430G2452.xcconfig"; sourceTree = "<group>"; };
-		A80EF3351B2244E900BF40A6 /* LaunchPad with MSP430F5529.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad with MSP430F5529.xcconfig"; path = "Configurations/LaunchPad with MSP430F5529.xcconfig"; sourceTree = "<group>"; };
-		A80EF3361B2244E900BF40A6 /* LaunchPad with MSP430FR5969.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "LaunchPad with MSP430FR5969.xcconfig"; path = "Configurations/LaunchPad with MSP430FR5969.xcconfig"; sourceTree = "<group>"; };
 		A80EF3371B2244E900BF40A6 /* Little Robot Friends.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Little Robot Friends.xcconfig"; path = "Configurations/Little Robot Friends.xcconfig"; sourceTree = "<group>"; };
 		A80EF3381B2244E900BF40A6 /* Maple Flash revision 3+.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Maple Flash revision 3+.xcconfig"; path = "Configurations/Maple Flash revision 3+.xcconfig"; sourceTree = "<group>"; };
 		A80EF3391B2244E900BF40A6 /* Maple RAM revision 3+.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Maple RAM revision 3+.xcconfig"; path = "Configurations/Maple RAM revision 3+.xcconfig"; sourceTree = "<group>"; };
 		A80EF33A1B2244E900BF40A6 /* Microduino Core STM32 Flash.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Microduino Core STM32 Flash.xcconfig"; path = "Configurations/Microduino Core STM32 Flash.xcconfig"; sourceTree = "<group>"; };
 		A80EF33B1B2244E900BF40A6 /* Microduino Core STM32 RAM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Microduino Core STM32 RAM.xcconfig"; path = "Configurations/Microduino Core STM32 RAM.xcconfig"; sourceTree = "<group>"; };
-		A80EF33C1B2244E900BF40A6 /* Microduino Core USB with ATmega328U4-5V.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Microduino Core USB with ATmega328U4-5V.xcconfig"; path = "Configurations/Microduino Core USB with ATmega328U4-5V.xcconfig"; sourceTree = "<group>"; };
-		A80EF33D1B2244E900BF40A6 /* Microduino Core with ATmega328-5V.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Microduino Core with ATmega328-5V.xcconfig"; path = "Configurations/Microduino Core with ATmega328-5V.xcconfig"; sourceTree = "<group>"; };
-		A80EF33E1B2244E900BF40A6 /* Microduino Core+ with ATmega644-5V.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Microduino Core+ with ATmega644-5V.xcconfig"; path = "Configurations/Microduino Core+ with ATmega644-5V.xcconfig"; sourceTree = "<group>"; };
 		A80EF33F1B2244E900BF40A6 /* panStamp AVR.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "panStamp AVR.xcconfig"; path = "Configurations/panStamp AVR.xcconfig"; sourceTree = "<group>"; };
 		A80EF3401B2244E900BF40A6 /* panStamp NRG 1.0.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "panStamp NRG 1.0.xcconfig"; path = "Configurations/panStamp NRG 1.0.xcconfig"; sourceTree = "<group>"; };
 		A80EF3411B2244E900BF40A6 /* panStamp NRG 1.1.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "panStamp NRG 1.1.xcconfig"; path = "Configurations/panStamp NRG 1.1.xcconfig"; sourceTree = "<group>"; };
@@ -84,33 +60,6 @@
 		A80EF3471B2244E900BF40A6 /* Teensy 3.0.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Teensy 3.0.xcconfig"; path = "Configurations/Teensy 3.0.xcconfig"; sourceTree = "<group>"; };
 		A80EF3481B2244E900BF40A6 /* Teensy 3.1.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Teensy 3.1.xcconfig"; path = "Configurations/Teensy 3.1.xcconfig"; sourceTree = "<group>"; };
 		A80EF3491B2244E900BF40A6 /* Wiring S.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Wiring S.xcconfig"; path = "Configurations/Wiring S.xcconfig"; sourceTree = "<group>"; };
-		A80EF34B1B2244E900BF40A6 /* Arduino.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino.mk; path = Makefiles/Arduino.mk; sourceTree = "<group>"; };
-		A80EF34C1B2244E900BF40A6 /* Arduino1.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino1.mk; path = Makefiles/Arduino1.mk; sourceTree = "<group>"; };
-		A80EF34D1B2244E900BF40A6 /* Arduino15avr.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino15avr.mk; path = Makefiles/Arduino15avr.mk; sourceTree = "<group>"; };
-		A80EF34E1B2244E900BF40A6 /* Arduino15sam.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino15sam.mk; path = Makefiles/Arduino15sam.mk; sourceTree = "<group>"; };
-		A80EF34F1B2244E900BF40A6 /* Arduino17samd.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino17samd.mk; path = Makefiles/Arduino17samd.mk; sourceTree = "<group>"; };
-		A80EF3501B2244E900BF40A6 /* Arduino23.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Arduino23.mk; path = Makefiles/Arduino23.mk; sourceTree = "<group>"; };
-		A80EF3511B2244E900BF40A6 /* Digispark.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Digispark.mk; path = Makefiles/Digispark.mk; sourceTree = "<group>"; };
-		A80EF3521B2244E900BF40A6 /* EnergiaMSP430.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = EnergiaMSP430.mk; path = Makefiles/EnergiaMSP430.mk; sourceTree = "<group>"; };
-		A80EF3531B2244E900BF40A6 /* EnergiaMSP432.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = EnergiaMSP432.mk; path = Makefiles/EnergiaMSP432.mk; sourceTree = "<group>"; };
-		A80EF3541B2244E900BF40A6 /* EnergiaLM4F.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = EnergiaLM4F.mk; path = Makefiles/EnergiaLM4F.mk; sourceTree = "<group>"; };
-		A80EF3551B2244E900BF40A6 /* EnergiaCC3200.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = EnergiaCC3200.mk; path = Makefiles/EnergiaCC3200.mk; sourceTree = "<group>"; };
-		A80EF3561B2244E900BF40A6 /* Edison.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Edison.mk; path = Makefiles/Edison.mk; sourceTree = "<group>"; };
-		A80EF3571B2244E900BF40A6 /* Galileo.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Galileo.mk; path = Makefiles/Galileo.mk; sourceTree = "<group>"; };
-		A80EF3581B2244E900BF40A6 /* ESP8266.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = ESP8266.mk; path = Makefiles/ESP8266.mk; sourceTree = "<group>"; };
-		A80EF3591B2244E900BF40A6 /* MapleIDE.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = MapleIDE.mk; path = Makefiles/MapleIDE.mk; sourceTree = "<group>"; };
-		A80EF35A1B2244E900BF40A6 /* RedBearLab.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = RedBearLab.mk; path = Makefiles/RedBearLab.mk; sourceTree = "<group>"; };
-		A80EF35B1B2244E900BF40A6 /* Microduino.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Microduino.mk; path = Makefiles/Microduino.mk; sourceTree = "<group>"; };
-		A80EF35C1B2244E900BF40A6 /* Mpide.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Mpide.mk; path = Makefiles/Mpide.mk; sourceTree = "<group>"; };
-		A80EF35D1B2244E900BF40A6 /* panStampAVR.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = panStampAVR.mk; path = Makefiles/panStampAVR.mk; sourceTree = "<group>"; };
-		A80EF35E1B2244E900BF40A6 /* panStampNRG.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = panStampNRG.mk; path = Makefiles/panStampNRG.mk; sourceTree = "<group>"; };
-		A80EF35F1B2244E900BF40A6 /* Wiring.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Wiring.mk; path = Makefiles/Wiring.mk; sourceTree = "<group>"; };
-		A80EF3601B2244E900BF40A6 /* Step1.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Step1.mk; path = Makefiles/Step1.mk; sourceTree = "<group>"; };
-		A80EF3611B2244E900BF40A6 /* Step2.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Step2.mk; path = Makefiles/Step2.mk; sourceTree = "<group>"; };
-		A80EF3621B2244E900BF40A6 /* Teensy.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Teensy.mk; path = Makefiles/Teensy.mk; sourceTree = "<group>"; };
-		A80EF3631B2244E900BF40A6 /* Teensy2.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Teensy2.mk; path = Makefiles/Teensy2.mk; sourceTree = "<group>"; };
-		A80EF3641B2244E900BF40A6 /* Teensy3.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Teensy3.mk; path = Makefiles/Teensy3.mk; sourceTree = "<group>"; };
-		A80EF3651B2244E900BF40A6 /* Avrdude.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; name = Avrdude.mk; path = Makefiles/Avrdude.mk; sourceTree = "<group>"; };
 		A80EF3691B2244E900BF40A6 /* reset_maple.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = reset_maple.py; path = Utilities/reset_maple.py; sourceTree = "<group>"; };
 		A80EF36A1B2244E900BF40A6 /* reset_1200.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = reset_1200.py; path = Utilities/reset_1200.py; sourceTree = "<group>"; };
 		A80EF36C1B2244E900BF40A6 /* embedXcode_check */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = embedXcode_check; path = Utilities/embedXcode_check; sourceTree = "<group>"; };
@@ -127,6 +76,40 @@
 		A8CE2F311BB61A84001E71F0 /* RN52.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52.cpp; sourceTree = "<group>"; };
 		A8DB13771C612FC500DA6CF7 /* SoftwareSerial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoftwareSerial.cpp; sourceTree = "<group>"; };
 		A8DB13781C612FC500DA6CF7 /* SoftwareSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoftwareSerial.h; sourceTree = "<group>"; };
+		A8E261CF1C615DAB009BEB39 /* About.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = About.mk; path = Makefiles/About.mk; sourceTree = "<group>"; };
+		A8E261D01C615DAB009BEB39 /* AdafruitAVR_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AdafruitAVR_165.mk; path = Makefiles/AdafruitAVR_165.mk; sourceTree = "<group>"; };
+		A8E261D11C615DAB009BEB39 /* ArduinoAVR_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoAVR_165.mk; path = Makefiles/ArduinoAVR_165.mk; sourceTree = "<group>"; };
+		A8E261D21C615DAB009BEB39 /* ArduinoAVR_166.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoAVR_166.mk; path = Makefiles/ArduinoAVR_166.mk; sourceTree = "<group>"; };
+		A8E261D31C615DAB009BEB39 /* ArduinoAVR_177.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoAVR_177.mk; path = Makefiles/ArduinoAVR_177.mk; sourceTree = "<group>"; };
+		A8E261D41C615DAB009BEB39 /* ArduinoSAM_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoSAM_165.mk; path = Makefiles/ArduinoSAM_165.mk; sourceTree = "<group>"; };
+		A8E261D51C615DAB009BEB39 /* ArduinoSAM_177.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoSAM_177.mk; path = Makefiles/ArduinoSAM_177.mk; sourceTree = "<group>"; };
+		A8E261D61C615DAB009BEB39 /* ArduinoSAMD_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoSAMD_165.mk; path = Makefiles/ArduinoSAMD_165.mk; sourceTree = "<group>"; };
+		A8E261D71C615DAB009BEB39 /* ArduinoSAMD_177.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArduinoSAMD_177.mk; path = Makefiles/ArduinoSAMD_177.mk; sourceTree = "<group>"; };
+		A8E261D81C615DAB009BEB39 /* Avrdude.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Avrdude.mk; path = Makefiles/Avrdude.mk; sourceTree = "<group>"; };
+		A8E261D91C615DAB009BEB39 /* chipKIT_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chipKIT_165.mk; path = Makefiles/chipKIT_165.mk; sourceTree = "<group>"; };
+		A8E261DA1C615DAB009BEB39 /* DigisparkAVR_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DigisparkAVR_165.mk; path = Makefiles/DigisparkAVR_165.mk; sourceTree = "<group>"; };
+		A8E261DB1C615DAB009BEB39 /* Edison_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Edison_165.mk; path = Makefiles/Edison_165.mk; sourceTree = "<group>"; };
+		A8E261DC1C615DAB009BEB39 /* EnergiaCC3200.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EnergiaCC3200.mk; path = Makefiles/EnergiaCC3200.mk; sourceTree = "<group>"; };
+		A8E261DD1C615DAB009BEB39 /* EnergiaCC3200EMT.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EnergiaCC3200EMT.mk; path = Makefiles/EnergiaCC3200EMT.mk; sourceTree = "<group>"; };
+		A8E261DE1C615DAB009BEB39 /* EnergiaLM4F.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EnergiaLM4F.mk; path = Makefiles/EnergiaLM4F.mk; sourceTree = "<group>"; };
+		A8E261DF1C615DAB009BEB39 /* EnergiaMSP430.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EnergiaMSP430.mk; path = Makefiles/EnergiaMSP430.mk; sourceTree = "<group>"; };
+		A8E261E01C615DAB009BEB39 /* EnergiaMSP432EMT.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EnergiaMSP432EMT.mk; path = Makefiles/EnergiaMSP432EMT.mk; sourceTree = "<group>"; };
+		A8E261E11C615DAB009BEB39 /* ESP8266_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ESP8266_165.mk; path = Makefiles/ESP8266_165.mk; sourceTree = "<group>"; };
+		A8E261E21C615DAB009BEB39 /* Galileo_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Galileo_165.mk; path = Makefiles/Galileo_165.mk; sourceTree = "<group>"; };
+		A8E261E31C615DAB009BEB39 /* LittleRobotFriends_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LittleRobotFriends_165.mk; path = Makefiles/LittleRobotFriends_165.mk; sourceTree = "<group>"; };
+		A8E261E41C615DAB009BEB39 /* MapleIDE.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MapleIDE.mk; path = Makefiles/MapleIDE.mk; sourceTree = "<group>"; };
+		A8E261E51C615DAB009BEB39 /* Microduino_16.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Microduino_16.mk; path = Makefiles/Microduino_16.mk; sourceTree = "<group>"; };
+		A8E261E61C615DAB009BEB39 /* panStampAVR_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = panStampAVR_165.mk; path = Makefiles/panStampAVR_165.mk; sourceTree = "<group>"; };
+		A8E261E71C615DAB009BEB39 /* panStampNRG_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = panStampNRG_165.mk; path = Makefiles/panStampNRG_165.mk; sourceTree = "<group>"; };
+		A8E261E81C615DAB009BEB39 /* RedBearLabAVR_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = RedBearLabAVR_165.mk; path = Makefiles/RedBearLabAVR_165.mk; sourceTree = "<group>"; };
+		A8E261E91C615DAB009BEB39 /* RedBearLabNRF_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = RedBearLabNRF_165.mk; path = Makefiles/RedBearLabNRF_165.mk; sourceTree = "<group>"; };
+		A8E261EA1C615DAB009BEB39 /* Step1.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Step1.mk; path = Makefiles/Step1.mk; sourceTree = "<group>"; };
+		A8E261EB1C615DAB009BEB39 /* Step2.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Step2.mk; path = Makefiles/Step2.mk; sourceTree = "<group>"; };
+		A8E261EC1C615DAB009BEB39 /* Teensy.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Teensy.mk; path = Makefiles/Teensy.mk; sourceTree = "<group>"; };
+		A8E261ED1C615DAB009BEB39 /* Teensy2.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Teensy2.mk; path = Makefiles/Teensy2.mk; sourceTree = "<group>"; };
+		A8E261EE1C615DAB009BEB39 /* Teensy3.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Teensy3.mk; path = Makefiles/Teensy3.mk; sourceTree = "<group>"; };
+		A8E261EF1C615DAB009BEB39 /* UDOONeo_165.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = UDOONeo_165.mk; path = Makefiles/UDOONeo_165.mk; sourceTree = "<group>"; };
+		A8E261F01C615DAB009BEB39 /* Wiring.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Wiring.mk; path = Makefiles/Wiring.mk; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -185,23 +168,14 @@
 				A80EF30A1B2244E900BF40A6 /* Adafruit Pro Trinket 5V-16MHz.xcconfig */,
 				A80EF30B1B2244E900BF40A6 /* Adafruit Trinket 3V-8MHz.xcconfig */,
 				A80EF30C1B2244E900BF40A6 /* Adafruit Trinket 5V-16MHz.xcconfig */,
-				A80EF30D1B2244E900BF40A6 /* Arduino Due.xcconfig */,
 				A80EF30E1B2244E900BF40A6 /* Arduino Duemilanove.xcconfig */,
 				A80EF30F1B2244E900BF40A6 /* Arduino Leonardo.xcconfig */,
 				A80EF3101B2244E900BF40A6 /* Arduino Mega 2560.xcconfig */,
 				A80EF3111B2244E900BF40A6 /* Arduino Micro.xcconfig */,
-				A80EF3121B2244E900BF40A6 /* Arduino Pro with ATmega328-3.3V.xcconfig */,
-				A80EF3131B2244E900BF40A6 /* Arduino Pro with ATmega328-5V.xcconfig */,
-				A80EF3141B2244E900BF40A6 /* Arduino Mini with ATmega168.xcconfig */,
-				A80EF3151B2244E900BF40A6 /* Arduino Mini with ATmega328.xcconfig */,
-				A80EF3161B2244E900BF40A6 /* Arduino Nano with ATmega168.xcconfig */,
-				A80EF3171B2244E900BF40A6 /* Arduino Nano with ATmega328.xcconfig */,
 				A80EF3181B2244E900BF40A6 /* Arduino Robot Control.xcconfig */,
 				A80EF3191B2244E900BF40A6 /* Arduino Robot Motor.xcconfig */,
 				A80EF31A1B2244E900BF40A6 /* Arduino Uno.xcconfig */,
 				A80EF31B1B2244E900BF40A6 /* Arduino Yun.xcconfig */,
-				A80EF31C1B2244E900BF40A6 /* Arduino Zero Pro (Native USB Port).xcconfig */,
-				A80EF31D1B2244E900BF40A6 /* Arduino Zero Pro (Programming Port).xcconfig */,
 				A80EF31E1B2244E900BF40A6 /* chipKIT DP32.xcconfig */,
 				A80EF31F1B2244E900BF40A6 /* chipKIT Max32.xcconfig */,
 				A80EF3201B2244E900BF40A6 /* chipKIT uC32.xcconfig */,
@@ -212,29 +186,14 @@
 				A80EF3251B2244E900BF40A6 /* DFRobot Wido.xcconfig */,
 				A80EF3261B2244E900BF40A6 /* Digispark Tiny Core.xcconfig */,
 				A80EF3271B2244E900BF40A6 /* ESP8266.xcconfig */,
-				A80EF3281B2244E900BF40A6 /* NodeMCU Board.xcconfig */,
-				A80EF3291B2244E900BF40A6 /* Experimeter Board with MSP430FR5739.xcconfig */,
 				A80EF32A1B2244E900BF40A6 /* Intel Edison.xcconfig */,
 				A80EF32B1B2244E900BF40A6 /* Intel Galileo.xcconfig */,
 				A80EF32C1B2244E900BF40A6 /* Intel Galileo Gen2.xcconfig */,
-				A80EF32D1B2244E900BF40A6 /* LaunchPad MSP432.xcconfig */,
-				A80EF32E1B2244E900BF40A6 /* LaunchPad WiFi with CC3200.xcconfig */,
-				A80EF32F1B2244E900BF40A6 /* LaunchPad Stellaris with LM4F120.xcconfig */,
-				A80EF3301B2244E900BF40A6 /* LaunchPad Tiva C with TM4C123.xcconfig */,
-				A80EF3311B2244E900BF40A6 /* LaunchPad Tiva C with TM4C129.xcconfig */,
-				A80EF3321B2244E900BF40A6 /* LaunchPad with MSP430G2553.xcconfig */,
-				A80EF3331B2244E900BF40A6 /* LaunchPad with MSP430G2231.xcconfig */,
-				A80EF3341B2244E900BF40A6 /* LaunchPad with MSP430G2452.xcconfig */,
-				A80EF3351B2244E900BF40A6 /* LaunchPad with MSP430F5529.xcconfig */,
-				A80EF3361B2244E900BF40A6 /* LaunchPad with MSP430FR5969.xcconfig */,
 				A80EF3371B2244E900BF40A6 /* Little Robot Friends.xcconfig */,
 				A80EF3381B2244E900BF40A6 /* Maple Flash revision 3+.xcconfig */,
 				A80EF3391B2244E900BF40A6 /* Maple RAM revision 3+.xcconfig */,
 				A80EF33A1B2244E900BF40A6 /* Microduino Core STM32 Flash.xcconfig */,
 				A80EF33B1B2244E900BF40A6 /* Microduino Core STM32 RAM.xcconfig */,
-				A80EF33C1B2244E900BF40A6 /* Microduino Core USB with ATmega328U4-5V.xcconfig */,
-				A80EF33D1B2244E900BF40A6 /* Microduino Core with ATmega328-5V.xcconfig */,
-				A80EF33E1B2244E900BF40A6 /* Microduino Core+ with ATmega644-5V.xcconfig */,
 				A80EF33F1B2244E900BF40A6 /* panStamp AVR.xcconfig */,
 				A80EF3401B2244E900BF40A6 /* panStamp NRG 1.0.xcconfig */,
 				A80EF3411B2244E900BF40A6 /* panStamp NRG 1.1.xcconfig */,
@@ -253,33 +212,40 @@
 		A80EF34A1B2244E900BF40A6 /* Makefiles */ = {
 			isa = PBXGroup;
 			children = (
-				A80EF34B1B2244E900BF40A6 /* Arduino.mk */,
-				A80EF34C1B2244E900BF40A6 /* Arduino1.mk */,
-				A80EF34D1B2244E900BF40A6 /* Arduino15avr.mk */,
-				A80EF34E1B2244E900BF40A6 /* Arduino15sam.mk */,
-				A80EF34F1B2244E900BF40A6 /* Arduino17samd.mk */,
-				A80EF3501B2244E900BF40A6 /* Arduino23.mk */,
-				A80EF3511B2244E900BF40A6 /* Digispark.mk */,
-				A80EF3521B2244E900BF40A6 /* EnergiaMSP430.mk */,
-				A80EF3531B2244E900BF40A6 /* EnergiaMSP432.mk */,
-				A80EF3541B2244E900BF40A6 /* EnergiaLM4F.mk */,
-				A80EF3551B2244E900BF40A6 /* EnergiaCC3200.mk */,
-				A80EF3561B2244E900BF40A6 /* Edison.mk */,
-				A80EF3571B2244E900BF40A6 /* Galileo.mk */,
-				A80EF3581B2244E900BF40A6 /* ESP8266.mk */,
-				A80EF3591B2244E900BF40A6 /* MapleIDE.mk */,
-				A80EF35A1B2244E900BF40A6 /* RedBearLab.mk */,
-				A80EF35B1B2244E900BF40A6 /* Microduino.mk */,
-				A80EF35C1B2244E900BF40A6 /* Mpide.mk */,
-				A80EF35D1B2244E900BF40A6 /* panStampAVR.mk */,
-				A80EF35E1B2244E900BF40A6 /* panStampNRG.mk */,
-				A80EF35F1B2244E900BF40A6 /* Wiring.mk */,
-				A80EF3601B2244E900BF40A6 /* Step1.mk */,
-				A80EF3611B2244E900BF40A6 /* Step2.mk */,
-				A80EF3621B2244E900BF40A6 /* Teensy.mk */,
-				A80EF3631B2244E900BF40A6 /* Teensy2.mk */,
-				A80EF3641B2244E900BF40A6 /* Teensy3.mk */,
-				A80EF3651B2244E900BF40A6 /* Avrdude.mk */,
+				A8E261CF1C615DAB009BEB39 /* About.mk */,
+				A8E261D01C615DAB009BEB39 /* AdafruitAVR_165.mk */,
+				A8E261D11C615DAB009BEB39 /* ArduinoAVR_165.mk */,
+				A8E261D21C615DAB009BEB39 /* ArduinoAVR_166.mk */,
+				A8E261D31C615DAB009BEB39 /* ArduinoAVR_177.mk */,
+				A8E261D41C615DAB009BEB39 /* ArduinoSAM_165.mk */,
+				A8E261D51C615DAB009BEB39 /* ArduinoSAM_177.mk */,
+				A8E261D61C615DAB009BEB39 /* ArduinoSAMD_165.mk */,
+				A8E261D71C615DAB009BEB39 /* ArduinoSAMD_177.mk */,
+				A8E261D81C615DAB009BEB39 /* Avrdude.mk */,
+				A8E261D91C615DAB009BEB39 /* chipKIT_165.mk */,
+				A8E261DA1C615DAB009BEB39 /* DigisparkAVR_165.mk */,
+				A8E261DB1C615DAB009BEB39 /* Edison_165.mk */,
+				A8E261DC1C615DAB009BEB39 /* EnergiaCC3200.mk */,
+				A8E261DD1C615DAB009BEB39 /* EnergiaCC3200EMT.mk */,
+				A8E261DE1C615DAB009BEB39 /* EnergiaLM4F.mk */,
+				A8E261DF1C615DAB009BEB39 /* EnergiaMSP430.mk */,
+				A8E261E01C615DAB009BEB39 /* EnergiaMSP432EMT.mk */,
+				A8E261E11C615DAB009BEB39 /* ESP8266_165.mk */,
+				A8E261E21C615DAB009BEB39 /* Galileo_165.mk */,
+				A8E261E31C615DAB009BEB39 /* LittleRobotFriends_165.mk */,
+				A8E261E41C615DAB009BEB39 /* MapleIDE.mk */,
+				A8E261E51C615DAB009BEB39 /* Microduino_16.mk */,
+				A8E261E61C615DAB009BEB39 /* panStampAVR_165.mk */,
+				A8E261E71C615DAB009BEB39 /* panStampNRG_165.mk */,
+				A8E261E81C615DAB009BEB39 /* RedBearLabAVR_165.mk */,
+				A8E261E91C615DAB009BEB39 /* RedBearLabNRF_165.mk */,
+				A8E261EA1C615DAB009BEB39 /* Step1.mk */,
+				A8E261EB1C615DAB009BEB39 /* Step2.mk */,
+				A8E261EC1C615DAB009BEB39 /* Teensy.mk */,
+				A8E261ED1C615DAB009BEB39 /* Teensy2.mk */,
+				A8E261EE1C615DAB009BEB39 /* Teensy3.mk */,
+				A8E261EF1C615DAB009BEB39 /* UDOONeo_165.mk */,
+				A8E261F01C615DAB009BEB39 /* Wiring.mk */,
 			);
 			name = Makefiles;
 			sourceTree = "<group>";
