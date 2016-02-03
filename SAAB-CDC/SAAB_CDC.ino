@@ -20,9 +20,12 @@
 #include "Arduino.h"
 #include "CDC.h"
 #include "RN52.h"
+#include "Timer.h"
 
 CDCClass CDC;
 RN52Class RN52;
+Timer time;
+
 
 // Setup
 void setup() {
@@ -37,4 +40,5 @@ void setup() {
 void loop() {
     CDC.handle_cdc_status();
     RN52.update();
+    time.update();
 }

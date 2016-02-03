@@ -3,13 +3,14 @@
 #include "CDC.h"
 #include "CAN.h"
 #include "RN52.h"
+#include "Timer.h"
 
 /**
  * Various constants used for identifying the CDC
  */
 
 #define CDC_APL_ADR              0x12
-#define CDC_SID_FUNCTION_ID      30 // Decimal
+#define CDC_SID_FUNCTION_ID      30   // Decimal
 
 /**
  * Other useful stuff
@@ -18,8 +19,8 @@
 #define MODULE_NAME              "BT TEST"
 #define LAST_EVENT_IN_TIMEOUT    2000 // Milliseconds
 #define DISPLAY_NAME_TIMEOUT     5000 // Milliseconds
-#define NODE_STATUS_TX_MSG_SIZE  4  // Defines how many messages do we need to reply with to '6A1'
-#define DEBUGMODE                0 // 1 = Output debug to serial port; 0 = No output
+#define NODE_STATUS_TX_MSG_SIZE  4    // Decimal. Defines how many messages do we need to reply with to '6A1'
+#define DEBUGMODE                0    // 1 = Output debug to serial port; 0 = No output
 
 /**
  * TX frames:
@@ -41,33 +42,47 @@
 #define STEERING_WHEEL_BUTTONS   0x290
 
 /**
+ * Timer definitions:
+ */
+
+#define CDC_STATUS_TX_TIME       850   // The CDC status frame must be sent with a 1000 ms periodicity.
+#define NODE_STATUS_TX_TIME      100   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
+
+/**
  * Variables:
  */
 
-unsigned long cdc_status_last_send_time = 0; // Timer used to ensure we send the CDC status frame in a timely manner.
-unsigned long display_request_last_send_time = 0; // Timer used to ensure we send the display request frame in a timely manner.
+extern Timer time;
+void send_cdc_node_status(void*);
+void send_cdc_active_status(void*);
+void send_cdc_powerdown_status(void*);
+void send_cdc_status_on_time(void*);
+void *current_cdc_cmd = NULL;
+unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner.
+unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner.
 unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner.
-unsigned long stop_displaying_name_at = 0; // Time at which we should stop displaying our name in the SID.
-unsigned long last_icoming_event_time = 0;
-boolean cdc_active = false; // True while our module, the simulated CDC, is active.
-boolean display_request_granted = true; // True while we are granted the 2nd row of the SID.
-boolean display_wanted = false; // True while we actually want the display.
-boolean cdc_status_resend_needed = false; // True if something has triggered the need to send the CDC status frame as an event.
-boolean cdc_status_resend_due_to_cdc_command = false; // True if the need for sending the CDC status frame was triggered by a CDC command.
-int incoming_event_counter = 0;
-int ninefive_poweron_cmd[NODE_STATUS_TX_MSG_SIZE][9] = {
+unsigned long stop_displaying_name_at = 0;              // Time at which we should stop displaying our name in the SID.
+unsigned long last_icoming_event_time = 0;              // Timer used for determening if we should treat current event as, for example, a long press of a button.
+boolean cdc_active = false;                             // True while our module, the simulated CDC, is active.
+boolean display_request_granted = true;                 // True while we are granted the 2nd row of the SID.
+boolean display_wanted = false;                         // True while we actually want the display.
+boolean cdc_status_resend_needed = false;               // True if something has triggered the need to send the CDC status frame as an event.
+boolean cdc_status_resend_due_to_cdc_command = false;   // True if the need for sending the CDC status frame was triggered by a CDC command.
+int incoming_event_counter = 0;                         // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button.
+int current_timer_event = -1;
+int cdc_poweron_cmd[NODE_STATUS_TX_MSG_SIZE][9] = {
     {0x32,0x00,0x00,0x03,0x01,0x02,0x00,0x00,-1},
     {0x42,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1}
 };
-int ninefive_active_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+int cdc_active_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1},
     {0x42,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
 };
-int ninefive_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+int cdc_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x32,0x00,0x00,0x19,0x01,0x00,0x00,0x00,-1},
     {0x42,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
@@ -118,7 +133,7 @@ void CDCClass::open_can_bus() {
     #if (DEBUGMODE==1)
         Serial.println("DEBUG: Initializing CAN bus @ 47.619kbps");
     #endif
-    CAN.begin(47);  // SAAB I-Bus is 47.619kbps
+    CAN.begin(47);                // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
 }
@@ -133,25 +148,21 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-            /*
+                // Here be dragons... This part of the code is responsible for causing lots of head ache
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
-                        for (int i = 0; i < NODE_STATUS_TX_MSG_SIZE; i++) {
-                            send_can_frame(NODE_STATUS_TX, ninefive_poweron_cmd[i]);
-                        }
+                        current_cdc_cmd = cdc_poweron_cmd;
+                        send_cdc_node_status(NULL);
                         break;
                     case (0x2):
-                        for (int i = 0; i < NODE_STATUS_TX_MSG_SIZE; i++) {
-                        send_can_frame(NODE_STATUS_TX, ninefive_active_cmd[i]);
-                        }
+                        current_cdc_cmd = cdc_active_cmd;
+                        send_cdc_node_status(NULL);
                         break;
                     case (0x8):
-                        for (int i = 0; i < NODE_STATUS_TX_MSG_SIZE; i++) {
-                        send_can_frame(NODE_STATUS_TX, ninefive_powerdown_cmd[i]);
-                        }
+                        current_cdc_cmd = cdc_powerdown_cmd;
+                        send_cdc_node_status(NULL);
                         break;
                 }
-                */
                 break;
             case IHU_BUTTONS:
                 handle_ihu_buttons();
@@ -333,11 +344,12 @@ void CDCClass::handle_cdc_status() {
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity.
-    
-    if (millis() - cdc_status_last_send_time > 850) {
+    /*if (millis() - cdc_status_last_send_time > 850) {
         send_cdc_status(false, false);
         
     }
+     */
+    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
 }
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
@@ -382,6 +394,32 @@ void CDCClass::send_can_frame(int message_id, int *msg) {
         i++;
     }
     CAN.send(&CAN_TxMsg);
+}
+
+/**
+ * Sends a reply of four messages to '6A1' requests. Currently we look at the bottom half of 3rd byte of '6A1'  'current_cdc_command' should be.
+ */
+
+void send_cdc_node_status(void *p) {
+    int i = (int)p;
+    
+    if (current_timer_event != -1) {
+        time.stop(current_timer_event);
+    }
+    
+    CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
+    if (i<3) {
+        current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i+1));
+    }
+    else current_timer_event = -1;
+}
+
+/**
+ * Sends CDC status very CDC_STATUS_TX_TIME interval
+ */
+
+void send_cdc_status_on_time(void*) {
+    CDC.send_cdc_status(false, false);
 }
 
 /**
