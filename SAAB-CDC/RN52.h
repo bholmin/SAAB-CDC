@@ -2,6 +2,7 @@
 #ifndef RN52_H
 #define RN52_H
 #define SERIAL_BUFFER_SIZE 10
+#define CMD_SEND_INTERVAL 500 // Interval in milliseconds. Used for sending various commands to RN52 after conenction to it is established.
 #define DEBUGMODE 0 // 1 = Output debug to serial port; 0 = No output
 
 // RN52 action command definitions
@@ -37,8 +38,7 @@ public:
     void uart_begin();
     void write(const char * in_message);
     bool read();
-    void volup();
-    void update();
+        void update();
     void start_connecting();
     void start_disconnecting();
     RN52Class() {
@@ -52,6 +52,9 @@ public:
         disconnection_attempts_remaining = 0;
     }
 };
+
+void turn_volume_to_max(void*);
+void start_audio_playback(void*);
 
 //----------------------------------------------------------------------------
 // VARIABLES

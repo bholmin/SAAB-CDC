@@ -46,7 +46,7 @@
  */
 
 #define CDC_STATUS_TX_TIME       850   // The CDC status frame must be sent with a 1000 ms periodicity.
-#define NODE_STATUS_TX_TIME      100   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
+#define NODE_STATUS_TX_TIME      140   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
 
 /**
  * Variables:
@@ -148,7 +148,8 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                // Here be dragons... This part of the code is responsible for causing lots of head ache
+                // Here be dragons... This part of the code is responsible for causing lots of head ache.
+                // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
                         current_cdc_cmd = cdc_poweron_cmd;
@@ -343,12 +344,13 @@ void CDCClass::handle_cdc_status() {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
     
-    // The CDC status frame must be sent with a 1000 ms periodicity.
     /*if (millis() - cdc_status_last_send_time > 850) {
         send_cdc_status(false, false);
         
     }
      */
+    
+    // The CDC status frame must be sent with a 1000 ms periodicity.
     time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
 }
 
@@ -372,17 +374,6 @@ void CDCClass::send_display_request() {
 }
 
 /**
- * Serial.write of an incoming message
- */
-
-void CDCClass::send_serial_message(int *msg) {
-    while (*msg != -1) {
-        Serial.write(byte(*msg));
-        msg++;
-    }
-}
-
-/**
  * Formats and puts a frame on CAN bus
  */
 
@@ -397,7 +388,7 @@ void CDCClass::send_can_frame(int message_id, int *msg) {
 }
 
 /**
- * Sends a reply of four messages to '6A1' requests. Currently we look at the bottom half of 3rd byte of '6A1'  'current_cdc_command' should be.
+ * Sends a reply of four messages to '6A1' requests
  */
 
 void send_cdc_node_status(void *p) {
@@ -408,8 +399,8 @@ void send_cdc_node_status(void *p) {
     }
     
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
-    if (i<3) {
-        current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i+1));
+    if (i < 3) {
+        current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
     }
     else current_timer_event = -1;
 }
