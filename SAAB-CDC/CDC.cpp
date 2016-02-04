@@ -344,12 +344,6 @@ void CDCClass::handle_cdc_status() {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
     
-    /*if (millis() - cdc_status_last_send_time > 850) {
-        send_cdc_status(false, false);
-        
-    }
-     */
-    
     // The CDC status frame must be sent with a 1000 ms periodicity.
     time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
 }
