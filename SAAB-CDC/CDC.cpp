@@ -45,8 +45,8 @@
  * Timer definitions:
  */
 
-#define CDC_STATUS_TX_TIME       1000   // The CDC status frame must be sent with a 1000 ms periodicity.
-#define NODE_STATUS_TX_TIME      140   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
+#define CDC_STATUS_TX_TIME       1000   // The CDC status frame must be sent with a 1000 ms periodicity
+#define NODE_STATUS_TX_TIME      140    // Replies to '6A1' request need to be sent with no more than 140 ms interval
 
 /**
  * Variables:
