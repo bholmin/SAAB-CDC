@@ -2,6 +2,9 @@
 #include "Arduino.h"
 #include "RN52.h"
 #include "SoftwareSerial.h"
+#include "Timer.h"
+
+
 
 // Atmel 328 pin definitions
 
@@ -9,6 +12,8 @@ const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of 
 const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode.
 const int UART_TX_PIN = 5;      // UART Tx.
 const int UART_RX_PIN = 6;      // UART Rx.
+
+extern Timer time;
 
 SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 
@@ -56,16 +61,20 @@ bool RN52Class::read() {
     return false;
 }
 
-void RN52Class::volup() {
-    volume_up_times_needed = 4;
-}
-
 void RN52Class::start_connecting() {
     connection_attempts_remaining = 2;
 }
 
 void RN52Class::start_disconnecting() {
     disconnection_attempts_remaining = 2;
+}
+
+void turn_volume_to_max(void*) {
+    RN52.write(MAXVOLUME);
+}
+
+void start_audio_playback(void*) {
+    RN52.write(PLAYPAUSE);
 }
 
 void RN52Class::update() {
@@ -101,17 +110,11 @@ void RN52Class::update() {
                 connection_attempts_remaining--;
             }
             if (connection_attempts_remaining == 0) {
-                write(MAXVOLUME);
-                // volup();
+                time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
+                time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
             }
         }
-        
-        /*
-        else if ((volume_up_times_needed > 0) && status_connected) {
-            write(VOLUP);
-            volume_up_times_needed--;
-        }
-        */
+
         else if (digitalRead(BT_STATUS_PIN) == LOW) {
             write(GETSTATUS);
             waiting_for_status = true;
