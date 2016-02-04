@@ -338,9 +338,9 @@ void CDCClass::handle_cdc_status() {
     handle_rx_frame();
     
     // If the CDC status frame needs to be sent as an event, do so now
-    // (note though, that we may not send the frame more often than once every 50 ms)
+    // (note though, that we may not send the frame more often than once every 100 ms)
     
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 100)) {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
     
