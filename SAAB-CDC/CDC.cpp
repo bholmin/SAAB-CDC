@@ -150,6 +150,7 @@ void CDCClass::handle_rx_frame() {
             case NODE_STATUS_RX:
                 // Here be dragons... This part of the code is responsible for causing lots of head ache.
                 // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
+                /*
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
                         current_cdc_cmd = cdc_poweron_cmd;
@@ -164,6 +165,7 @@ void CDCClass::handle_rx_frame() {
                         send_cdc_node_status(NULL);
                         break;
                 }
+                 */
                 break;
             case IHU_BUTTONS:
                 handle_ihu_buttons();
@@ -345,7 +347,11 @@ void CDCClass::handle_cdc_status() {
     }
     
     // The CDC status frame must be sent with a 1000 ms periodicity.
-    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
+    // time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
+    if (millis() - cdc_status_last_send_time > CDC_STATUS_TX_TIME) {
+        send_cdc_status(false, false);
+        
+    }
 }
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
