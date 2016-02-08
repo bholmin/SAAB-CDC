@@ -1,7 +1,8 @@
 
 #ifndef CDC_H
 #define CDC_H
-#define DEBUGMODE 0 // 1 = Output debug to serial port; 0 = No output
+#define DEBUGMODE                0     // 1 = Output debug to serial port; 0 = No output
+#define CDC_STATUS_TX_TIME       1000  // The CDC status frame must be sent with a 1000 ms periodicity.
 
 //----------------------------------------------------------------------------
 // CLASS
@@ -25,6 +26,7 @@ public:
 };
 
 void send_node_status();
+void send_cdc_status_on_time(void*);
 
 //----------------------------------------------------------------------------
 // VARIABLES

@@ -45,7 +45,6 @@
  * Timer definitions:
  */
 
-#define CDC_STATUS_TX_TIME       850   // The CDC status frame must be sent with a 1000 ms periodicity.
 #define NODE_STATUS_TX_TIME      140   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
 
 /**
@@ -56,7 +55,6 @@ extern Timer time;
 void send_cdc_node_status(void*);
 void send_cdc_active_status(void*);
 void send_cdc_powerdown_status(void*);
-void send_cdc_status_on_time(void*);
 void *current_cdc_cmd = NULL;
 unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner.
 unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner.
@@ -340,18 +338,9 @@ void CDCClass::handle_cdc_status() {
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
     
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 50)) {
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 100)) {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
-    
-    /*if (millis() - cdc_status_last_send_time > 850) {
-        send_cdc_status(false, false);
-        
-    }
-     */
-    
-    // The CDC status frame must be sent with a 1000 ms periodicity.
-    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
 }
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
@@ -401,7 +390,9 @@ void send_cdc_node_status(void *p) {
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
     if (i < 3) {
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
+        Serial.println(millis());
     }
+    
     else current_timer_event = -1;
 }
 
