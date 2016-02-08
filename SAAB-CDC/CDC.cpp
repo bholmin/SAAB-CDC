@@ -45,8 +45,8 @@
  * Timer definitions:
  */
 
-#define CDC_STATUS_TX_TIME       1000   // The CDC status frame must be sent with a 1000 ms periodicity
 #define NODE_STATUS_TX_TIME      140    // Replies to '6A1' request need to be sent with no more than 140 ms interval
+#define CDC_STATUS_RE_TX_TIME    100    // If the CDC status frame needs to be sent as an event, do so now within the given interval
 
 /**
  * Variables:
@@ -56,7 +56,6 @@ extern Timer time;
 void send_cdc_node_status(void*);
 void send_cdc_active_status(void*);
 void send_cdc_powerdown_status(void*);
-void send_cdc_status_on_time(void*);
 void *current_cdc_cmd = NULL;
 unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner.
 unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner.
@@ -148,22 +147,18 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                Serial.println("Seeing '6A1' on the bus. Need to reply");
                 // Here be dragons... This part of the code is responsible for causing lots of head ache.
                 // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
-                        Serial.println("'6A1' tells us to 'Power-UP'");
                         current_cdc_cmd = cdc_poweron_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x2):
-                        Serial.println("'6A1' asks us if we are 'Active'");
                         current_cdc_cmd = cdc_active_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x8):
-                        Serial.println("'6A1' tells us to 'Power-DOWN'");
                         current_cdc_cmd = cdc_powerdown_cmd;
                         send_cdc_node_status(NULL);
                         break;
@@ -171,11 +166,9 @@ void CDCClass::handle_rx_frame() {
                 break;
             case IHU_BUTTONS:
                 handle_ihu_buttons();
-                Serial.println("Seeing 'IHU buttons frame' on the bus.");
                 break;
             case STEERING_WHEEL_BUTTONS:
                 handle_steering_wheel_buttons();
-                Serial.println("Seeing 'Steering wheel buttons frame' on the bus.");
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
@@ -343,20 +336,10 @@ void CDCClass::handle_cdc_status() {
     
     handle_rx_frame();
     
-    // If the CDC status frame needs to be sent as an event, do so now
-    // (note though, that we may not send the frame more often than once every 100 ms)
-    
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 100)) {
+    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > CDC_STATUS_RE_TX_TIME)) {
         send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
     }
-    
-    // The CDC status frame must be sent with a 1000 ms periodicity.
-    // time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
-    if (millis() - cdc_status_last_send_time > CDC_STATUS_TX_TIME) {
-        send_cdc_status(false, false);
-        Serial.println("Sending CDC status with 1000ms interval");
-        
-    }
+
 }
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
@@ -405,7 +388,6 @@ void send_cdc_node_status(void *p) {
     
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
     if (i < 3) {
-        Serial.println("Sending reply to 6A1 ");
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
     }
     else current_timer_event = -1;

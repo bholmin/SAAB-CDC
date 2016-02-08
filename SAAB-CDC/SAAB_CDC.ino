@@ -32,6 +32,7 @@ void setup() {
     RN52.initialize_atmel_pins();
     RN52.uart_begin();
     CDC.open_can_bus();
+    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
     Serial.begin(115200);
     Serial.println("SAAB CDC v2.0 - February 2016");
 }
