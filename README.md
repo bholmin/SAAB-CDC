@@ -1,4 +1,4 @@
-# SAAB-CDC
+# BlueSaab (SAAB-CDC)
 A CD changer emulator for older SAAB cars.
 http://bluesaab.blogspot.com
 
