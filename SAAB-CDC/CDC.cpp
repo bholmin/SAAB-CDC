@@ -44,7 +44,7 @@ int cdc_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x52,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1}
 };
-int sound_cmd[] = {0x80,SOUND_ALERT,0x00,0x00,0x00,0x00,0x00,0x00,-1};
+int sound_cmd[] = {0x80,SOUND_ACK,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0xFF,0xFF,0xFF,0xD0,-1};
 int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
@@ -103,7 +103,7 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                // Here be dragons... This part of the code is responsible for causing lots of head ache.
+                // Here be dragons... This part of the code is responsible for causing lots of headache.
                 // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
@@ -338,11 +338,11 @@ void CDCClass::send_can_frame(int message_id, int *msg) {
 void send_cdc_node_status(void *p) {
     int i = (int)p;
     
-    if (current_timer_event != -1) {
+    if (current_timer_event > NODE_STATUS_TX_MSG_SIZE) {
         time.stop(current_timer_event);
     }
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
-    if (i < 3) {
+    if (i < NODE_STATUS_TX_MSG_SIZE) {
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
     }    
     else current_timer_event = -1;
