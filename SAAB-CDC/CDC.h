@@ -46,6 +46,16 @@
 #define CDC_STATUS_RE_TX_TIME    50     // Interval for CDC status frame if it needs to be sent as an event
 #define CDC_STATUS_TX_TIME       1000   // The CDC status frame must be sent with a 1000ms interval periodicity
 
+/**
+ * SID Sound type definitions:
+ */
+
+#define SOUND_ACK                0x04   // Short "Beep"
+#define SOUND_TAC                0x08   // "Tack"
+#define SOUND_TIC                0x10   // "Tic"
+#define SOUND_ALERT              0x40   // "Ding-Dong"
+
+
 //----------------------------------------------------------------------------
 // CLASS
 //----------------------------------------------------------------------------
