@@ -86,8 +86,7 @@ int cdc_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x52,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1}
 };
-int beep_cmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00,-1};
-int button_release_cmd[] = {0xFF,0x55,0x03,0x02,0x00,0x00,0xFB,-1};
+int sound_cmd[] = {0x80,SOUND_ACK,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0xFF,0xFF,0xFF,0xD0,-1};
 int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
@@ -114,13 +113,13 @@ void CDCClass::print_can_tx_frame() {
  */
 
 void CDCClass::print_can_rx_frame() {
-        Serial.print(CAN_RxMsg.id,HEX);
-        Serial.print(" -> ");
-        for (int i = 0; i < 8; i++) {
-            Serial.print(CAN_RxMsg.data[i],HEX);
-            Serial.print(" ");
-        }
-        Serial.println();
+    Serial.print(CAN_RxMsg.id,HEX);
+    Serial.print(" -> ");
+    for (int i = 0; i < 8; i++) {
+        Serial.print(CAN_RxMsg.data[i],HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
 }
 
 /**
@@ -128,9 +127,9 @@ void CDCClass::print_can_rx_frame() {
  */
 
 void CDCClass::open_can_bus() {
-    #if (DEBUGMODE==1)
-        Serial.println("DEBUG: Initializing CAN bus @ 47.619kbps");
-    #endif
+#if (DEBUGMODE==1)
+    Serial.println("DEBUG: Initializing CAN bus @ 47.619kbps");
+#endif
     CAN.begin(47);                // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -146,18 +145,21 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                // Here be dragons... This part of the code is responsible for causing lots of head ache.
+                // Here be dragons... This part of the code is responsible for causing lots of headache.
                 // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
+                        Serial.println("Seeing 6A1 \"Power UP\" frame");
                         current_cdc_cmd = cdc_poweron_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x2):
+                        Serial.println("Seeing 6A1 \"Active?\" frame");
                         current_cdc_cmd = cdc_active_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x8):
+                        Serial.println("Seeing 6A1 \"Power DOWN\" frame");
                         current_cdc_cmd = cdc_powerdown_cmd;
                         send_cdc_node_status(NULL);
                         break;
@@ -171,28 +173,28 @@ void CDCClass::handle_rx_frame() {
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-                    #if (DEBUGMODE==1)
-                        Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
-                    #endif
+#if (DEBUGMODE==1)
+                    Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
+#endif
                     display_request_granted = true;
                     write_text_on_display(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
-                    #if (DEBUGMODE==1)
-                        Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
-                    #endif
+#if (DEBUGMODE==1)
+                    Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
+#endif
                     display_request_granted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
-                    #if (DEBUGMODE==1)
-                        Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
-                    #endif
+#if (DEBUGMODE==1)
+                    Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
+#endif
                     display_request_granted = false;
                 }
                 else {
-                    #if (DEBUGMODE==1)
-                        Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
-                    #endif
+#if (DEBUGMODE==1)
+                    Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
+#endif
                 }
                 break;
         }
@@ -204,9 +206,9 @@ void CDCClass::handle_rx_frame() {
  */
 
 void CDCClass::handle_ihu_buttons() {
-    #if (DEBUGMODE==1)
-        print_can_rx_frame();
-    #endif
+#if (DEBUGMODE==1)
+    print_can_rx_frame();
+#endif
     
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
@@ -216,7 +218,7 @@ void CDCClass::handle_ihu_buttons() {
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
-            send_can_frame(SOUND_REQUEST, beep_cmd);
+            send_can_frame(SOUND_REQUEST, sound_cmd);
             RN52.start_connecting();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
@@ -224,11 +226,11 @@ void CDCClass::handle_ihu_buttons() {
             display_wanted = false;
             RN52.start_disconnecting();
             break;
-            }
+    }
     if (cdc_active) {
-        #if (DEBUGMODE==1)
-            print_can_rx_frame();
-        #endif
+#if (DEBUGMODE==1)
+        print_can_rx_frame();
+#endif
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
                 RN52.write(PLAYPAUSE);
@@ -272,57 +274,57 @@ void CDCClass::handle_ihu_buttons() {
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
-    #if (DEBUGMODE==1)
-        print_can_rx_frame();
-    #endif
+#if (DEBUGMODE==1)
+    print_can_rx_frame();
+#endif
     if (!cdc_active) {
         return;
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         /*
-        // Possible long press of a button has occured. We need to handle this.
-        if (millis() - last_icoming_event_time > LAST_EVENT_IN_TIMEOUT) {
-            incoming_event_counter = 0;
-        }
-        incoming_event_counter++;
-        last_icoming_event_time = millis();
-        switch (CAN_RxMsg.data[4]) {
-            case 0x04: // Long press of NXT button on wheel
-                if (incoming_event_counter == 5) {
-                    RN52.write(ASSISTANT);
-                }
-                break;
-            default:
-                break;
-        }
+         // Possible long press of a button has occured. We need to handle this.
+         if (millis() - last_icoming_event_time > LAST_EVENT_IN_TIMEOUT) {
+         incoming_event_counter = 0;
+         }
+         incoming_event_counter++;
+         last_icoming_event_time = millis();
+         switch (CAN_RxMsg.data[4]) {
+         case 0x04: // Long press of NXT button on wheel
+         if (incoming_event_counter == 5) {
+         RN52.write(ASSISTANT);
+         }
+         break;
+         default:
+         break;
+         }
          */
         return;
     }
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
-            #if (DEBUGMODE==1)
-                Serial.println("DEBUG: 'NXT' button on wheel pressed.");
-            #endif
+#if (DEBUGMODE==1)
+            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
+#endif
             //RN52.write(PLAYPAUSE);
             break;
         case 0x10: // Seek+ button on wheel
-            #if (DEBUGMODE==1)
-                Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
-            #endif
+#if (DEBUGMODE==1)
+            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
+#endif
             //RN52.write(NEXTTRACK);
             break;
         case 0x08: // Seek- button on wheel
-            #if (DEBUGMODE==1)
-                Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
-            #endif
+#if (DEBUGMODE==1)
+            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
+#endif
             //RN52.write(PREVTRACK);
             break;
         default:
-            #if (DEBUGMODE==1)
-                Serial.print(CAN_RxMsg.data[2],HEX);
-                Serial.println("DEBUG: Unknown button message");
-            #endif
+#if (DEBUGMODE==1)
+            Serial.print(CAN_RxMsg.data[2],HEX);
+            Serial.println("DEBUG: Unknown button message");
+#endif
             break;
     }
 }
@@ -345,6 +347,8 @@ void CDCClass::handle_cdc_status() {
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
     send_can_frame(GENERAL_STATUS_CDC, cdc_status_cmd);
+    Serial.println("Sending away CDC status \"3C0\"");
+    Serial.println(millis());
     
     // Record the time of sending and reset status variables
     cdc_status_last_send_time = millis();
@@ -383,12 +387,11 @@ void CDCClass::send_can_frame(int message_id, int *msg) {
 void send_cdc_node_status(void *p) {
     int i = (int)p;
     
-    if (current_timer_event != -1) {
+    if (current_timer_event > NODE_STATUS_TX_MSG_SIZE) {
         time.stop(current_timer_event);
     }
-    
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
-    if (i < 3) {
+    if (i < NODE_STATUS_TX_MSG_SIZE) {
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
         Serial.println(millis());
     }
