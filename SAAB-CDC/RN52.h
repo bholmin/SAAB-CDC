@@ -1,25 +1,29 @@
 
 #ifndef RN52_H
 #define RN52_H
-#define SERIAL_BUFFER_SIZE 10
-#define CMD_SEND_INTERVAL 500 // Interval in milliseconds. Used for sending various commands to RN52 after conenction to it is established.
+#define SERIAL_BUFFER_SIZE      10      // Incomming buffer size
+#define CMD_SEND_INTERVAL       500     // Interval in milliseconds; used for sending various commands to RN52 after conenction to it is established
 
-// RN52 action command definitions
 
-#define PLAYPAUSE   "AP"
-#define NEXTTRACK   "AT+"
-#define PREVTRACK   "AT-"
-#define CONNECT     "B"
-#define DISCONNECT  "@,1"
-#define REBOOT      "R,1"
-#define VOLUP       "AV+"
-#define MAXVOLUME   "SS,0F"
-#define GETSTATUS   "Q"
-#define ASSISTANT   "P"
 
-//----------------------------------------------------------------------------
-// CLASS
-//----------------------------------------------------------------------------
+/**
+ * RN52 action command definitions:
+ */
+
+#define PLAYPAUSE               "AP"    // Play
+#define NEXTTRACK               "AT+"   // Next Track
+#define PREVTRACK               "AT-"   // Previous Track
+#define CONNECT                 "B"     // Connect to last known device
+#define DISCONNECT              "@,1"   // Disconnect from the current device and become "connectable"
+#define REBOOT                  "R,1"   // Reboot RN52
+#define VOLUP                   "AV+"   // Turn up the volume by one level
+#define MAXVOLUME               "SS,0F" // Set the volume gain level to max
+#define GETSTATUS               "Q"     // Querry the RN52 for status
+#define ASSISTANT               "P"     // Invoke voice assistant
+
+/**
+ * Class:
+ */
 
 class RN52Class
 {
@@ -55,9 +59,9 @@ public:
 void turn_volume_to_max(void*);
 void start_audio_playback(void*);
 
-//----------------------------------------------------------------------------
-// VARIABLES
-//----------------------------------------------------------------------------
+/**
+ * Variables:
+ */
 
 extern RN52Class RN52;
 

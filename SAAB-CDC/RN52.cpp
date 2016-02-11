@@ -6,14 +6,15 @@
 
 
 
-// Atmel 328 pin definitions
+/**
+ * Atmel 328 pin definitions:
+ */
 
-const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of the module.
-const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode.
-const int UART_TX_PIN = 5;      // UART Tx.
-const int UART_RX_PIN = 6;      // UART Rx.
-
-extern Timer time;
+const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of the module
+const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode
+const int UART_TX_PIN = 5;      // UART Tx
+const int UART_RX_PIN = 6;      // UART Rx
+extern Timer time;              // Timer instance for timed actions
 
 SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 

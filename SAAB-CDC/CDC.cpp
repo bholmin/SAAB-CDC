@@ -6,48 +6,6 @@
 #include "Timer.h"
 
 /**
- * Various constants used for identifying the CDC
- */
-
-#define CDC_APL_ADR              0x12
-#define CDC_SID_FUNCTION_ID      30   // Decimal
-
-/**
- * Other useful stuff
- */
-
-#define MODULE_NAME              "BT TEST"
-#define LAST_EVENT_IN_TIMEOUT    2000 // Milliseconds
-#define DISPLAY_NAME_TIMEOUT     5000 // Milliseconds
-#define NODE_STATUS_TX_MSG_SIZE  4    // Decimal. Defines how many messages do we need to reply with to '6A1'
-#define DEBUGMODE                0    // 1 = Output debug to serial port; 0 = No output
-
-/**
- * TX frames:
- */
-
-#define GENERAL_STATUS_CDC       0x3C8
-#define DISPLAY_RESOURCE_REQ     0x348 // 'Stolen' from the IHU since the CDC doesn't send this message
-#define WRITE_TEXT_ON_DISPLAY    0x328 // 'Stolen' from the IHU since the CDC doesn't send this message
-#define NODE_STATUS_TX           0x6A2
-#define SOUND_REQUEST            0x430
-
-/**
- * RX frames:
- */
-
-#define IHU_BUTTONS              0x3C0
-#define DISPLAY_RESOURCE_GRANT   0x368
-#define NODE_STATUS_RX           0x6A1
-#define STEERING_WHEEL_BUTTONS   0x290
-
-/**
- * Timer definitions:
- */
-
-#define NODE_STATUS_TX_TIME      140   // Replies to '6A1' request need to be sent with no more than 140 ms interval.
-
-/**
  * Variables:
  */
 
@@ -56,17 +14,17 @@ void send_cdc_node_status(void*);
 void send_cdc_active_status(void*);
 void send_cdc_powerdown_status(void*);
 void *current_cdc_cmd = NULL;
-unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner.
-unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner.
-unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner.
-unsigned long stop_displaying_name_at = 0;              // Time at which we should stop displaying our name in the SID.
-unsigned long last_icoming_event_time = 0;              // Timer used for determening if we should treat current event as, for example, a long press of a button.
-boolean cdc_active = false;                             // True while our module, the simulated CDC, is active.
-boolean display_request_granted = true;                 // True while we are granted the 2nd row of the SID.
-boolean display_wanted = false;                         // True while we actually want the display.
-boolean cdc_status_resend_needed = false;               // True if something has triggered the need to send the CDC status frame as an event.
-boolean cdc_status_resend_due_to_cdc_command = false;   // True if the need for sending the CDC status frame was triggered by a CDC command.
-int incoming_event_counter = 0;                         // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button.
+unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner
+unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner
+unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner
+unsigned long stop_displaying_name_at = 0;              // Time at which we should stop displaying our name in the SID
+unsigned long last_icoming_event_time = 0;              // Timer used for determening if we should treat current event as, for example, a long press of a button
+boolean cdc_active = false;                             // True while our module, the simulated CDC, is active
+boolean display_request_granted = true;                 // True while we are granted the 2nd row of the SID
+boolean display_wanted = false;                         // True while we actually want the display
+boolean cdc_status_resend_needed = false;               // True if something has triggered the need to send the CDC status frame as an event
+boolean cdc_status_resend_due_to_cdc_command = false;   // True if the need for sending the CDC status frame was triggered by a CDC command
+int incoming_event_counter = 0;                         // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
 int current_timer_event = -1;
 int cdc_poweron_cmd[NODE_STATUS_TX_MSG_SIZE][9] = {
     {0x32,0x00,0x00,0x03,0x01,0x02,0x00,0x00,-1},
@@ -90,9 +48,7 @@ int sound_cmd[] = {0x80,SOUND_ACK,0x00,0x00,0x00,0x00,0x00,0x00,-1};
 int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0xFF,0xFF,0xFF,0xD0,-1};
 int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
-/******************************************************************************
- * PUBLIC METHODS
- ******************************************************************************/
+
 
 /**
  * DEBUG: Prints the CAN TX frame to serial output
@@ -127,9 +83,6 @@ void CDCClass::print_can_rx_frame() {
  */
 
 void CDCClass::open_can_bus() {
-#if (DEBUGMODE==1)
-    Serial.println("DEBUG: Initializing CAN bus @ 47.619kbps");
-#endif
     CAN.begin(47);                // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -145,21 +98,20 @@ void CDCClass::handle_rx_frame() {
         CAN.ReadFromDevice(&CAN_RxMsg);
         switch (CAN_RxMsg.id) {
             case NODE_STATUS_RX:
-                // Here be dragons... This part of the code is responsible for causing lots of headache.
-                // We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be.
+                /*
+                Here be dragons... This part of the code is responsible for causing lots of headache
+                We look at the bottom half of 3rd byte of '6A1' frame to determine what 'current_cdc_command' should be
+                 */
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
-                        Serial.println("Seeing 6A1 \"Power UP\" frame");
                         current_cdc_cmd = cdc_poweron_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x2):
-                        Serial.println("Seeing 6A1 \"Active?\" frame");
                         current_cdc_cmd = cdc_active_cmd;
                         send_cdc_node_status(NULL);
                         break;
                     case (0x8):
-                        Serial.println("Seeing 6A1 \"Power DOWN\" frame");
                         current_cdc_cmd = cdc_powerdown_cmd;
                         send_cdc_node_status(NULL);
                         break;
@@ -173,28 +125,20 @@ void CDCClass::handle_rx_frame() {
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
-#if (DEBUGMODE==1)
-                    Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID.");
-#endif
+                    //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID");
                     display_request_granted = true;
                     write_text_on_display(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
-#if (DEBUGMODE==1)
-                    Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
-#endif
+                    //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
                     display_request_granted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
-#if (DEBUGMODE==1)
-                    Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
-#endif
+                    //Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
                     display_request_granted = false;
                 }
                 else {
-#if (DEBUGMODE==1)
-                    Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
-#endif
+                    //Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
                 }
                 break;
         }
@@ -206,10 +150,6 @@ void CDCClass::handle_rx_frame() {
  */
 
 void CDCClass::handle_ihu_buttons() {
-#if (DEBUGMODE==1)
-    print_can_rx_frame();
-#endif
-    
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // FIXME: can we really ignore the message if it wasn't sent on event?
@@ -228,23 +168,20 @@ void CDCClass::handle_ihu_buttons() {
             break;
     }
     if (cdc_active) {
-#if (DEBUGMODE==1)
-        print_can_rx_frame();
-#endif
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
                 RN52.write(PLAYPAUSE);
                 break;
-            case 0x45: // SEEK+ button long press on 9-3 IHU
+            case 0x45: // SEEK+ button long press on IHU
                 RN52.write(CONNECT);
                 break;
-            case 0x46: // SEEK- button long press on 9-3 IHU
+            case 0x46: // SEEK- button long press on IHU
                 RN52.write(DISCONNECT);
                 break;
-            case 0x84: // SEEK button long press on IHU
+            case 0x84: // SEEK button (middle) long press on IHU
                 RN52.write(CONNECT);
                 break;
-            case 0X88: // > 2 sec long press of SEEK button on IHU
+            case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
                 RN52.write(DISCONNECT);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
@@ -274,9 +211,6 @@ void CDCClass::handle_ihu_buttons() {
  */
 
 void CDCClass::handle_steering_wheel_buttons() {
-#if (DEBUGMODE==1)
-    print_can_rx_frame();
-#endif
     if (!cdc_active) {
         return;
     }
@@ -303,28 +237,17 @@ void CDCClass::handle_steering_wheel_buttons() {
     }
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
-#if (DEBUGMODE==1)
-            Serial.println("DEBUG: 'NXT' button on wheel pressed.");
-#endif
             //RN52.write(PLAYPAUSE);
             break;
         case 0x10: // Seek+ button on wheel
-#if (DEBUGMODE==1)
-            Serial.println("DEBUG: 'Seek+' button on wheel pressed.");
-#endif
             //RN52.write(NEXTTRACK);
             break;
         case 0x08: // Seek- button on wheel
-#if (DEBUGMODE==1)
-            Serial.println("DEBUG: 'Seek-' button on wheel pressed.");
-#endif
             //RN52.write(PREVTRACK);
             break;
         default:
-#if (DEBUGMODE==1)
-            Serial.print(CAN_RxMsg.data[2],HEX);
-            Serial.println("DEBUG: Unknown button message");
-#endif
+            //Serial.print(CAN_RxMsg.data[2],HEX);
+            //Serial.println("DEBUG: Unknown button message");
             break;
     }
 }
@@ -347,8 +270,6 @@ void CDCClass::handle_cdc_status() {
 
 void CDCClass::send_cdc_status(boolean event, boolean remote) {
     send_can_frame(GENERAL_STATUS_CDC, cdc_status_cmd);
-    Serial.println("Sending away CDC status \"3C0\"");
-    Serial.println(millis());
     
     // Record the time of sending and reset status variables
     cdc_status_last_send_time = millis();
@@ -393,7 +314,6 @@ void send_cdc_node_status(void *p) {
     CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
     if (i < NODE_STATUS_TX_MSG_SIZE) {
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
-        Serial.println(millis());
     }
     
     else current_timer_event = -1;
@@ -417,8 +337,7 @@ void CDCClass::write_text_on_display(char text[]) {
         return;
     }
     
-    // Copy the provided string and make sure we have a new array of the correct length:
-    
+    // Copy the provided string and make sure we have a new array of the correct length
     char txt[15];
     int i, n;
     n = strlen(text);
