@@ -14,6 +14,8 @@ const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of 
 const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode
 const int UART_TX_PIN = 5;      // UART Tx
 const int UART_RX_PIN = 6;      // UART Rx
+const int UART_CTS_PIN = 7;     // UART "Clear To Send"
+const int UART_RTS_PIN = 8;     // UART "Request To Send"
 const int BT_RESET_PIN = 14;    // RN52 GPIO4 pin for factory reset
 extern Timer time;              // Timer instance for timed actions
 
@@ -22,8 +24,12 @@ SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 void RN52Class::initialize_atmel_pins() {
     pinMode(BT_CMD_PIN, OUTPUT);
     pinMode(BT_RESET_PIN,OUTPUT);
+    pinMode(UART_RTS_PIN,OUTPUT);
+    pinMode(UART_CTS_PIN,INPUT);
     digitalWrite(BT_CMD_PIN, HIGH);
     digitalWrite(BT_RESET_PIN, LOW);
+    digitalWrite(UART_RTS_PIN,LOW);
+    digitalWrite(UART_CTS_PIN,LOW);
 }
 
 void RN52Class::uart_begin() {
