@@ -44,7 +44,7 @@
  */
 
 #define NODE_STATUS_TX_TIME         140     // Replies to '6A1' request need to be sent with no more than 140ms interval
-#define CDC_STATUS_TX_TIME          1000    // The CDC status frame must be sent with a 1000ms periodicity
+#define CDC_STATUS_TX_TIME          950     // The CDC status frame must be sent periodically within this timeframe
 
 /**
  * SID sound type definitions:
