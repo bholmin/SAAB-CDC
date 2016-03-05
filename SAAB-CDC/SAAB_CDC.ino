@@ -29,7 +29,7 @@ Timer time;
 
 // Setup
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
     Serial.println("SAAB CDC v2.1 - February 2016");
     RN52.initialize_atmel_pins();
     RN52.uart_begin();

@@ -24,7 +24,7 @@ void RN52Class::initialize_atmel_pins() {
 }
 
 void RN52Class::uart_begin() {
-    serial.begin(115200);
+    serial.begin(9600);
     digitalWrite(BT_CMD_PIN,LOW);
 }
 

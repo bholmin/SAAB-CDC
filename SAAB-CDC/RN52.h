@@ -1,7 +1,7 @@
 
 #ifndef RN52_H
 #define RN52_H
-#define SERIAL_BUFFER_SIZE      10      // Incomming buffer size
+#define SERIAL_BUFFER_SIZE      16      // Incomming buffer size
 #define CMD_SEND_INTERVAL       500     // Interval in milliseconds; used for sending various commands to RN52 after conenction to it is established
 
 
