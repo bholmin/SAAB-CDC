@@ -20,11 +20,13 @@ SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 
 void RN52Class::initialize_atmel_pins() {
     pinMode(BT_CMD_PIN, OUTPUT);
+    pinMode(A0,OUTPUT);         // Connected to GPIO4 - factory reset pin on RN52
     digitalWrite(BT_CMD_PIN, HIGH);
+    digitalWrite(A0,LOW);       // GPIO4 of RN52 needs to be pulled down; it is in floating state by default
 }
 
 void RN52Class::uart_begin() {
-    serial.begin(9600);
+    serial.begin(BAUDRATE);
     digitalWrite(BT_CMD_PIN,LOW);
 }
 
@@ -43,9 +45,6 @@ bool RN52Class::read() {
     }
     while (serial.available() > 0) {
         char in_char = serial.read();
-        #if (DEBUGMODE==1)
-            Serial.println(int(in_char));
-        #endif
         if (in_char == '\r') continue;
         if (in_char == '\n') {
             response_received = true;

@@ -3,6 +3,7 @@
 #define RN52_H
 #define SERIAL_BUFFER_SIZE      16      // Incomming buffer size
 #define CMD_SEND_INTERVAL       500     // Interval in milliseconds; used for sending various commands to RN52 after conenction to it is established
+#define BAUDRATE                9600    //RN52 is happier with 9600bps instead of default 115200bps when controlled by ATMEGA-328
 
 
 
