@@ -12,7 +12,8 @@
 
 const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of the module
 const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode
-const int BT_FACT_RST_PIN = A0; // RN52 factory reset pin GPIO4;
+const int BT_FACT_RST_PIN = A0; // RN52 factory reset pin GPIO4
+const int BT_PWREN_PIN = 9;     // RN52 Power enable pin
 const int UART_TX_PIN = 5;      // UART Tx
 const int UART_RX_PIN = 6;      // UART Rx
 extern Timer time;              // Timer instance for timed actions
@@ -20,14 +21,49 @@ extern Timer time;              // Timer instance for timed actions
 SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 
 void RN52Class::initialize_atmel_pins() {
-    pinMode(BT_CMD_PIN, OUTPUT);
+    pinMode(BT_STATUS_PIN,INPUT);
+    pinMode(BT_CMD_PIN,OUTPUT);
     pinMode(BT_FACT_RST_PIN,INPUT); // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
-    digitalWrite(BT_CMD_PIN, HIGH);
+    pinMode(BT_PWREN_PIN,OUTPUT);
+    digitalWrite(BT_STATUS_PIN,HIGH);
+    digitalWrite(BT_CMD_PIN,HIGH);
+}
+
+void RN52Class::wakeup() {
+    int pin_status;
+    if (millis() - last_command_sent_time < BT_IDLE_TIME) {
+        Serial.println("RN52: \"Module seems to be awake. No need to wakeup (PWREN). Sending CONNECT command\"");
+        write(CONNECT);
+    }
+    else {
+        Serial.println("RN52: \"Starting wakeup procedure\"");
+        
+        pin_status = digitalRead(BT_PWREN_PIN);
+        Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
+        Serial.print(pin_status);
+        Serial.println("\"");
+        
+        digitalWrite(BT_PWREN_PIN,HIGH);
+        
+        pin_status = digitalRead(BT_PWREN_PIN);
+        Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
+        Serial.print(pin_status);
+        Serial.println("\"");
+        time.after(3000,finish_wakeup_procedure,NULL);
+    }
 }
 
 void RN52Class::uart_begin() {
+    int pin_status;
+    Serial.print("RN52: \"Opening software serial connection @ ");
+    Serial.print(BAUDRATE);
+    Serial.println(" bps\"");
     serial.begin(BAUDRATE);
     digitalWrite(BT_CMD_PIN,LOW);
+    pin_status = digitalRead(BT_CMD_PIN);
+    Serial.print("RN52: \"Status of BT_CMD_PIN: ");
+    Serial.print(pin_status);
+    Serial.println("\"");
 }
 
 void RN52Class::write(const char * in_message) {
@@ -36,6 +72,7 @@ void RN52Class::write(const char * in_message) {
     serial.println(in_message);
     serial_index = 0;
     in_buffer[serial_index] = 0;
+    last_command_sent_time = millis();
 }
 
 bool RN52Class::read() {
@@ -70,14 +107,43 @@ void RN52Class::start_disconnecting() {
 }
 
 void turn_volume_to_max(void*) {
+    Serial.println("RN52: \"Turning up the volume of RN52 to max\"");
     RN52.write(MAXVOLUME);
 }
 
 void start_audio_playback(void*) {
+    Serial.println("RN52: \"Starting auto play\"");
     RN52.write(PLAYPAUSE);
 }
 
+void finish_wakeup_procedure(void*) {
+    int pin_status;
+    
+    Serial.println("RN52: \"Finishing RN52 \"wakeup\" procedure\"");
+    
+    digitalWrite(BT_PWREN_PIN,LOW);
+    
+    pin_status = digitalRead(BT_PWREN_PIN);
+    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
+    Serial.print(pin_status);
+    Serial.println("\"");
+    
+    RN52.uart_begin();
+    
+    // time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
+    time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
+}
+
 void RN52Class::update() {
+    int bt_status_pin_state;
+    bt_status_pin_state = digitalRead(BT_STATUS_PIN);
+    
+    if (bt_status_pin_state == 0) {
+        read();
+        Serial.println("RN52: \"State of RN52 has changed. Reading status...\"");
+    }
+    
+    /*
     read();
     
     if (response_received) {
@@ -94,6 +160,7 @@ void RN52Class::update() {
         if (disconnection_attempts_remaining > 0) {
             if (!status_connected) {
                 disconnection_attempts_remaining = 0;
+                connection_handled = false;
             }
             else {
                 write(DISCONNECT);
@@ -101,6 +168,12 @@ void RN52Class::update() {
             }
         }
         
+        else if ((status_connected) && (!connection_handled)) {
+            connection_handled = true;
+            time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
+            time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
+        }
+     
         else if (connection_attempts_remaining > 0) {
             if (status_connected) {
                 connection_attempts_remaining = 0;
@@ -115,9 +188,11 @@ void RN52Class::update() {
             }
         }
 
+
         else if (digitalRead(BT_STATUS_PIN) == LOW) {
             write(GETSTATUS);
             waiting_for_status = true;
         }
     }
+     */
 }

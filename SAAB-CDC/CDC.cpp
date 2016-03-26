@@ -159,12 +159,12 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, sound_cmd);
-            RN52.start_connecting();
+            RN52.wakeup();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            RN52.start_disconnecting();
+            RN52.write(DISCONNECT);
             break;
     }
     if (cdc_active) {
@@ -173,7 +173,7 @@ void CDCClass::handle_ihu_buttons() {
                 RN52.write(PLAYPAUSE);
                 break;
             case 0x45: // SEEK+ button long press on IHU
-                RN52.write(CONNECT);
+                RN52.write(REBOOT);
                 break;
             case 0x46: // SEEK- button long press on IHU
                 RN52.write(DISCONNECT);
