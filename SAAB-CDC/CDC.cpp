@@ -159,12 +159,16 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, sound_cmd);
+            Serial.println("CDC: \"Apparently we're entering the CDC mode. Waking up RN52.\"");
             RN52.wakeup();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
             RN52.write(DISCONNECT);
+            Serial.print("CDC: \"Disconnecting from RN52 due to switch over of IHU to any other mode than CDC. Timestamp (in millis): ");
+            Serial.print(millis());
+            Serial.println("\"");
             break;
     }
     if (cdc_active) {
@@ -173,16 +177,22 @@ void CDCClass::handle_ihu_buttons() {
                 RN52.write(PLAYPAUSE);
                 break;
             case 0x45: // SEEK+ button long press on IHU
-                RN52.write(REBOOT);
+                RN52.write(CONNECT);
                 break;
             case 0x46: // SEEK- button long press on IHU
                 RN52.write(DISCONNECT);
+                Serial.print("CDC: \"Disconnecting from RN52 due to SEEK- button long press on IHU. Timestamp (in millis): ");
+                Serial.print(millis());
+                Serial.println("\"");
                 break;
             case 0x84: // SEEK button (middle) long press on IHU
                 RN52.write(CONNECT);
                 break;
             case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
                 RN52.write(DISCONNECT);
+                Serial.print("CDC: \"Disconnecting from RN52 due to SEEK button long press (in the middle) on IHU. Timestamp (in millis): ");
+                Serial.print(millis());
+                Serial.println("\"");
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 RN52.write(VOLUP);

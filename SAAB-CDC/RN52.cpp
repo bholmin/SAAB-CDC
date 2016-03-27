@@ -31,25 +31,25 @@ void RN52Class::initialize_atmel_pins() {
 
 void RN52Class::wakeup() {
     int pin_status;
-    if (millis() - last_command_sent_time < BT_IDLE_TIME) {
-        Serial.println("RN52: \"Module seems to be awake. No need to wakeup (PWREN). Sending CONNECT command\"");
+     
+    Serial.println("RN52: \"Starting wakeup procedure\"");
+    
+    pin_status = digitalRead(BT_PWREN_PIN);
+    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
+    Serial.print(pin_status);
+    Serial.println("\"");
+    
+    digitalWrite(BT_PWREN_PIN,HIGH);
+    
+    pin_status = digitalRead(BT_PWREN_PIN);
+    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
+    Serial.print(pin_status);
+    Serial.println("\"");
+    time.after(3000,finish_wakeup_procedure,NULL);
+    
+    if ((millis() - last_command_sent_time) < BT_IDLE_TIME) {
+        Serial.println("RN52: \"Module seems to be awake. No need to wakeup (PWREN). Sending CONNECT command\. Don't trust this message entirely though :)\"");
         write(CONNECT);
-    }
-    else {
-        Serial.println("RN52: \"Starting wakeup procedure\"");
-        
-        pin_status = digitalRead(BT_PWREN_PIN);
-        Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
-        Serial.print(pin_status);
-        Serial.println("\"");
-        
-        digitalWrite(BT_PWREN_PIN,HIGH);
-        
-        pin_status = digitalRead(BT_PWREN_PIN);
-        Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
-        Serial.print(pin_status);
-        Serial.println("\"");
-        time.after(3000,finish_wakeup_procedure,NULL);
     }
 }
 
@@ -140,7 +140,7 @@ void RN52Class::update() {
     
     if (bt_status_pin_state == 0) {
         read();
-        Serial.println("RN52: \"State of RN52 has changed. Reading status...\"");
+       // Serial.println("RN52: \"State of RN52 has changed. Reading status...\"");
     }
     
     /*
