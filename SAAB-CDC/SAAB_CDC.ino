@@ -41,4 +41,5 @@ void loop() {
     time.update();
     CDC.handle_cdc_status();
     RN52.update();
+    RN52.monitor_serial_input();
 }

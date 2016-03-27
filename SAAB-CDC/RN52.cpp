@@ -25,7 +25,6 @@ void RN52Class::initialize_atmel_pins() {
     pinMode(BT_CMD_PIN,OUTPUT);
     pinMode(BT_FACT_RST_PIN,INPUT); // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
     pinMode(BT_PWREN_PIN,OUTPUT);
-    digitalWrite(BT_STATUS_PIN,HIGH);
     digitalWrite(BT_CMD_PIN,HIGH);
 }
 
@@ -132,6 +131,22 @@ void finish_wakeup_procedure(void*) {
     
     // time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
     time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
+}
+
+void RN52Class::monitor_serial_input() {
+    int incomingByte = 0;
+    
+    if (Serial.available() > 0) {
+        incomingByte = Serial.read();
+        switch (incomingByte) {
+            case 'P':
+                Serial.println("RN52: \"Manual wakeup.");
+                RN52.wakeup();
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void RN52Class::update() {

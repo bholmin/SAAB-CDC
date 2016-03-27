@@ -43,6 +43,7 @@ public:
     char in_buffer[SERIAL_BUFFER_SIZE];
     void initialize_atmel_pins();
     void wakeup();
+    void monitor_serial_input();
     void uart_begin();
     void write(const char * in_message);
     bool read();
