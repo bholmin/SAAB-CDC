@@ -30,7 +30,7 @@ Timer time;
 // Setup
 void setup() {
     Serial.begin(BAUDRATE);
-    Serial.println("SAAB CDC-DEV v2.1 - March 2016");
+    Serial.println("SAAB CDC-DEV v2.1 - April 2016");
     RN52.initialize_atmel_pins();
     CDC.open_can_bus();
     time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
