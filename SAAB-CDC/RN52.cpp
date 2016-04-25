@@ -139,9 +139,20 @@ void RN52Class::monitor_serial_input() {
     if (Serial.available() > 0) {
         incomingByte = Serial.read();
         switch (incomingByte) {
-            case 'P':
+            case 'W':
                 Serial.println("RN52: \"Manual wakeup.");
                 RN52.wakeup();
+                break;
+            case 'C':
+                Serial.println("RN52: \"Manual reconnect to last known device.");
+                RN52.write(CONNECT);
+                break;
+            case 'D':
+                Serial.println("RN52: \"Manual disconnect from device.");
+                RN52.write(DISCONNECT);
+            case 'R':
+                Serial.println("RN52: \"Manual reboot.");
+                RN52.write(REBOOT);
                 break;
             default:
                 break;
