@@ -23,23 +23,19 @@
 #include "Timer.h"
 
 CDCClass CDC;
-RN52Class RN52;
 Timer time;
 
 
 // Setup
 void setup() {
-    Serial.begin(BAUDRATE);
+    Serial.begin(9600);
     Serial.println("SAAB CDC-DEV v2.1 - May 2016");
-    RN52.initialize_atmel_pins();
-    CDC.open_can_bus();
-    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
+    CDC.openCANbus();
+    time.every(CDC_STATUS_TX_TIME, &sendCDCStatusOnTime,NULL);
 }
 
 // Main loop
 void loop() {
     time.update();
-    CDC.handle_cdc_status();
-    RN52.update();
-    RN52.monitor_serial_input();
+    CDC.handleCDCstatus();
 }

@@ -1,224 +1,326 @@
-
-#include "Arduino.h"
-#include "RN52.h"
-#include "SoftwareSerial.h"
-#include "Timer.h"
-
-
-
-/**
- * Atmel 328 pin definitions:
+/*
+ * Virtual C++ Class for RovingNetworks RN-52 Bluetooth modules
+ * Copyright (C) 2013  Tim Otto
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ *  Created on: Jun 21, 2013
  */
 
-const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of the module
-const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode
-const int BT_FACT_RST_PIN = A0; // RN52 factory reset pin GPIO4
-const int BT_PWREN_PIN = 9;     // RN52 Power enable pin
-const int UART_TX_PIN = 5;      // UART Tx
-const int UART_RX_PIN = 6;      // UART Rx
-extern Timer time;              // Timer instance for timed actions
+#include "RN52.h"
+#include "RN52strings.h"
+#include <string.h>
 
-SoftwareSerial serial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
-
-void RN52Class::initialize_atmel_pins() {
-    pinMode(BT_STATUS_PIN,INPUT);
-    pinMode(BT_CMD_PIN,OUTPUT);
-    pinMode(BT_FACT_RST_PIN,INPUT); // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
-    pinMode(BT_PWREN_PIN,OUTPUT);
-    digitalWrite(BT_CMD_PIN,HIGH);
-}
-
-void RN52Class::wakeup() {
-    int pin_status;
-     
-    Serial.println("RN52: \"Starting wakeup procedure\"");
+using namespace std;
+namespace RN52 {
     
-    pin_status = digitalRead(BT_PWREN_PIN);
-    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
-    Serial.print(pin_status);
-    Serial.println("\"");
+    static int getVal(char c);
     
-    digitalWrite(BT_PWREN_PIN,HIGH);
+    RN52driver::RN52driver() :
+    mode(DATA), enterCommandMode(false), enterDataMode(false), state(0), profile(0), a2dpConnected(false),
+    sppConnected(false), streamingAudio(false), sppTxBufferPos(0), cmdRxBufferPos(0), currentCommand(NULL), commandQueuePos(0)
+    {}
     
-    pin_status = digitalRead(BT_PWREN_PIN);
-    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
-    Serial.print(pin_status);
-    Serial.println("\"");
-    time.after(3000,finish_wakeup_procedure,NULL);
-    
-    if ((millis() - last_command_sent_time) < BT_IDLE_TIME) {
-        Serial.println("RN52: \"Module seems to be awake. No need to wakeup (PWREN). Sending CONNECT command\. Don't trust this message entirely though :)\"");
-        write(CONNECT);
-    }
-}
-
-void RN52Class::uart_begin() {
-    int pin_status;
-    Serial.print("RN52: \"Opening software serial connection @ ");
-    Serial.print(BAUDRATE);
-    Serial.println(" bps\"");
-    serial.begin(BAUDRATE);
-    digitalWrite(BT_CMD_PIN,LOW);
-    pin_status = digitalRead(BT_CMD_PIN);
-    Serial.print("RN52: \"Status of BT_CMD_PIN: ");
-    Serial.print(pin_status);
-    Serial.println("\"");
-}
-
-void RN52Class::write(const char * in_message) {
-    response_received = false;
-    response_timeout = millis() + 10;
-    serial.println(in_message);
-    serial_index = 0;
-    in_buffer[serial_index] = 0;
-    last_command_sent_time = millis();
-}
-
-bool RN52Class::read() {
-    if ((long)(millis() - response_timeout) >= 0) {
-        response_received = true;
-        return true;
-    }
-    while (serial.available() > 0) {
-        char in_char = serial.read();
-        if (in_char == '\r') continue;
-        if (in_char == '\n') {
-            response_received = true;
-            in_buffer[serial_index] = 0;
-            serial_index = 0;
-            return true;
-        }
-        if (serial_index < SERIAL_RX_BUFFER_SIZE - 1) {
-            in_buffer[serial_index] = in_char;
-            serial_index++;
-            in_buffer[serial_index] = 0;
+    int RN52driver::fromUART(const char c)
+    {
+        if (mode == DATA && !enterCommandMode) {
+            fromSPP(&c, 1);
+            return 1;
+        } else {
+            return parseCmdResponse(&c, 1);
+            
         }
     }
-    return false;
-}
-
-void RN52Class::start_connecting() {
-    connection_attempts_remaining = 2;
-}
-
-void RN52Class::start_disconnecting() {
-    disconnection_attempts_remaining = 2;
-}
-
-void turn_volume_to_max(void*) {
-    Serial.println("RN52: \"Turning up the volume of RN52 to max\"");
-    RN52.write(MAXVOLUME);
-}
-
-void start_audio_playback(void*) {
-    Serial.println("RN52: \"Starting auto play\"");
-    RN52.write(PLAYPAUSE);
-}
-
-void finish_wakeup_procedure(void*) {
-    int pin_status;
     
-    Serial.println("RN52: \"Finishing RN52 \"wakeup\" procedure\"");
-    
-    digitalWrite(BT_PWREN_PIN,LOW);
-    
-    pin_status = digitalRead(BT_PWREN_PIN);
-    Serial.print("RN52: \"Status of BT_PWREN_PIN: ");
-    Serial.print(pin_status);
-    Serial.println("\"");
-    
-    RN52.uart_begin();
-    
-    // time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
-    time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
-}
-
-void RN52Class::monitor_serial_input() {
-    int incomingByte = 0;
-    
-    if (Serial.available() > 0) {
-        incomingByte = Serial.read();
-        switch (incomingByte) {
-            case 'W':
-                Serial.println("RN52: \"Manual wakeup.");
-                RN52.wakeup();
-                break;
-            case 'C':
-                Serial.println("RN52: \"Manual reconnect to last known device.");
-                RN52.write(CONNECT);
-                break;
-            case 'D':
-                Serial.println("RN52: \"Manual disconnect from device.");
-                RN52.write(DISCONNECT);
-            case 'R':
-                Serial.println("RN52: \"Manual reboot.");
-                RN52.write(REBOOT);
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-void RN52Class::update() {
-    int bt_status_pin_state;
-    bt_status_pin_state = digitalRead(BT_STATUS_PIN);
-    
-    if (bt_status_pin_state == 0) {
-        read();
-       // Serial.println("RN52: \"State of RN52 has changed. Reading status...\"");
-    }
-    
-    /*
-    read();
-    
-    if (response_received) {
-        if (waiting_for_status) {
-            if (strlen(in_buffer) != 4) {
-                write(GETSTATUS);
+    int RN52driver::fromUART(const char *data, int size)
+    {
+        if (mode == DATA && !enterCommandMode) {
+            fromSPP(data, size);
+        } else {
+            int parsed = parseCmdResponse(data, size);
+            if (parsed < size && parsed > 0) {
+                // Not all UART bytes were processed by the CommandMode parser.
+                // This means there was an END\r\n, so feed the remainder to SPP
+                if (mode == DATA) {
+                    fromSPP(data+parsed, size-parsed);
+                } else {
+                    onError(1, OVERFLOW);
+                    return -1;
+                }
             }
-            else {
-                waiting_for_status = false;
-                status_connected = (in_buffer[3] >= '3');
-            }
+        }
+        return size;
+    }
+    
+    int RN52driver::toSPP(const char c)
+    {
+        if(!sppConnected) {
+            onError(2, NOTCONNECTED);
+            return -2;
         }
         
-        if (disconnection_attempts_remaining > 0) {
-            if (!status_connected) {
-                disconnection_attempts_remaining = 0;
-                connection_handled = false;
+        if (mode == DATA && !enterCommandMode)
+            toUART(&c, 1);
+        else {
+            // in command mode, buffer
+            int left = SPP_TX_BUFFER_SIZE - sppTxBufferPos;
+            if (left < 1) {
+                onError(2, OVERFLOW);
+                return -1;
             }
-            else {
-                write(DISCONNECT);
-                disconnection_attempts_remaining--;
-            }
+            
+            sppTxBuffer[sppTxBufferPos++] = c;
+        }
+        return 1;
+    }
+    
+    int RN52driver::toSPP(const char *data, int size)
+    {
+        if(!sppConnected) {
+            onError(3, NOTCONNECTED);
+            return -2;
         }
         
-        else if ((status_connected) && (!connection_handled)) {
-            connection_handled = true;
-            time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
-            time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
-        }
-     
-        else if (connection_attempts_remaining > 0) {
-            if (status_connected) {
-                connection_attempts_remaining = 0;
+        if (mode == DATA && !enterCommandMode)
+            toUART(data, size);
+        else {
+            // in command mode, buffer
+            int left = SPP_TX_BUFFER_SIZE - sppTxBufferPos;
+            if (left < size) {
+                onError(3, OVERFLOW);
+                return -1;
             }
-            else {
-                write(CONNECT);
-                connection_attempts_remaining--;
-            }
-            if (connection_attempts_remaining == 0) {
-                time.after(CMD_SEND_INTERVAL,turn_volume_to_max,NULL);
-                time.after(CMD_SEND_INTERVAL * 2,start_audio_playback,NULL);
-            }
+            
+            memcpy(sppTxBuffer+sppTxBufferPos, data, size);
+            sppTxBufferPos+=size;
         }
-
-
-        else if (digitalRead(BT_STATUS_PIN) == LOW) {
-            write(GETSTATUS);
-            waiting_for_status = true;
-        }
+        return size;
     }
-     */
-}
+    
+    static bool isCmd(const char *buffer, const char *cmd) {
+        return strncmp(buffer, cmd, strlen(cmd)) == 0;
+    }
+    
+    int RN52driver::parseCmdResponse(const char *data, int size)
+    {
+        int parsed = 0;
+        while (parsed < size) {
+            if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE) {
+                onError(4, OVERFLOW);
+                return -1;
+            }
+            
+            cmdRxBuffer[cmdRxBufferPos++] = data[parsed++];
+            if (mode == DATA) {
+                // did not receive CMD\r\n yet
+                if (cmdRxBufferPos == 5) {
+                    if (isCmd(cmdRxBuffer, RN52_CMD_BEGIN)) {
+                        mode = COMMAND;
+                        enterCommandMode = false;
+                        cmdRxBufferPos = 0;
+                    } else {
+                        toSPP(cmdRxBuffer[0]);
+                        for (int i=1;i<5;i++)
+                            cmdRxBuffer[i-1] = cmdRxBuffer[i];
+                        cmdRxBufferPos--;
+                    }
+                }
+            } else if (cmdRxBufferPos >= 2) {
+                if (cmdRxBuffer[cmdRxBufferPos-1] == '\n' && cmdRxBuffer[cmdRxBufferPos-2] == '\r') {
+                    // this is a line
+                    if (isCmd(cmdRxBuffer, RN52_CMD_EXIT)) {
+                        mode = DATA;
+                        cmdRxBufferPos = 0;
+                        enterDataMode = false;
+                        
+                        if (commandQueuePos > 0) {
+                            // there's outgoing command requests (yet or again)
+                            prepareCommandMode();
+                        }
+                        break;
+                    }
+                    // TODO handle other responses, depending on the command sent before
+                    if (currentCommand == NULL) {
+                        cmdRxBuffer[cmdRxBufferPos-2] = 0;
+                    } else if (isCmd(currentCommand, RN52_CMD_QUERY)) {
+                        parseQResponse(cmdRxBuffer);
+                        currentCommand = NULL;
+                    } else if (isCmd(currentCommand, RN52_CMD_DETAILS)) {
+                        // multiple lines
+                        //TODO set currentCommand to NULL after the 10th line of response
+                        currentCommand = NULL;
+                    } else {
+                        // misc command (AVCRP, connect/disconnect, etc)
+                        if (isCmd(cmdRxBuffer, RN52_RX_OK)) {
+                            // OK
+                        } else if (isCmd(cmdRxBuffer, RN52_RX_ERROR)) {
+                            // Error
+                        } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
+                            // WTF!?
+                        } else {
+                            cmdRxBuffer[cmdRxBufferPos-2] = 0;
+                            onError(4, PROTOCOL);
+                            debug("invalid response:");
+                            debug(cmdRxBuffer);
+                        }
+                        currentCommand = NULL;
+                    }
+                    cmdRxBufferPos = 0;
+                }
+            }
+        }
+        if (mode == COMMAND) {
+            if (currentCommand == NULL) {
+                if (commandQueuePos>0 && !enterDataMode) {
+                    // send next command
+                    currentCommand = commandQueue[0];
+                    for(int i=1;i<commandQueuePos;i++)
+                        commandQueue[i-1] = commandQueue[i];
+                    commandQueuePos--;
+                    toUART(currentCommand, strlen(currentCommand));
+                } else if (!enterDataMode){
+                    enterDataMode = true;
+                    prepareDataMode();
+                }
+            }
+        }
+        return parsed;
+    }
+    
+    int RN52driver::queueCommand(const char *cmd) {
+        if (commandQueuePos == CMD_QUEUE_SIZE) {
+            onError(5, OVERFLOW);
+            return -1;
+        }
+        
+        commandQueue[commandQueuePos++] = cmd;
+        if (mode == COMMAND)// || enterCommandMode)
+            return 0;
+        
+        prepareCommandMode();
+        return 0;
+    }
+    
+    void RN52driver::parseQResponse(const char data[4]) {
+        int profile =
+        (getVal(data[0]) << 4 | getVal(data[1])) & 0x0f;
+        int state =
+        (getVal(data[2]) << 4 | getVal(data[3])) & 0x0f;
+        
+        //profIAPConnected = profile & 0x01;
+        bool lastSppConnected = sppConnected;
+        bool lastA2dpConnected = a2dpConnected;
+        
+        sppConnected = profile & 0x02;
+        a2dpConnected = profile & 0x04;
+        //profHFPHSPConnected = profile & 0x08;
+        
+        bool changed = (this->state != state) || (this->profile != profile);
+        //bool profilesChanged = this->profile != profile;
+        bool streamingChanged = (this->state == 13 && state != 13) || (this->state != 3 && state == 13);
+        this->state = state;
+        this->profile = profile;
+        
+        if (changed)
+            onStateChange(state, profile);
+        
+        if (streamingChanged)
+            onStreaming(state == 13);
+        if (lastSppConnected != sppConnected)
+            onProfileChange(SPP, sppConnected);
+        if (lastA2dpConnected != a2dpConnected)
+            onProfileChange(A2DP, a2dpConnected);
+    }
+    
+    void RN52driver::prepareCommandMode() {
+        if (mode == COMMAND)
+            return;
+        enterCommandMode = true;
+        setMode(COMMAND);
+    }
+    
+    void RN52driver::prepareDataMode() {
+        if (mode == DATA)
+            return;
+        
+        if (enterCommandMode) {
+            // command mode was attempted but never reached
+            enterCommandMode = false;
+        }
+        setMode(DATA);
+    }
+    
+    int RN52driver::sendAVCRP(AVCRP cmd)
+    {
+        if(!a2dpConnected) {
+            onError(6, NOTCONNECTED);
+            return -2;
+        }
+        switch(cmd) {
+            case PLAYPAUSE:
+                queueCommand(RN52_CMD_AVCRP_PLAYPAUSE);
+                break;
+            case PREV:
+                queueCommand(RN52_CMD_AVCRP_PREV);
+                break;
+            case NEXT:
+                queueCommand(RN52_CMD_AVCRP_NEXT);
+                break;
+            case VOLUP:
+                queueCommand(RN52_CMD_AVCRP_VOLUP);
+                break;
+            case VOLDOWN:
+                queueCommand(RN52_CMD_AVCRP_VOLDOWN);
+                break;
+            case PLAY:
+                //nice but not reliable:
+                if (state != 13)
+                    queueCommand(RN52_CMD_AVCRP_PLAYPAUSE);
+                break;
+            case PAUSE:
+                //nice but not reliable:
+                if (state == 13)
+                    queueCommand(RN52_CMD_AVCRP_PLAYPAUSE);
+                break;
+        }
+        return 0;
+    }
+    
+    void RN52driver::reconnectLast(){
+        queueCommand(RN52_CMD_RECONNECTLAST);
+    }
+    void RN52driver::disconnect(){
+        queueCommand(RN52_CMD_DISCONNECT);
+    }
+    void RN52driver::visible(bool visible){
+        if (visible)
+            queueCommand(RN52_CMD_DISCOVERY_ON);
+        else
+            queueCommand(RN52_CMD_DISCOVERY_OFF);
+    }
+    
+    void RN52driver::refreshState() {
+        queueCommand(RN52_CMD_QUERY);
+    }
+    
+    static int getVal(char c)
+    {
+        if(c >= '0' && c <= '9')
+            return (c - '0');
+        else
+            return (c-'A'+10);
+    }
+    
+} /* namespace RN52 */

@@ -16,7 +16,7 @@ void send_cdc_powerdown_status(void*);
 void *current_cdc_cmd = NULL;
 unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner
 unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner
-unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner
+unsigned long writeTextOnDisplay_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner
 unsigned long stop_displaying_name_at = 0;              // Time at which we should stop displaying our name in the SID
 unsigned long last_icoming_event_time = 0;              // Timer used for determening if we should treat current event as, for example, a long press of a button
 boolean cdc_active = false;                             // True while our module, the simulated CDC, is active
@@ -54,7 +54,7 @@ int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00
  * DEBUG: Prints the CAN TX frame to serial output
  */
 
-void CDCClass::print_can_tx_frame() {
+void CDCClass::printCANTXframe() {
     Serial.print(CAN_TxMsg.id,HEX);
     Serial.print(" -> ");
     for (int i = 0; i < 8; i++) {
@@ -68,7 +68,7 @@ void CDCClass::print_can_tx_frame() {
  * DEBUG: Prints the CAN RX frame to serial output
  */
 
-void CDCClass::print_can_rx_frame() {
+void CDCClass::printCANRXframe() {
     Serial.print(CAN_RxMsg.id,HEX);
     Serial.print(" -> ");
     for (int i = 0; i < 8; i++) {
@@ -82,7 +82,7 @@ void CDCClass::print_can_rx_frame() {
  * Opens CAN bus for communication
  */
 
-void CDCClass::open_can_bus() {
+void CDCClass::openCANbus() {
     CAN.begin(47);                // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -92,7 +92,7 @@ void CDCClass::open_can_bus() {
  * Handles an incoming (RX) frame
  */
 
-void CDCClass::handle_rx_frame() {
+void CDCClass::handleRXframe() {
     if (CAN.CheckNew()) {
         CAN_TxMsg.data[0]++;
         CAN.ReadFromDevice(&CAN_RxMsg);
@@ -118,16 +118,16 @@ void CDCClass::handle_rx_frame() {
                 }
                 break;
             case IHU_BUTTONS:
-                handle_ihu_buttons();
+                handleIHUbuttons();
                 break;
             case STEERING_WHEEL_BUTTONS:
-                handle_steering_wheel_buttons();
+                handleSteeringWheelButtons();
                 break;
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
                     //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID");
                     display_request_granted = true;
-                    write_text_on_display(MODULE_NAME);
+                    writeTextOnDisplay(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
                     //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
@@ -149,7 +149,7 @@ void CDCClass::handle_rx_frame() {
  * Handles the IHU_BUTTONS frame that the IHU sends us when it wants to control some feature of the CDC
  */
 
-void CDCClass::handle_ihu_buttons() {
+void CDCClass::handleIHUbuttons() {
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // FIXME: can we really ignore the message if it wasn't sent on event?
@@ -158,44 +158,26 @@ void CDCClass::handle_ihu_buttons() {
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
-            send_can_frame(SOUND_REQUEST, sound_cmd);
-            Serial.println("CDC: \"Apparently we're entering the CDC mode. Waking up RN52.\"");
-            RN52.wakeup();
+            sendCANframe(SOUND_REQUEST, sound_cmd);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            RN52.write(DISCONNECT);
-            Serial.print("CDC: \"Disconnecting from RN52 due to switch over of IHU to any other mode than CDC. Timestamp (in millis): ");
-            Serial.print(millis());
-            Serial.println("\"");
             break;
     }
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
-                RN52.write(PLAYPAUSE);
                 break;
             case 0x45: // SEEK+ button long press on IHU
-                RN52.write(CONNECT);
                 break;
             case 0x46: // SEEK- button long press on IHU
-                RN52.write(DISCONNECT);
-                Serial.print("CDC: \"Disconnecting from RN52 due to SEEK- button long press on IHU. Timestamp (in millis): ");
-                Serial.print(millis());
-                Serial.println("\"");
                 break;
             case 0x84: // SEEK button (middle) long press on IHU
-                RN52.write(CONNECT);
                 break;
             case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
-                RN52.write(DISCONNECT);
-                Serial.print("CDC: \"Disconnecting from RN52 due to SEEK button long press (in the middle) on IHU. Timestamp (in millis): ");
-                Serial.print(millis());
-                Serial.println("\"");
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
-                RN52.write(VOLUP);
                 break;
             case 0xB1: // Pause ON
                 // N/A for now
@@ -204,10 +186,8 @@ void CDCClass::handle_ihu_buttons() {
                 // N/A for now
                 break;
             case 0x35: // Track +
-                RN52.write(NEXTTRACK);
                 break;
             case 0x36: // Track -
-                RN52.write(PREVTRACK);
                 break;
             default:
                 break;
@@ -220,7 +200,7 @@ void CDCClass::handle_ihu_buttons() {
  * TODO connect the SID button events to actions
  */
 
-void CDCClass::handle_steering_wheel_buttons() {
+void CDCClass::handleSteeringWheelButtons() {
     if (!cdc_active) {
         return;
     }
@@ -266,20 +246,20 @@ void CDCClass::handle_steering_wheel_buttons() {
  * Handles CDC status and sends it to IHU as necessary
  */
 
-void CDCClass::handle_cdc_status() {
+void CDCClass::handleCDCstatus() {
     
-    handle_rx_frame();
+    handleRXframe();
     
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
     
     if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 100)) {
-        send_cdc_status(true, cdc_status_resend_due_to_cdc_command);
+        sendCDCstatus(true, cdc_status_resend_due_to_cdc_command);
     }
 }
 
-void CDCClass::send_cdc_status(boolean event, boolean remote) {
-    send_can_frame(GENERAL_STATUS_CDC, cdc_status_cmd);
+void CDCClass::sendCDCstatus(boolean event, boolean remote) {
+    sendCANframe(GENERAL_STATUS_CDC, cdc_status_cmd);
     
     // Record the time of sending and reset status variables
     cdc_status_last_send_time = millis();
@@ -292,8 +272,8 @@ void CDCClass::send_cdc_status(boolean event, boolean remote) {
  * Sends a request for using the SID, row 2. We may NOT start writing until we've received a grant frame with the correct function ID!
  */
 
-void CDCClass::send_display_request() {
-    send_can_frame(DISPLAY_RESOURCE_REQ, display_request_cmd);
+void CDCClass::sendDisplayRequest() {
+    sendCANframe(DISPLAY_RESOURCE_REQ, display_request_cmd);
     display_request_last_send_time = millis();
 }
 
@@ -301,7 +281,7 @@ void CDCClass::send_display_request() {
  * Formats and puts a frame on CAN bus
  */
 
-void CDCClass::send_can_frame(int message_id, int *msg) {
+void CDCClass::sendCANframe(int message_id, int *msg) {
     CAN_TxMsg.id = message_id;
     int i = 0;
     while (msg[i] != -1) {
@@ -321,7 +301,7 @@ void send_cdc_node_status(void *p) {
     if (current_timer_event > NODE_STATUS_TX_MSG_SIZE) {
         time.stop(current_timer_event);
     }
-    CDC.send_can_frame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
+    CDC.sendCANframe(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
     if (i < NODE_STATUS_TX_MSG_SIZE) {
         current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
     }
@@ -333,8 +313,8 @@ void send_cdc_node_status(void *p) {
  * Sends CDC status very CDC_STATUS_TX_TIME interval
  */
 
-void send_cdc_status_on_time(void*) {
-    CDC.send_cdc_status(false, false);
+void sendCDCStatusOnTime(void*) {
+    CDC.sendCDCstatus(false, false);
 }
 
 /**
@@ -342,7 +322,7 @@ void send_cdc_status_on_time(void*) {
  * NOTE the character set used by the SID is slightly nonstandard. "Normal" characters should work fine.
  */
 
-void CDCClass::write_text_on_display(char text[]) {
+void CDCClass::writeTextOnDisplay(char text[]) {
     if (!text) {
         return;
     }
@@ -387,5 +367,5 @@ void CDCClass::write_text_on_display(char text[]) {
     CAN_TxMsg.data[7] = txt[14];
     CAN.send(&CAN_TxMsg);
     
-    write_text_on_display_last_send_time = millis();
+    writeTextOnDisplay_last_send_time = millis();
 }

@@ -62,22 +62,20 @@
 class CDCClass
 {
 public:
-    void print_can_tx_frame();
-    void print_can_rx_frame();
-    void open_can_bus();
-    void handle_rx_frame();
-    void handle_ihu_buttons();
-    void handle_steering_wheel_buttons();
-    void handle_cdc_status();
-    void send_cdc_status(boolean event, boolean remote);
-    void send_display_request();
-    void send_serial_message(int *msg);
-    void send_can_frame(int message_id, int *msg);
-    void write_text_on_display(char text[]);
+    void printCANTXframe();
+    void printCANRXframe();
+    void openCANbus();
+    void handleRXframe();
+    void handleIHUbuttons();
+    void handleSteeringWheelButtons();
+    void handleCDCstatus();
+    void sendCDCstatus(boolean event, boolean remote);
+    void sendDisplayRequest();
+    void sendCANframe(int message_id, int *msg);
+    void writeTextOnDisplay(char text[]);
 };
 
-void send_node_status();
-void send_cdc_status_on_time(void*);
+void sendCDCStatusOnTime(void*);
 
 /**
  * Variables:

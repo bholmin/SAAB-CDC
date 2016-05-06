@@ -1,75 +1,92 @@
-
-#ifndef RN52_H
-#define RN52_H
-#define SERIAL_BUFFER_SIZE      16      // Incomming buffer size
-#define CMD_SEND_INTERVAL       500     // Interval in milliseconds; used for sending various commands to RN52 after conenction to it is established
-#define BAUDRATE                9600    // RN52 is happier with 9600bps instead of default 115200bps when controlled by ATMEGA-328
-#define BT_IDLE_TIME            300000  // Time in milliseconds that RN52 has been programmed with after which RN52 goes to sleep
-
-
-
-/**
- * RN52 action command definitions:
+/*
+ * Virtual C++ Class for RovingNetworks RN-52 Bluetooth modules
+ * Copyright (C) 2013  Tim Otto
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ *  Created on: Jun 21, 2013
+ *  Modified by: Karlis Veilands on May, 2016
  */
 
-#define PLAYPAUSE               "AP"    // Play
-#define NEXTTRACK               "AT+"   // Next Track
-#define PREVTRACK               "AT-"   // Previous Track
-#define CONNECT                 "B"     // Connect to last known device
-#define DISCONNECT              "@,1"   // Disconnect from the current device and become "connectable"
-#define REBOOT                  "R,1"   // Reboot RN52
-#define VOLUP                   "AV+"   // Turn up the volume by one level
-#define MAXVOLUME               "SS,0F" // Set the volume gain level to max
-#define GETSTATUS               "Q"     // Querry the RN52 for status
-#define ASSISTANT               "P"     // Invoke voice assistant
+#ifndef RN52_H_
+#define RN52_H_
+#include "RN52configuration.h"
 
-
-/**
- * Class:
- */
-
-class RN52Class
-{
-    int serial_index;
-    int volume_up_times_needed;
-    int connection_attempts_remaining;
-    int disconnection_attempts_remaining;
-    bool response_received;
-    bool waiting_for_status;
-    bool status_connected;
-    unsigned long response_timeout;
-    unsigned long last_command_sent_time = 0;            // Timer to note down last time we sent a command to RN52
-public:
-    char in_buffer[SERIAL_BUFFER_SIZE];
-    void initialize_atmel_pins();
-    void wakeup();
-    void monitor_serial_input();
-    void uart_begin();
-    void write(const char * in_message);
-    bool read();
-    void update();
-    void start_connecting();
-    void start_disconnecting();
-    RN52Class() {
-        serial_index = 0;
-        response_received = true;
-        waiting_for_status = false;
-        status_connected = false;
-        response_timeout = 0;
-        volume_up_times_needed = 0;
-        connection_attempts_remaining = 0;
-        disconnection_attempts_remaining = 0;
-    }
-};
-
-void turn_volume_to_max(void*);
-void start_audio_playback(void*);
-void finish_wakeup_procedure(void*);
-
-/**
- * Variables:
- */
-
-extern RN52Class RN52;
-
-#endif
+namespace RN52 {
+    
+    class RN52driver {
+    public:
+        enum BtProfile { IAP, SPP, A2DP, HFP };
+        enum Mode { COMMAND, DATA };
+        enum Error { TIMEOUT, OVERFLOW, NOTCONNECTED, PROTOCOL };
+        enum AVCRP { PLAYPAUSE, NEXT, PREV, VOLUP, VOLDOWN, PLAY, PAUSE };
+        
+        RN52driver();
+        virtual ~RN52driver(){}
+        
+        int fromUART(const char c);
+        int fromUART(const char *data, int size);
+        int toSPP(const char c);
+        int toSPP(const char *data, int size);
+        
+        bool isA2DPConnected() { return a2dpConnected; }
+        bool isSPPConnected() { return sppConnected; }
+        bool isStreamingAudio() { return streamingAudio; }
+        
+        void reconnectLast();
+        void disconnect();
+        void visible(bool visible);
+        int sendAVCRP(AVCRP cmd);
+        
+    protected:
+        void refreshState();
+        int queueCommand(const char *cmd);
+        
+    private:
+        Mode mode;
+        bool enterCommandMode;
+        bool enterDataMode;
+        int state;
+        int profile;
+        bool a2dpConnected;
+        bool sppConnected;
+        bool streamingAudio;
+        
+        char sppTxBuffer[SPP_TX_BUFFER_SIZE];
+        int sppTxBufferPos;
+        char cmdRxBuffer[CMD_RX_BUFFER_SIZE];
+        int cmdRxBufferPos;
+        
+        const char *currentCommand;
+        const char *commandQueue[CMD_QUEUE_SIZE];
+        int commandQueuePos;
+        
+        void prepareCommandMode();
+        void prepareDataMode();
+        int parseCmdResponse(const char *data, int size);
+        void parseQResponse(const char data[4]);
+        
+        virtual void onStateChange(int state, int profile) {};
+        virtual void onProfileChange(BtProfile profile, bool connected) {};
+        virtual void onStreaming(bool streaming) {};
+        virtual void toUART(const char* c, int len) = 0;
+        virtual void fromSPP(const char* c, int len) = 0;
+        virtual void setMode(Mode mode) = 0;
+        virtual void debug(const char *c) {};
+        virtual void onError(int location, Error error) {};
+    };
+    
+} /* namespace RN52 */
+#endif /* RN52_H_ */
