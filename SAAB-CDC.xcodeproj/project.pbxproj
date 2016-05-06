@@ -72,8 +72,8 @@
 		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
 		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CDC.cpp; sourceTree = "<group>"; tabWidth = 4; wrapsLines = 0; };
 		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
-		A82E7D0D1CDC30E600BC91BA /* RN52strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52strings.h; sourceTree = "<group>"; };
-		A82E7D0E1CDC335A00BC91BA /* Rn52configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rn52configuration.h; sourceTree = "<group>"; };
+		A82E7D0F1CDC412600BC91BA /* RN52configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52configuration.h; sourceTree = "<group>"; };
+		A82E7D101CDC412600BC91BA /* RN52strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52strings.h; sourceTree = "<group>"; };
 		A8CE2F301BB61A3E001E71F0 /* RN52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52.h; sourceTree = "<group>"; };
 		A8CE2F311BB61A84001E71F0 /* RN52.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52.cpp; sourceTree = "<group>"; };
 		A8DB13771C612FC500DA6CF7 /* SoftwareSerial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoftwareSerial.cpp; sourceTree = "<group>"; };
@@ -151,8 +151,8 @@
 				A8E261F21C6162A0009BEB39 /* Event.h */,
 				A82B27941B2263DC009B19C3 /* pinout.h */,
 				A8CE2F301BB61A3E001E71F0 /* RN52.h */,
-				A82E7D0E1CDC335A00BC91BA /* Rn52configuration.h */,
-				A82E7D0D1CDC30E600BC91BA /* RN52strings.h */,
+				A82E7D0F1CDC412600BC91BA /* RN52configuration.h */,
+				A82E7D101CDC412600BC91BA /* RN52strings.h */,
 				A8DB13781C612FC500DA6CF7 /* SoftwareSerial.h */,
 				A8E261F41C6162A0009BEB39 /* Timer.h */,
 				A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */,

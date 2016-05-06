@@ -30,12 +30,12 @@ Timer time;
 void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC-DEV v2.1 - May 2016");
-    CDC.openCANbus();
-    time.every(CDC_STATUS_TX_TIME, &sendCDCStatusOnTime,NULL);
+    CDC.open_can_bus();
+    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
 }
 
 // Main loop
 void loop() {
     time.update();
-    CDC.handleCDCstatus();
+    CDC.handle_cdc_status();
 }

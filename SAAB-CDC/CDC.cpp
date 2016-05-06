@@ -159,33 +159,25 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, sound_cmd);
-            RN52.start_connecting();
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            RN52.start_disconnecting();
             break;
     }
     if (cdc_active) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
-                RN52.write(PLAYPAUSE);
                 break;
             case 0x45: // SEEK+ button long press on IHU
-                RN52.write(CONNECT);
                 break;
             case 0x46: // SEEK- button long press on IHU
-                RN52.write(DISCONNECT);
                 break;
             case 0x84: // SEEK button (middle) long press on IHU
-                RN52.write(CONNECT);
                 break;
             case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
-                RN52.write(DISCONNECT);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
-                RN52.write(VOLUP);
                 break;
             case 0xB1: // Pause ON
                 // N/A for now
@@ -194,10 +186,8 @@ void CDCClass::handle_ihu_buttons() {
                 // N/A for now
                 break;
             case 0x35: // Track +
-                RN52.write(NEXTTRACK);
                 break;
             case 0x36: // Track -
-                RN52.write(PREVTRACK);
                 break;
             default:
                 break;
