@@ -176,13 +176,13 @@ void CDCClass::handle_ihu_buttons() {
                 RN52.write(CONNECT);
                 break;
             case 0x46: // SEEK- button long press on IHU
-                RN52.write(DISCONNECT);
+                RN52.write(GO_DISCOVERABLE);
                 break;
             case 0x84: // SEEK button (middle) long press on IHU
                 RN52.write(CONNECT);
                 break;
             case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
-                RN52.write(DISCONNECT);
+                RN52.write(GO_DISCOVERABLE);
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 RN52.write(VOLUP);
