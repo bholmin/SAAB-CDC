@@ -159,12 +159,14 @@ void CDCClass::handle_ihu_buttons() {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdc_active = true;
             send_can_frame(SOUND_REQUEST, sound_cmd);
-            RN52.start_connecting();
+            // RN52.start_connecting(); // There's definitely something wrong with this function. Stepping down to simplier approach.
+            RN52.write(CONNECT);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdc_active = false;
             display_wanted = false;
-            RN52.start_disconnecting();
+            //RN52.start_disconnecting(); // There's definitely something wrong with this function. Stepping down to simplier approach.
+            RN52.write(DISCONNECT);
             break;
     }
     if (cdc_active) {

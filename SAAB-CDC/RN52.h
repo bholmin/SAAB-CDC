@@ -14,7 +14,7 @@
 #define PLAYPAUSE               "AP"    // Play
 #define NEXTTRACK               "AT+"   // Next Track
 #define PREVTRACK               "AT-"   // Previous Track
-#define CONNECT                 "B,04"  // Connect to last known device that uses A2DP profile
+#define CONNECT                 "B,06"  // Connect to last known device that uses A2DP profile
 #define DISCONNECT              "K,06"  // Disconnect from the current device and become "connectable" while staying "non-discoverable"
 #define GO_DISCOVERABLE         "@,1"   // Disconnect from the current device and become "discoverable"
 #define REBOOT                  "R,1"   // Reboot RN52
