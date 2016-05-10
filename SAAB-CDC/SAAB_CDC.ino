@@ -19,7 +19,7 @@
 
 #include "Arduino.h"
 #include "CDC.h"
-//#include "RN52.h"
+#include "RN52.h"
 #include "Timer.h"
 
 CDCClass CDC;
@@ -30,12 +30,12 @@ Timer time;
 void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC-DEV v2.1 - May 2016");
-    CDC.open_can_bus();
-    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
+    CDC.openCanBus();
+    time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);
 }
 
 // Main loop
 void loop() {
     time.update();
-    CDC.handle_cdc_status();
+    CDC.handleCdcStatus();
 }
