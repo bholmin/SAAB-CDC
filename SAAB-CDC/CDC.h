@@ -59,7 +59,7 @@
  * Class:
  */
 
-class CDCClass
+class CDChandler
 {
 public:
     void printCanTxFrame();
@@ -81,6 +81,6 @@ void sendCdcStatusOnTime(void*);
  * Variables:
  */
 
-extern CDCClass CDC;
+extern CDChandler CDC;
 
 #endif

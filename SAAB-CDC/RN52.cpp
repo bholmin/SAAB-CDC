@@ -20,7 +20,7 @@ extern Timer time;              // Timer instance for timed actions
 
 SoftwareSerial softSerial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
 
-void RN52Class::initializeAtmelPins() {
+void RN52handler::initializeAtmelPins() {
     pinMode(BT_CMD_PIN, OUTPUT);
     pinMode(BT_FACT_RST_PIN,INPUT); // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
     pinMode(BT_PWREN_PIN,OUTPUT);
@@ -28,8 +28,7 @@ void RN52Class::initializeAtmelPins() {
     digitalWrite(BT_PWREN_PIN,HIGH);
 }
 
-void RN52Class::fromUART() {
-    while (softSerial.available()) {
-        char c = softSerial.read();
-    }
-}
+void RN52handler::writeToUart(const char* c, int len) {
+    for(int i = 0; i < len; i++)
+        softSerial.write(c[i]);
+};

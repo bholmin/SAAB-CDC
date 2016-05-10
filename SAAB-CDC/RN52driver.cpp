@@ -24,6 +24,7 @@
 #include <string.h>
 
 using namespace std;
+
 namespace RN52 {
     
     static int getVal(char c);

@@ -54,7 +54,7 @@ int displayRequestCmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0
  * DEBUG: Prints the CAN TX frame to serial output
  */
 
-void CDCClass::printCanTxFrame() {
+void CDChandler::printCanTxFrame() {
     Serial.print(CAN_TxMsg.id,HEX);
     Serial.print(" -> ");
     for (int i = 0; i < 8; i++) {
@@ -68,7 +68,7 @@ void CDCClass::printCanTxFrame() {
  * DEBUG: Prints the CAN RX frame to serial output
  */
 
-void CDCClass::printCanRxFrame() {
+void CDChandler::printCanRxFrame() {
     Serial.print(CAN_RxMsg.id,HEX);
     Serial.print(" -> ");
     for (int i = 0; i < 8; i++) {
@@ -82,7 +82,7 @@ void CDCClass::printCanRxFrame() {
  * Opens CAN bus for communication
  */
 
-void CDCClass::openCanBus() {
+void CDChandler::openCanBus() {
     CAN.begin(47);                // SAAB I-Bus is 47.619kbps
     CAN_TxMsg.header.rtr = 0;     // This value never changes
     CAN_TxMsg.header.length = 8;  // This value never changes
@@ -92,7 +92,7 @@ void CDCClass::openCanBus() {
  * Handles an incoming (RX) frame
  */
 
-void CDCClass::handleRxFrame() {
+void CDChandler::handleRxFrame() {
     if (CAN.CheckNew()) {
         CAN_TxMsg.data[0]++;
         CAN.ReadFromDevice(&CAN_RxMsg);
@@ -149,7 +149,7 @@ void CDCClass::handleRxFrame() {
  * Handles the IHU_BUTTONS frame that the IHU sends us when it wants to control some feature of the CDC
  */
 
-void CDCClass::handleIhuButtons() {
+void CDChandler::handleIhuButtons() {
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         // FIXME: can we really ignore the message if it wasn't sent on event?
@@ -200,7 +200,7 @@ void CDCClass::handleIhuButtons() {
  * TODO connect the SID button events to actions
  */
 
-void CDCClass::handleSteeringWheelButtons() {
+void CDChandler::handleSteeringWheelButtons() {
     if (!cdcActive) {
         return;
     }
@@ -246,7 +246,7 @@ void CDCClass::handleSteeringWheelButtons() {
  * Handles CDC status and sends it to IHU as necessary
  */
 
-void CDCClass::handleCdcStatus() {
+void CDChandler::handleCdcStatus() {
     
     handleRxFrame();
     
@@ -258,7 +258,7 @@ void CDCClass::handleCdcStatus() {
     }
 }
 
-void CDCClass::sendCdcStatus(boolean event, boolean remote) {
+void CDChandler::sendCdcStatus(boolean event, boolean remote) {
     sendCanFrame(GENERAL_STATUS_CDC, cdcGeneralStatusCmd);
     
     // Record the time of sending and reset status variables
@@ -272,7 +272,7 @@ void CDCClass::sendCdcStatus(boolean event, boolean remote) {
  * Sends a request for using the SID, row 2. We may NOT start writing until we've received a grant frame with the correct function ID!
  */
 
-void CDCClass::sendDisplayRequest() {
+void CDChandler::sendDisplayRequest() {
     sendCanFrame(DISPLAY_RESOURCE_REQ, displayRequestCmd);
     displayRequestLastSendTime = millis();
 }
@@ -281,7 +281,7 @@ void CDCClass::sendDisplayRequest() {
  * Formats and puts a frame on CAN bus
  */
 
-void CDCClass::sendCanFrame(int messageId, int *msg) {
+void CDChandler::sendCanFrame(int messageId, int *msg) {
     CAN_TxMsg.id = messageId;
     int i = 0;
     while (msg[i] != -1) {
@@ -322,7 +322,7 @@ void sendCdcStatusOnTime(void*) {
  * NOTE the character set used by the SID is slightly nonstandard. "Normal" characters should work fine.
  */
 
-void CDCClass::writeTextOnDisplay(char text[]) {
+void CDChandler::writeTextOnDisplay(char text[]) {
     if (!text) {
         return;
     }

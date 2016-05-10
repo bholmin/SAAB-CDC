@@ -22,8 +22,8 @@
 #include "RN52.h"
 #include "Timer.h"
 
-CDCClass CDC;
-RN52Class RN52;
+CDChandler CDC;
+RN52handler RN52;
 Timer time;
 
 
