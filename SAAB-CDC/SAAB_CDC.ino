@@ -19,7 +19,7 @@
 
 #include "Arduino.h"
 #include "CDC.h"
-#include "RN52.h"
+//#include "RN52.h"
 #include "Timer.h"
 
 CDCClass CDC;

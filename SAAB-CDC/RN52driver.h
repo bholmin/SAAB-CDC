@@ -20,8 +20,8 @@
  *  Modified by: Karlis Veilands on May, 2016
  */
 
-#ifndef RN52_H_
-#define RN52_H_
+#ifndef RN52DRIVER_H_
+#define RN52DRIVER_H_
 #include "RN52configuration.h"
 
 namespace RN52 {
@@ -89,4 +89,4 @@ namespace RN52 {
     };
     
 } /* namespace RN52 */
-#endif /* RN52_H_ */
+#endif /* RN52DRIVER_H_ */

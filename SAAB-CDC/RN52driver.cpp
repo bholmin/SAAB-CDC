@@ -19,7 +19,7 @@
  *  Created on: Jun 21, 2013
  */
 
-#include "RN52.h"
+#include "RN52driver.h"
 #include "RN52strings.h"
 #include <string.h>
 
