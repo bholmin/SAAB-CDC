@@ -10,43 +10,43 @@
  */
 
 extern Timer time;
-void send_cdc_node_status(void*);
-void send_cdc_active_status(void*);
-void send_cdc_powerdown_status(void*);
-void *current_cdc_cmd = NULL;
-unsigned long cdc_status_last_send_time = 0;            // Timer used to ensure we send the CDC status frame in a timely manner
-unsigned long display_request_last_send_time = 0;       // Timer used to ensure we send the display request frame in a timely manner
-unsigned long write_text_on_display_last_send_time = 0; // Timer used to ensure we send the write text on display frame in a timely manner
-unsigned long stop_displaying_name_at = 0;              // Time at which we should stop displaying our name in the SID
-unsigned long last_icoming_event_time = 0;              // Timer used for determening if we should treat current event as, for example, a long press of a button
-boolean cdc_active = false;                             // True while our module, the simulated CDC, is active
-boolean display_request_granted = true;                 // True while we are granted the 2nd row of the SID
-boolean display_wanted = false;                         // True while we actually want the display
-boolean cdc_status_resend_needed = false;               // True if something has triggered the need to send the CDC status frame as an event
-boolean cdc_status_resend_due_to_cdc_command = false;   // True if the need for sending the CDC status frame was triggered by a CDC command
-int incoming_event_counter = 0;                         // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
-int current_timer_event = -1;
-int cdc_poweron_cmd[NODE_STATUS_TX_MSG_SIZE][9] = {
+void sendCdcNodeStatus(void*);
+void sendCdcActiveStatus(void*);
+void sendCdcPowerdownStatus(void*);
+void *currentCdcCmd = NULL;
+unsigned long cdcStatusLastSendTime = 0;            // Timer used to ensure we send the CDC status frame in a timely manner
+unsigned long displayRequestLastSendTime = 0;       // Timer used to ensure we send the display request frame in a timely manner
+unsigned long writeTextOnDisplayLastSendTime = 0;   // Timer used to ensure we send the write text on display frame in a timely manner
+unsigned long stopDisplayingNameAt = 0;             // Time at which we should stop displaying our name in the SID
+unsigned long lastIcomingEventTime = 0;             // Timer used for determening if we should treat current event as, for example, a long press of a button
+boolean cdcActive = false;                          // True while our module, the simulated CDC, is active
+boolean displayRequestGranted = true;               // True while we are granted the 2nd row of the SID
+boolean displayWanted = false;                      // True while we actually want the display
+boolean cdcStatusResendNeeded = false;              // True if something has triggered the need to send the CDC status frame as an event
+boolean cdcStatusResendDueToCdcCommand = false;     // True if the need for sending the CDC status frame was triggered by a CDC command
+int incomingEventCounter = 0;                       // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
+int currentTimerEvent = -1;
+int cdcPoweronCmd[NODE_STATUS_TX_MSG_SIZE][9] = {
     {0x32,0x00,0x00,0x03,0x01,0x02,0x00,0x00,-1},
     {0x42,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x22,0x00,0x00,0x00,0x00,-1}
 };
-int cdc_active_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+int cdcActiveCmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x32,0x00,0x00,0x16,0x01,0x02,0x00,0x00,-1},
     {0x42,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x36,0x00,0x00,0x00,0x00,-1},
 };
-int cdc_powerdown_cmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
+int cdcPowerdownCmd[NODE_STATUS_TX_MSG_SIZE] [9] = {
     {0x32,0x00,0x00,0x19,0x01,0x00,0x00,0x00,-1},
     {0x42,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
     {0x52,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1},
     {0x62,0x00,0x00,0x38,0x01,0x00,0x00,0x00,-1}
 };
-int sound_cmd[] = {0x80,SOUND_ACK,0x00,0x00,0x00,0x00,0x00,0x00,-1};
-int cdc_status_cmd[] = {0xE0,0xFF,0x3F,0x41,0xFF,0xFF,0xFF,0xD0,-1};
-int display_request_cmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
+int soundCmd[] = {0x80,SOUND_ACK,0x00,0x00,0x00,0x00,0x00,0x00,-1};
+int cdcGeneralStatusCmd[] = {0xE0,0xFF,0x3F,0x41,0xFF,0xFF,0xFF,0xD0,-1};
+int displayRequestCmd[] = {CDC_APL_ADR,0x02,0x02,CDC_SID_FUNCTION_ID,0x00,0x00,0x00,0x00,-1};
 
 
 
@@ -104,16 +104,16 @@ void CDCClass::handleRxFrame() {
                  */
                 switch (CAN_RxMsg.data[3] & 0x0F){
                     case (0x3):
-                        current_cdc_cmd = cdc_poweron_cmd;
-                        send_cdc_node_status(NULL);
+                        currentCdcCmd = cdcPoweronCmd;
+                        sendCdcNodeStatus(NULL);
                         break;
                     case (0x2):
-                        current_cdc_cmd = cdc_active_cmd;
-                        send_cdc_node_status(NULL);
+                        currentCdcCmd = cdcActiveCmd;
+                        sendCdcNodeStatus(NULL);
                         break;
                     case (0x8):
-                        current_cdc_cmd = cdc_powerdown_cmd;
-                        send_cdc_node_status(NULL);
+                        currentCdcCmd = cdcPowerdownCmd;
+                        sendCdcNodeStatus(NULL);
                         break;
                 }
                 break;
@@ -126,16 +126,16 @@ void CDCClass::handleRxFrame() {
             case DISPLAY_RESOURCE_GRANT:
                 if ((CAN_RxMsg.data[1] == 0x02) && (CAN_RxMsg.data[3] == CDC_SID_FUNCTION_ID)) {
                     //Serial.println("DEBUG: We have been granted the right to write text to the second row in the SID");
-                    display_request_granted = true;
+                    displayRequestGranted = true;
                     writeTextOnDisplay(MODULE_NAME);
                 }
                 else if (CAN_RxMsg.data[1] == 0x02) {
                     //Serial.println("DEBUG: Someone else has been granted the second row, we need to back down");
-                    display_request_granted = false;
+                    displayRequestGranted = false;
                 }
                 else if (CAN_RxMsg.data[1] == 0x00) {
                     //Serial.println("DEBUG: Someone else has been granted the entire display, we need to back down");
-                    display_request_granted = false;
+                    displayRequestGranted = false;
                 }
                 else {
                     //Serial.println("DEBUG: Someone else has been granted the first row; if we had the grant to the 2nd row, we still have it.");
@@ -157,15 +157,15 @@ void CDCClass::handleIhuButtons() {
     }
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
-            cdc_active = true;
-            sendCanFrame(SOUND_REQUEST, sound_cmd);
+            cdcActive = true;
+            sendCanFrame(SOUND_REQUEST, soundCmd);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
-            cdc_active = false;
-            display_wanted = false;
+            cdcActive = false;
+            displayWanted = false;
             break;
     }
-    if (cdc_active) {
+    if (cdcActive) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
                 break;
@@ -201,21 +201,21 @@ void CDCClass::handleIhuButtons() {
  */
 
 void CDCClass::handleSteeringWheelButtons() {
-    if (!cdc_active) {
+    if (!cdcActive) {
         return;
     }
     boolean event = (CAN_RxMsg.data[0] == 0x80);
     if (!event) {
         /*
          // Possible long press of a button has occured. We need to handle this.
-         if (millis() - last_icoming_event_time > LAST_EVENT_IN_TIMEOUT) {
-         incoming_event_counter = 0;
+         if (millis() - lastIcomingEventTime > LAST_EVENT_IN_TIMEOUT) {
+         incomingEventCounter = 0;
          }
-         incoming_event_counter++;
-         last_icoming_event_time = millis();
+         incomingEventCounter++;
+         lastIcomingEventTime = millis();
          switch (CAN_RxMsg.data[4]) {
          case 0x04: // Long press of NXT button on wheel
-         if (incoming_event_counter == 5) {
+         if (incomingEventCounter == 5) {
          RN52.write(ASSISTANT);
          }
          break;
@@ -253,18 +253,18 @@ void CDCClass::handleCdcStatus() {
     // If the CDC status frame needs to be sent as an event, do so now
     // (note though, that we may not send the frame more often than once every 50 ms)
     
-    if (cdc_status_resend_needed && (millis() - cdc_status_last_send_time > 100)) {
-        sendCdcStatus(true, cdc_status_resend_due_to_cdc_command);
+    if (cdcStatusResendNeeded && (millis() - cdcStatusLastSendTime > 100)) {
+        sendCdcStatus(true, cdcStatusResendDueToCdcCommand);
     }
 }
 
 void CDCClass::sendCdcStatus(boolean event, boolean remote) {
-    sendCanFrame(GENERAL_STATUS_CDC, cdc_status_cmd);
+    sendCanFrame(GENERAL_STATUS_CDC, cdcGeneralStatusCmd);
     
     // Record the time of sending and reset status variables
-    cdc_status_last_send_time = millis();
-    cdc_status_resend_needed = false;
-    cdc_status_resend_due_to_cdc_command = false;
+    cdcStatusLastSendTime = millis();
+    cdcStatusResendNeeded = false;
+    cdcStatusResendDueToCdcCommand = false;
     
 }
 
@@ -273,16 +273,16 @@ void CDCClass::sendCdcStatus(boolean event, boolean remote) {
  */
 
 void CDCClass::sendDisplayRequest() {
-    sendCanFrame(DISPLAY_RESOURCE_REQ, display_request_cmd);
-    display_request_last_send_time = millis();
+    sendCanFrame(DISPLAY_RESOURCE_REQ, displayRequestCmd);
+    displayRequestLastSendTime = millis();
 }
 
 /**
  * Formats and puts a frame on CAN bus
  */
 
-void CDCClass::sendCanFrame(int message_id, int *msg) {
-    CAN_TxMsg.id = message_id;
+void CDCClass::sendCanFrame(int messageId, int *msg) {
+    CAN_TxMsg.id = messageId;
     int i = 0;
     while (msg[i] != -1) {
         CAN_TxMsg.data[i] = msg[i];
@@ -295,18 +295,18 @@ void CDCClass::sendCanFrame(int message_id, int *msg) {
  * Sends a reply of four messages to '6A1' requests
  */
 
-void send_cdc_node_status(void *p) {
+void sendCdcNodeStatus(void *p) {
     int i = (int)p;
     
-    if (current_timer_event > NODE_STATUS_TX_MSG_SIZE) {
-        time.stop(current_timer_event);
+    if (currentTimerEvent > NODE_STATUS_TX_MSG_SIZE) {
+        time.stop(currentTimerEvent);
     }
-    CDC.sendCanFrame(NODE_STATUS_TX, ((int(*)[9])current_cdc_cmd)[i]);
+    CDC.sendCanFrame(NODE_STATUS_TX, ((int(*)[9])currentCdcCmd)[i]);
     if (i < NODE_STATUS_TX_MSG_SIZE) {
-        current_timer_event = time.after(NODE_STATUS_TX_TIME,send_cdc_node_status,(void*)(i + 1));
+        currentTimerEvent = time.after(NODE_STATUS_TX_TIME,sendCdcNodeStatus,(void*)(i + 1));
     }
     
-    else current_timer_event = -1;
+    else currentTimerEvent = -1;
 }
 
 /**
@@ -367,5 +367,5 @@ void CDCClass::writeTextOnDisplay(char text[]) {
     CAN_TxMsg.data[7] = txt[14];
     CAN.send(&CAN_TxMsg);
     
-    write_text_on_display_last_send_time = millis();
+    writeTextOnDisplayLastSendTime = millis();
 }
