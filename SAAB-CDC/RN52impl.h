@@ -16,20 +16,30 @@ const int BT_PWREN_PIN = 9;     // RN52 Power enable pin
 const int UART_TX_PIN = 5;      // UART Tx
 const int UART_RX_PIN = 6;      // UART Rx
 
-bool playing = true;
-bool bt_iap = false;
-bool bt_spp = false;
-bool bt_a2dp = false;
-bool bt_hfp = false;
 
 // extend the RN52driver to implement callbacks and hardware interface
 class RN52impl : public RN52::RN52driver {
+    
     // called by RN52lib when the connected Bluetooth devices uses a profile
     void onProfileChange(BtProfile profile, bool connected);
     
     SoftwareSerial softSerial =  SoftwareSerial(UART_RX_PIN, UART_TX_PIN);
     
+    bool playing;
+    bool bt_iap;
+    bool bt_spp;
+    bool bt_a2dp;
+    bool bt_hfp;
+    
 public:
+    
+    RN52impl() {
+        playing = true;
+        bt_iap = false;
+        bt_spp = false;
+        bt_a2dp = false;
+        bt_hfp = false;
+    }
     // this is used by RN52lib to send data to the RN52 module
     // the implementation of this method needs to write to the
     // connected serial port
