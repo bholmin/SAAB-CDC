@@ -19,11 +19,11 @@
 
 #include "Arduino.h"
 #include "CDC.h"
-#include "RN52.h"
+#include "RN52impl.h"
 #include "Timer.h"
 
 CDChandler CDC;
-RN52handler RN52;
+RN52impl RN52;
 Timer time;
 
 

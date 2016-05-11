@@ -20,12 +20,12 @@
  *  Modified by: Karlis Veilands on May, 2016
  */
 
-#ifndef RN52CONFIGURATION_H_
-#define RN52CONFIGURATION_H_
+#ifndef RN52CONFIGURATION_H
+#define RN52CONFIGURATION_H
 
 
 #define SPP_TX_BUFFER_SIZE		128
 #define CMD_RX_BUFFER_SIZE		64
 #define CMD_QUEUE_SIZE			8
 
-#endif /* RN52CONFIGURATION_H_ */
+#endif /* RN52CONFIGURATION_H */
