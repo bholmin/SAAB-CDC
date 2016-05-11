@@ -29,7 +29,9 @@ void RN52impl::onGPIO2() {
 void RN52impl::onProfileChange(BtProfile profile, bool connected) {
     switch(profile) {
         case A2DP:bt_a2dp = connected;
-            if (connected && playing)bt_play();
+            if (connected && playing) {
+//                RN52impl.bt_play();
+            }
             break;
         case SPP:bt_spp = connected;break;
         case IAP:bt_iap = connected;break;
@@ -43,36 +45,4 @@ void RN52impl::initializeAtmelPins() {
     pinMode(BT_PWREN_PIN,OUTPUT);
     digitalWrite(BT_CMD_PIN,HIGH);
     digitalWrite(BT_PWREN_PIN,HIGH);
-}
-
-void bt_play() {
-    rn52.sendAVCRP(RN52::RN52driver::PLAY);
-}
-
-void bt_pause() {
-    rn52.sendAVCRP(RN52::RN52driver::PAUSE);
-}
-
-void bt_prev() {
-    rn52.sendAVCRP(RN52::RN52driver::PREV);
-}
-
-void bt_next() {
-    rn52.sendAVCRP(RN52::RN52driver::NEXT);
-}
-
-void bt_visible() {
-    rn52.visible(true);
-}
-
-void bt_invisible() {
-    rn52.visible(false);
-}
-
-void bt_reconnect() {
-    rn52.reconnectLast();
-}
-
-void bt_disconnect() {
-    rn52.disconnect();
 }

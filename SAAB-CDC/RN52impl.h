@@ -45,14 +45,6 @@ public:
     void onGPIO2();
     
     void initializeAtmelPins();
-    void bt_play();
-    void bt_pause();
-    void bt_prev();
-    void bt_next();
-    void bt_visible();
-    void bt_invisible();
-    void bt_reconnect();
-    void bt_disconnect();
 };
 
 #endif

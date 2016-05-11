@@ -2,7 +2,6 @@
 #include "Arduino.h"
 #include "CAN.h"
 #include "CDC.h"
-#include "RN52impl.h"
 #include "Timer.h"
 
 /**

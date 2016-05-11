@@ -23,7 +23,6 @@
 #include "Timer.h"
 
 CDChandler CDC;
-RN52impl RN52;
 Timer time;
 
 
@@ -32,7 +31,6 @@ void setup() {
     Serial.begin(9600);
     Serial.println("SAAB CDC-DEV v2.1 - May 2016");
     CDC.openCanBus();
-    RN52.initializeAtmelPins();
     time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);
 }
 
