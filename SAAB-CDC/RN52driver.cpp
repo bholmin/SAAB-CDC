@@ -19,6 +19,7 @@
  *  Created on: Jun 21, 2013
  */
 
+#include "Arduino.h"
 #include "RN52driver.h"
 #include "RN52strings.h"
 #include <string.h>
@@ -201,6 +202,7 @@ namespace RN52 {
     }
     
     int RN52driver::queueCommand(const char *cmd) {
+        Serial.println("DEBUG: Queuing a command");
         if (commandQueuePos == CMD_QUEUE_SIZE) {
             onError(5, OVERFLOW);
             return -1;

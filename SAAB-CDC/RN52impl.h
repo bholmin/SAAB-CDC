@@ -55,7 +55,7 @@ public:
     // devices connects
     void onGPIO2();
     
-    void initializeAtmelPins();
+    void initialize();
 };
 
 #endif

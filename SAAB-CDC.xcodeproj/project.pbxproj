@@ -530,7 +530,7 @@
 		A80EF3741B2244E900BF40A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BOARD_PORT = "/dev/tty.usbserial*";
+				BOARD_PORT = "/dev/tty.usb*";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

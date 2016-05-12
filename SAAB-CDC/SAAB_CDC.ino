@@ -23,14 +23,16 @@
 #include "Timer.h"
 
 CDChandler CDC;
+RN52handler BT;
 Timer time;
 
 
 // Setup
 void setup() {
     Serial.begin(9600);
-    Serial.println("SAAB CDC-DEV v2.1 - May 2016");
+    Serial.println("SAAB CDC-DEV v3.0 - May 2016");
     CDC.openCanBus();
+    BT.initialize();
     time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);
 }
 
@@ -38,4 +40,6 @@ void setup() {
 void loop() {
     time.update();
     CDC.handleCdcStatus();
+    BT.update();
+    BT.monitor_serial_input();
 }
