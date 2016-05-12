@@ -32,7 +32,7 @@ void RN52impl::onProfileChange(BtProfile profile, bool connected) {
     switch(profile) {
         case A2DP:bt_a2dp = connected;
             if (connected && playing) {
-            //bt_play();
+            sendAVCRP(RN52::RN52driver::PLAY);
             }
             break;
         case SPP:bt_spp = connected;break;
