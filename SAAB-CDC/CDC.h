@@ -59,8 +59,7 @@
  * Class:
  */
 
-class CDChandler
-{
+class CDChandler {
 public:
     void printCanTxFrame();
     void printCanRxFrame();
