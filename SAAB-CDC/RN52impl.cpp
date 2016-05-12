@@ -49,9 +49,9 @@ void RN52impl::initialize() {
     softSerial.begin(9600);
     pinMode(BT_EVENT_INDICATOR_PIN,INPUT);
     pinMode(BT_CMD_PIN, OUTPUT);
-    pinMode(BT_FACT_RST_PIN,INPUT); // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
+    pinMode(BT_FACT_RST_PIN,INPUT);             // Some REALLY crazy stuff is going on if this pin is set as output and pulled low. Leave it alone! Trust me...
     pinMode(BT_PWREN_PIN,OUTPUT);
-    digitalWrite(BT_EVENT_INDICATOR_PIN,HIGH); // Default state of GPIO2, per data sheet, is HIGH
-    digitalWrite(BT_CMD_PIN,HIGH);
-    digitalWrite(BT_PWREN_PIN,HIGH);
+    digitalWrite(BT_EVENT_INDICATOR_PIN,HIGH);  // Default state of GPIO2, per data sheet, is HIGH
+    digitalWrite(BT_CMD_PIN,HIGH);              // Default state of GPIO9, per data sheet, is HIGH
+    digitalWrite(BT_PWREN_PIN,HIGH);            // Keeping the PWREN pin HIGH for now to keep the module ON at all times. TODO: implement go-to-sleep/wakeup function.
 }

@@ -56,7 +56,7 @@ namespace RN52 {
                 // Not all UART bytes were processed by the CommandMode parser.
                 // This means there was an END\r\n, so feed the remainder to SPP
                 if (mode == DATA) {
-                    fromSPP(data+parsed, size-parsed);
+                    fromSPP(data + parsed, size - parsed);
                 } else {
                     onError(1, OVERFLOW);
                     return -1;
@@ -106,7 +106,7 @@ namespace RN52 {
             }
             
             memcpy(sppTxBuffer+sppTxBufferPos, data, size);
-            sppTxBufferPos+=size;
+            sppTxBufferPos += size;
         }
         return size;
     }
@@ -134,13 +134,13 @@ namespace RN52 {
                         cmdRxBufferPos = 0;
                     } else {
                         toSPP(cmdRxBuffer[0]);
-                        for (int i=1;i<5;i++)
-                            cmdRxBuffer[i-1] = cmdRxBuffer[i];
+                        for (int i = 1; i < 5; i++)
+                            cmdRxBuffer[i - 1] = cmdRxBuffer[i];
                         cmdRxBufferPos--;
                     }
                 }
             } else if (cmdRxBufferPos >= 2) {
-                if (cmdRxBuffer[cmdRxBufferPos-1] == '\n' && cmdRxBuffer[cmdRxBufferPos-2] == '\r') {
+                if (cmdRxBuffer[cmdRxBufferPos - 1] == '\n' && cmdRxBuffer[cmdRxBufferPos - 2] == '\r') {
                     // this is a line
                     if (isCmd(cmdRxBuffer, RN52_CMD_EXIT)) {
                         mode = DATA;
@@ -155,7 +155,7 @@ namespace RN52 {
                     }
                     // TODO handle other responses, depending on the command sent before
                     if (currentCommand == NULL) {
-                        cmdRxBuffer[cmdRxBufferPos-2] = 0;
+                        cmdRxBuffer[cmdRxBufferPos - 2] = 0;
                     } else if (isCmd(currentCommand, RN52_CMD_QUERY)) {
                         parseQResponse(cmdRxBuffer);
                         currentCommand = NULL;
@@ -172,7 +172,7 @@ namespace RN52 {
                         } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
                             // WTF!?
                         } else {
-                            cmdRxBuffer[cmdRxBufferPos-2] = 0;
+                            cmdRxBuffer[cmdRxBufferPos - 2] = 0;
                             onError(4, PROTOCOL);
                             debug("invalid response:");
                             debug(cmdRxBuffer);
@@ -185,11 +185,11 @@ namespace RN52 {
         }
         if (mode == COMMAND) {
             if (currentCommand == NULL) {
-                if (commandQueuePos>0 && !enterDataMode) {
+                if (commandQueuePos > 0 && !enterDataMode) {
                     // send next command
                     currentCommand = commandQueue[0];
-                    for(int i=1;i<commandQueuePos;i++)
-                        commandQueue[i-1] = commandQueue[i];
+                    for(int i = 1; i < commandQueuePos; i++)
+                        commandQueue[i - 1] = commandQueue[i];
                     commandQueuePos--;
                     toUART(currentCommand, strlen(currentCommand));
                 } else if (!enterDataMode){
