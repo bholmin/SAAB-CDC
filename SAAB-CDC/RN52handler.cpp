@@ -1,6 +1,14 @@
-#include "Arduino.h"
 #include "RN52handler.h"
 
+void RN52handler::update() {
+    if ((!eventIndicatorPinStateHandled) && (millis() - lastEventIndicatorPinStateChange) > 100) {
+        if (currentEventIndicatorPinState != defaultEventIndicatorPinState) {
+            unsigned long lastEventIndicatorPinStateChange = millis();
+            driver.onGPIO2();
+            eventIndicatorPinStateHandled = true;
+        }
+    }
+}
 
 void RN52handler::bt_play() {
     driver.sendAVCRP(RN52::RN52driver::PLAY);

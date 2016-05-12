@@ -6,6 +6,10 @@
 
 class RN52handler {
     RN52impl driver;
+    bool eventIndicatorPinStateHandled;
+    int defaultEventIndicatorPinState = 1;
+    int currentEventIndicatorPinState = digitalRead(BT_EVENT_INDICATOR_PIN);
+    unsigned long lastEventIndicatorPinStateChange = 0;
     
 public:
     void update();

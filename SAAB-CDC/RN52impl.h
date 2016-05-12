@@ -4,17 +4,18 @@
 #include "Arduino.h"
 #include "RN52driver.h"
 #include "SoftwareSerial.h"
+#include "Timer.h"
 
 /**
  * Atmel 328 pin definitions:
  */
 
-const int BT_STATUS_PIN = 3;    // RN52 GPIO2 pin for reading current status of the module
-const int BT_CMD_PIN = 4;       // RN52 GPIO9 pin for enabling command mode
-const int BT_FACT_RST_PIN = A0; // RN52 factory reset pin GPIO4
-const int BT_PWREN_PIN = 9;     // RN52 Power enable pin
-const int UART_TX_PIN = 5;      // UART Tx
-const int UART_RX_PIN = 6;      // UART Rx
+const int BT_EVENT_INDICATOR_PIN = 3;       // RN52 GPIO2 pin for reading current status of the module
+const int BT_CMD_PIN = 4;                   // RN52 GPIO9 pin for enabling command mode
+const int BT_FACT_RST_PIN = A0;             // RN52 factory reset pin GPIO4
+const int BT_PWREN_PIN = 9;                 // RN52 Power enable pin
+const int UART_TX_PIN = 5;                  // UART Tx
+const int UART_RX_PIN = 6;                  // UART Rx
 
 
 // extend the RN52driver to implement callbacks and hardware interface

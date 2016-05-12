@@ -22,6 +22,7 @@
 
 #ifndef RN52DRIVER_H
 #define RN52DRIVER_H
+
 #include "RN52configuration.h"
 
 namespace RN52 {
