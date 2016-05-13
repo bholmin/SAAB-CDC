@@ -41,6 +41,8 @@ public:
         bt_a2dp = false;
         bt_hfp = false;
     }
+    
+    void readFromUART();
     // this is used by RN52lib to send data to the RN52 module
     // the implementation of this method needs to write to the
     // connected serial port
@@ -54,7 +56,6 @@ public:
     // GPIO2 of RN52 is toggled on state change, eg. a Bluetooth
     // devices connects
     void onGPIO2();
-    
     void initialize();
 };
 

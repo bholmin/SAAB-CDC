@@ -32,7 +32,7 @@ namespace RN52 {
         enum BtProfile { IAP, SPP, A2DP, HFP };
         enum Mode { COMMAND, DATA };
         enum Error { TIMEOUT, OVERFLOW, NOTCONNECTED, PROTOCOL };
-        enum AVCRP { PLAYPAUSE, NEXT, PREV, VOLUP, VOLDOWN, PLAY, PAUSE };
+        enum AVCRP { PLAYPAUSE, NEXT, PREV, VASSISTANT, VOLUP, VOLDOWN, MAXVOL, PLAY, PAUSE };
         
         RN52driver();
         virtual ~RN52driver(){}

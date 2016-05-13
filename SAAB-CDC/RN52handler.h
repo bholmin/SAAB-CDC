@@ -7,12 +7,10 @@
 class RN52handler {
     RN52impl driver;
     
-    bool eventIndicatorPinStateHandled;
     unsigned long lastEventIndicatorPinStateChange;
     
 public:
     RN52handler() {
-        eventIndicatorPinStateHandled = false;
         lastEventIndicatorPinStateChange = 0;
     }
     void update();
@@ -20,6 +18,7 @@ public:
     void bt_pause();
     void bt_prev();
     void bt_next();
+    void bt_vassistant();
     void bt_visible();
     void bt_invisible();
     void bt_reconnect();

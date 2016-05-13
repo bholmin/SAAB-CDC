@@ -167,14 +167,17 @@ namespace RN52 {
                         // misc command (AVCRP, connect/disconnect, etc)
                         if (isCmd(cmdRxBuffer, RN52_RX_OK)) {
                             // OK
+                            //Serial.println("RN52: \"Response 'OK'.");
                         } else if (isCmd(cmdRxBuffer, RN52_RX_ERROR)) {
                             // Error
+                            //Serial.println("RN52: \"Response 'ERR'.");
                         } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
+                            //Serial.println("RN52: \"Response 'WTF?!'.");
                             // WTF!?
                         } else {
                             cmdRxBuffer[cmdRxBufferPos - 2] = 0;
                             onError(4, PROTOCOL);
-                            debug("invalid response:");
+                            debug("Invalid response:");
                             debug(cmdRxBuffer);
                         }
                         currentCommand = NULL;
@@ -202,7 +205,6 @@ namespace RN52 {
     }
     
     int RN52driver::queueCommand(const char *cmd) {
-        Serial.println("DEBUG: Queuing a command");
         if (commandQueuePos == CMD_QUEUE_SIZE) {
             onError(5, OVERFLOW);
             return -1;
@@ -252,6 +254,7 @@ namespace RN52 {
             return;
         enterCommandMode = true;
         setMode(COMMAND);
+        Serial.println("DEBUG: RN52 'SPP -> CMD'.");
     }
     
     void RN52driver::prepareDataMode() {
@@ -263,29 +266,41 @@ namespace RN52 {
             enterCommandMode = false;
         }
         setMode(DATA);
+        Serial.println("DEBUG: RN52 'CMD -> SPP'.");
     }
     
     int RN52driver::sendAVCRP(AVCRP cmd)
     {
         if(!a2dpConnected) {
             onError(6, NOTCONNECTED);
+            Serial.println("ERROR: RN52 A2DP not connected.");
             return -2;
         }
         switch(cmd) {
             case PLAYPAUSE:
                 queueCommand(RN52_CMD_AVCRP_PLAYPAUSE);
+                Serial.println("DEBUG: Sending 'Play/Pause' command to RN52.");
                 break;
             case PREV:
                 queueCommand(RN52_CMD_AVCRP_PREV);
+                Serial.println("DEBUG: Sending 'Previous Track' command to RN52.");
                 break;
             case NEXT:
                 queueCommand(RN52_CMD_AVCRP_NEXT);
+                Serial.println("DEBUG: Sending 'Next Track' command to RN52.");
+                break;
+            case VASSISTANT:
+                queueCommand(RN52_CMD_AVCRP_VASSISTANT);
+                Serial.println("DEBUG: Sending 'Invoke voice assistant' command to RN52.");
                 break;
             case VOLUP:
                 queueCommand(RN52_CMD_AVCRP_VOLUP);
                 break;
             case VOLDOWN:
                 queueCommand(RN52_CMD_AVCRP_VOLDOWN);
+                break;
+            case MAXVOL:
+                queueCommand(RN52_CMD_MAXVOL);
                 break;
             case PLAY:
                 //nice but not reliable:
@@ -303,15 +318,21 @@ namespace RN52 {
     
     void RN52driver::reconnectLast(){
         queueCommand(RN52_CMD_RECONNECTLAST);
+        Serial.println("DEBUG: RN52 connecting to the last known device.");
     }
     void RN52driver::disconnect(){
         queueCommand(RN52_CMD_DISCONNECT);
+        Serial.println("DEBUG: RN52 disconnecting from the 'active' device.");
     }
     void RN52driver::visible(bool visible){
-        if (visible)
+        if (visible) {
             queueCommand(RN52_CMD_DISCOVERY_ON);
-        else
+            Serial.println("DEBUG: RN52 discoverable = ON.");
+        }
+        else {
             queueCommand(RN52_CMD_DISCOVERY_OFF);
+            Serial.println("DEBUG: RN52 discoverable = OFF (connectable).");
+        }
     }
     
     void RN52driver::refreshState() {

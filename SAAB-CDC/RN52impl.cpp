@@ -1,6 +1,18 @@
 #include "RN52impl.h"
 
 /**
+ * Reads the input (if any) from UART over software serial connection
+ */
+
+void RN52impl::readFromUART() {
+    while (softSerial.available()) {
+        char c = softSerial.read();
+        fromUART(c);
+    }
+}
+
+
+/**
  * Formats a message and writes it to UART over software serial
  */
 
@@ -32,7 +44,8 @@ void RN52impl::onProfileChange(BtProfile profile, bool connected) {
     switch(profile) {
         case A2DP:bt_a2dp = connected;
             if (connected && playing) {
-            sendAVCRP(RN52::RN52driver::PLAY);
+                Serial.println("DEBUG: RN52 connection ok; 'auto-play' should kick in now!");
+                sendAVCRP(RN52::RN52driver::PLAY);
             }
             break;
         case SPP:bt_spp = connected;break;
@@ -42,7 +55,7 @@ void RN52impl::onProfileChange(BtProfile profile, bool connected) {
 }
 
 /**
- * Initializes Atmel pins for their initial state on startup
+ * Initializes Atmel pins and software serial for their initial state on startup
  */
 
 void RN52impl::initialize() {
