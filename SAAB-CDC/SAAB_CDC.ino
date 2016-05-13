@@ -1,5 +1,5 @@
 /*
- SAAB-CDC v2.1
+ SAAB-CDC v3.0
 
  A CD changer emulator for older SAAB cars with RN52 bluetooth module.
  

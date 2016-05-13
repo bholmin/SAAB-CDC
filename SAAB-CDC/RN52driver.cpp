@@ -167,12 +167,9 @@ namespace RN52 {
                         // misc command (AVCRP, connect/disconnect, etc)
                         if (isCmd(cmdRxBuffer, RN52_RX_OK)) {
                             // OK
-                            //Serial.println("RN52: \"Response 'OK'.");
                         } else if (isCmd(cmdRxBuffer, RN52_RX_ERROR)) {
                             // Error
-                            //Serial.println("RN52: \"Response 'ERR'.");
                         } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
-                            //Serial.println("RN52: \"Response 'WTF?!'.");
                             // WTF!?
                         } else {
                             cmdRxBuffer[cmdRxBufferPos - 2] = 0;
