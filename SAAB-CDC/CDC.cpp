@@ -2,6 +2,7 @@
 #include "Arduino.h"
 #include "CAN.h"
 #include "CDC.h"
+#include "RN52handler.h"
 #include "Timer.h"
 
 /**
@@ -156,24 +157,31 @@ void CDChandler::handleIhuButtons() {
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdcActive = true;
+            BT.bt_reconnect();
             sendCanFrame(SOUND_REQUEST, soundCmd);
             break;
         case 0x14: // CDC = OFF (Back to Radio or Tape mode)
             cdcActive = false;
             displayWanted = false;
+            BT.bt_disconnect();
             break;
     }
     if (cdcActive) {
         switch (CAN_RxMsg.data[1]) {
             case 0x59: // NXT
+                BT.bt_play();
                 break;
             case 0x45: // SEEK+ button long press on IHU
+                BT.bt_visible();
                 break;
             case 0x46: // SEEK- button long press on IHU
+                BT.bt_invisible();
                 break;
             case 0x84: // SEEK button (middle) long press on IHU
+                BT.bt_visible();
                 break;
             case 0X88: // > 2 sec long press of SEEK button (middle) on IHU
+                BT.bt_invisible();
                 break;
             case 0x76: // Random ON/OFF (Long press of CD/RDM button)
                 break;
@@ -184,8 +192,10 @@ void CDChandler::handleIhuButtons() {
                 // N/A for now
                 break;
             case 0x35: // Track +
+                BT.bt_next();
                 break;
             case 0x36: // Track -
+                BT.bt_prev();
                 break;
             default:
                 break;

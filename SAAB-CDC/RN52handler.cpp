@@ -1,5 +1,7 @@
 #include "RN52handler.h"
 
+RN52handler BT;
+
 /**
  * Checks for state of event indicator pin (GPIO2). Calls out onGPIO2() from RN52impl that will querry the RN52 module for its status.
  */

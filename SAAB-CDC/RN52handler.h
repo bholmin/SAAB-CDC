@@ -27,4 +27,6 @@ public:
     void initialize();
 };
 
+extern RN52handler BT;
+
 #endif

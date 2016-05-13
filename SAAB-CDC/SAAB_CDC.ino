@@ -23,7 +23,6 @@
 #include "Timer.h"
 
 CDChandler CDC;
-RN52handler BT;
 Timer time;
 
 
