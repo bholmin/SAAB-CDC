@@ -6,9 +6,10 @@
  Credits:
 
  Hardware design: Seth Evans (http://bluesaab.blogspot.com)
- Initial code: Seth Evans and Emil Fors
+ Initial CDC code: Seth Evans and Emil Fors
  CAN code: Igor Real (http://secuduino.blogspot.com)
  Information on SAAB I-Bus: Tomi Liljemark (http://pikkupossu.1g.fi/tomi/projects/i-bus/i-bus.html)
+ RN52 handing:  based on code by Tim Otto
  Additions/bug fixes: Karlis Veilands and Girts Linde
 
  "BEERWARE"
