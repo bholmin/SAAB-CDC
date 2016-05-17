@@ -30,7 +30,7 @@ Timer time;
 // Setup
 void setup() {
     Serial.begin(9600);
-    Serial.println("SAAB CDC-DEV v3.0 - May 2016");
+    Serial.println("SAAB-CDC v3.0 - May 2016");
     CDC.openCanBus();
     BT.initialize();
     time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);

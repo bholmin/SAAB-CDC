@@ -68,7 +68,7 @@ void RN52impl::onProfileChange(BtProfile profile, bool connected) {
     switch(profile) {
         case A2DP:bt_a2dp = connected;
             if (connected && playing) {
-                Serial.println("DEBUG: RN52 connection ok; 'auto-play' should kick in now!");
+                // Serial.println("DEBUG: RN52 connection ok; 'auto-play' should kick in now!");
                 sendAVCRP(RN52::RN52driver::PLAY);
             }
             break;

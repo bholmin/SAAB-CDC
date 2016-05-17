@@ -34,7 +34,6 @@ void RN52handler::update() {
     driver.readFromUART();
     if (digitalRead(BT_EVENT_INDICATOR_PIN) == 0) {
     if ((millis() - lastEventIndicatorPinStateChange) > 100) {
-        Serial.println("DEBUG: RN52 GPIO2 status has changed. Handling...");
         lastEventIndicatorPinStateChange = millis();
         driver.onGPIO2();
         }
