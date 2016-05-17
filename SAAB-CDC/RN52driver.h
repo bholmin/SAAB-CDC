@@ -16,7 +16,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *  Created on: Jun 21, 2013
+ * Created by: Tim Otto
+ * Created on: Jun 21, 2013
+ * Modified by: Karlis Veilands
+ * Modified on: May 17, 2016
  */
 
 #ifndef RN52DRIVER_H
