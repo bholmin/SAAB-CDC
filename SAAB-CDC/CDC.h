@@ -1,3 +1,26 @@
+/*
+ * C++ Class for handling CD changer emulator on SAAB I-Bus
+ * Copyright (C) 2016  Karlis Veilands
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Created by: Karlis Veilands
+ * Created on: Jun 4, 2015
+ * Modified by: Karlis Veilands
+ * Modified on: May 17, 2016
+ */
 
 #ifndef CDC_H
 #define CDC_H
@@ -59,30 +82,27 @@
  * Class:
  */
 
-class CDCClass
-{
+class CDChandler {
 public:
-    void print_can_tx_frame();
-    void print_can_rx_frame();
-    void open_can_bus();
-    void handle_rx_frame();
-    void handle_ihu_buttons();
-    void handle_steering_wheel_buttons();
-    void handle_cdc_status();
-    void send_cdc_status(boolean event, boolean remote);
-    void send_display_request();
-    void send_serial_message(int *msg);
-    void send_can_frame(int message_id, int *msg);
-    void write_text_on_display(char text[]);
+    void printCanTxFrame();
+    void printCanRxFrame();
+    void openCanBus();
+    void handleRxFrame();
+    void handleIhuButtons();
+    void handleSteeringWheelButtons();
+    void handleCdcStatus();
+    void sendCdcStatus(boolean event, boolean remote);
+    void sendDisplayRequest();
+    void sendCanFrame(int message_id, int *msg);
+    void writeTextOnDisplay(char text[]);
 };
 
-void send_node_status();
-void send_cdc_status_on_time(void*);
+void sendCdcStatusOnTime(void*);
 
 /**
  * Variables:
  */
 
-extern CDCClass CDC;
+extern CDChandler CDC;
 
 #endif

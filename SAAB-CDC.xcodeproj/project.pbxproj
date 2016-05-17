@@ -10,7 +10,9 @@
 		A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80EF2FD1B2244E800BF40A6 /* main.cpp */; };
 		A82B27981B22649F009B19C3 /* CDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A82B27961B22649F009B19C3 /* CDC.cpp */; };
 		A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */ = {isa = PBXBuildFile; fileRef = A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */; };
-		A8CE2F321BB61A84001E71F0 /* RN52.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8CE2F311BB61A84001E71F0 /* RN52.cpp */; };
+		A85D26F51CE2B1DD002FE52C /* RN52impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A85D26F31CE2B1DD002FE52C /* RN52impl.cpp */; };
+		A85D26F81CE3E76B002FE52C /* RN52handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A85D26F61CE3E76B002FE52C /* RN52handler.cpp */; };
+		A8CE2F321BB61A84001E71F0 /* RN52driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8CE2F311BB61A84001E71F0 /* RN52driver.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,8 +74,14 @@
 		A82B27941B2263DC009B19C3 /* pinout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinout.h; sourceTree = "<group>"; };
 		A82B27961B22649F009B19C3 /* CDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CDC.cpp; sourceTree = "<group>"; tabWidth = 4; wrapsLines = 0; };
 		A82B27971B22649F009B19C3 /* CDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDC.h; sourceTree = "<group>"; };
-		A8CE2F301BB61A3E001E71F0 /* RN52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52.h; sourceTree = "<group>"; };
-		A8CE2F311BB61A84001E71F0 /* RN52.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52.cpp; sourceTree = "<group>"; };
+		A82E7D0F1CDC412600BC91BA /* RN52configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52configuration.h; sourceTree = "<group>"; };
+		A82E7D101CDC412600BC91BA /* RN52strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52strings.h; sourceTree = "<group>"; };
+		A85D26F31CE2B1DD002FE52C /* RN52impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52impl.cpp; sourceTree = "<group>"; };
+		A85D26F41CE2B1DD002FE52C /* RN52impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52impl.h; sourceTree = "<group>"; };
+		A85D26F61CE3E76B002FE52C /* RN52handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52handler.cpp; sourceTree = "<group>"; };
+		A85D26F71CE3E76B002FE52C /* RN52handler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52handler.h; sourceTree = "<group>"; };
+		A8CE2F301BB61A3E001E71F0 /* RN52driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RN52driver.h; sourceTree = "<group>"; };
+		A8CE2F311BB61A84001E71F0 /* RN52driver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RN52driver.cpp; sourceTree = "<group>"; };
 		A8DB13771C612FC500DA6CF7 /* SoftwareSerial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoftwareSerial.cpp; sourceTree = "<group>"; };
 		A8DB13781C612FC500DA6CF7 /* SoftwareSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoftwareSerial.h; sourceTree = "<group>"; };
 		A8E261CF1C615DAB009BEB39 /* About.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = About.mk; path = Makefiles/About.mk; sourceTree = "<group>"; };
@@ -136,25 +144,31 @@
 		A80EF2FC1B2244E800BF40A6 /* SAAB-CDC */ = {
 			isa = PBXGroup;
 			children = (
-				A8E261F11C6162A0009BEB39 /* Event.cpp */,
-				A8E261F21C6162A0009BEB39 /* Event.h */,
-				A8E261F31C6162A0009BEB39 /* Timer.cpp */,
-				A8E261F41C6162A0009BEB39 /* Timer.h */,
-				A8DB13771C612FC500DA6CF7 /* SoftwareSerial.cpp */,
-				A8DB13781C612FC500DA6CF7 /* SoftwareSerial.h */,
-				A8CE2F311BB61A84001E71F0 /* RN52.cpp */,
-				A8CE2F301BB61A3E001E71F0 /* RN52.h */,
-				A82B27961B22649F009B19C3 /* CDC.cpp */,
-				A82B27971B22649F009B19C3 /* CDC.h */,
-				A82B27921B2263DC009B19C3 /* CAN.cpp */,
-				A82B27931B2263DC009B19C3 /* CAN.h */,
-				A82B27941B2263DC009B19C3 /* pinout.h */,
-				A80EF2FD1B2244E800BF40A6 /* main.cpp */,
 				A80EF2FF1B2244E800BF40A6 /* Makefile */,
+				A82B27921B2263DC009B19C3 /* CAN.cpp */,
+				A82B27961B22649F009B19C3 /* CDC.cpp */,
+				A8E261F11C6162A0009BEB39 /* Event.cpp */,
+				A80EF2FD1B2244E800BF40A6 /* main.cpp */,
+				A85D26F61CE3E76B002FE52C /* RN52handler.cpp */,
+				A8CE2F311BB61A84001E71F0 /* RN52driver.cpp */,
+				A85D26F31CE2B1DD002FE52C /* RN52impl.cpp */,
+				A8DB13771C612FC500DA6CF7 /* SoftwareSerial.cpp */,
+				A8E261F31C6162A0009BEB39 /* Timer.cpp */,
+				A82B27931B2263DC009B19C3 /* CAN.h */,
+				A82B27971B22649F009B19C3 /* CDC.h */,
+				A8E261F21C6162A0009BEB39 /* Event.h */,
+				A82B27941B2263DC009B19C3 /* pinout.h */,
+				A85D26F71CE3E76B002FE52C /* RN52handler.h */,
+				A82E7D0F1CDC412600BC91BA /* RN52configuration.h */,
+				A8CE2F301BB61A3E001E71F0 /* RN52driver.h */,
+				A85D26F41CE2B1DD002FE52C /* RN52impl.h */,
+				A82E7D101CDC412600BC91BA /* RN52strings.h */,
+				A8DB13781C612FC500DA6CF7 /* SoftwareSerial.h */,
+				A8E261F41C6162A0009BEB39 /* Timer.h */,
 				A80EF3701B2244E900BF40A6 /* SAAB_CDC.ino */,
-				A80EF3051B2244E800BF40A6 /* Sketchbook */,
 				A80EF3071B2244E900BF40A6 /* Configurations */,
 				A80EF34A1B2244E900BF40A6 /* Makefiles */,
+				A80EF3051B2244E800BF40A6 /* Sketchbook */,
 				A80EF3681B2244E900BF40A6 /* Utilities */,
 			);
 			path = "SAAB-CDC";
@@ -418,9 +432,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A85D26F81CE3E76B002FE52C /* RN52handler.cpp in Sources */,
 				A80EF2FE1B2244E800BF40A6 /* main.cpp in Sources */,
+				A85D26F51CE2B1DD002FE52C /* RN52impl.cpp in Sources */,
 				A82EF3701B2244E900BF40A6 /* SAAB_CDC.ino in Sources */,
-				A8CE2F321BB61A84001E71F0 /* RN52.cpp in Sources */,
+				A8CE2F321BB61A84001E71F0 /* RN52driver.cpp in Sources */,
 				A82B27981B22649F009B19C3 /* CDC.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -514,7 +530,7 @@
 		A80EF3741B2244E900BF40A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BOARD_PORT = "/dev/tty.usbserial*";
+				BOARD_PORT = "/dev/tty.usb*";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

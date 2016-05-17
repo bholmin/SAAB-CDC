@@ -1,14 +1,15 @@
 /*
- SAAB-CDC v2.1
+ SAAB-CDC v3.0
 
  A CD changer emulator for older SAAB cars with RN52 bluetooth module.
  
  Credits:
 
  Hardware design: Seth Evans (http://bluesaab.blogspot.com)
- Initial code: Seth Evans and Emil Fors
+ Initial CDC code: Seth Evans and Emil Fors
  CAN code: Igor Real (http://secuduino.blogspot.com)
  Information on SAAB I-Bus: Tomi Liljemark (http://pikkupossu.1g.fi/tomi/projects/i-bus/i-bus.html)
+ RN52 handing:  based on code by Tim Otto
  Additions/bug fixes: Karlis Veilands and Girts Linde
 
  "BEERWARE"
@@ -19,27 +20,26 @@
 
 #include "Arduino.h"
 #include "CDC.h"
-#include "RN52.h"
+#include "RN52handler.h"
 #include "Timer.h"
 
-CDCClass CDC;
-RN52Class RN52;
+CDChandler CDC;
 Timer time;
 
 
 // Setup
 void setup() {
-    Serial.begin(BAUDRATE);
-    Serial.println("SAAB CDC v2.1 - May 2016");
-    RN52.initialize_atmel_pins();
-    RN52.uart_begin();
-    CDC.open_can_bus();
-    time.every(CDC_STATUS_TX_TIME, &send_cdc_status_on_time,NULL);
+    Serial.begin(9600);
+    Serial.println("SAAB CDC-DEV v3.0 - May 2016");
+    CDC.openCanBus();
+    BT.initialize();
+    time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);
 }
 
 // Main loop
 void loop() {
-    CDC.handle_cdc_status();
-    RN52.update();
     time.update();
+    CDC.handleCdcStatus();
+    BT.update();
+    BT.monitor_serial_input();
 }
