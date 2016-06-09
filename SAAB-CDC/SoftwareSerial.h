@@ -32,8 +32,8 @@ http://arduiniana.org.
 #ifndef SoftwareSerial_h
 #define SoftwareSerial_h
 
-#include "inttypes.h"
-#include "Stream.h"
+#include <inttypes.h>
+#include <Stream.h>
 
 /******************************************************************************
 * Definitions

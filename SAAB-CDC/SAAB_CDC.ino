@@ -18,7 +18,7 @@
 */
 
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "CDC.h"
 #include "RN52handler.h"
 #include "Timer.h"
@@ -30,7 +30,7 @@ Timer time;
 // Setup
 void setup() {
     Serial.begin(9600);
-    Serial.println("SAAB-CDC v3.0 - May 2016");
+    Serial.println("SAAB-CDC v3.0 - June 2016");
     CDC.openCanBus();
     BT.initialize();
     time.every(CDC_STATUS_TX_TIME, &sendCdcStatusOnTime,NULL);

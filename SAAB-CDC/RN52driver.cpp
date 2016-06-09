@@ -22,10 +22,10 @@
  * Modified on: May 17, 2016
  */
 
-#include "Arduino.h"
+#include <Arduino.h>
+#include <string.h>
 #include "RN52driver.h"
 #include "RN52strings.h"
-#include <string.h>
 
 using namespace std;
 

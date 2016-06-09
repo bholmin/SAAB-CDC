@@ -25,7 +25,7 @@
 #ifndef RN52HANDLER_H
 #define RN52HANDLER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "RN52impl.h"
 
 class RN52handler {

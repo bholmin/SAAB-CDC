@@ -25,7 +25,7 @@
 #ifndef RN52impl_H
 #define RN52impl_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "RN52driver.h"
 #include "SoftwareSerial.h"
 #include "Timer.h"

@@ -23,7 +23,7 @@
 #ifndef Event_h
 #define Event_h
 
-#include "inttypes.h"
+#include <inttypes.h>
 
 #define EVENT_NONE 0
 #define EVENT_EVERY 1

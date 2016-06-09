@@ -4,9 +4,9 @@
 
 
 
-#include "inttypes.h"
-#include "avr/io.h"
-#include "util/delay.h"
+#include <inttypes.h>
+#include <avr/io.h>
+#include <util/delay.h>
 
 #include "pinout.h"
 

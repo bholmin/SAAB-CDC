@@ -22,7 +22,7 @@
  * Modified on: May 17, 2016
  */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "CAN.h"
 #include "CDC.h"
 #include "RN52handler.h"
@@ -172,23 +172,7 @@ void CDChandler::handleRxFrame() {
  */
 
 void CDChandler::handleIhuButtons() {
-    boolean event = (CAN_RxMsg.data[0] == 0x80);
-    if ((!event) && (CAN_RxMsg.data[1]) != 0) { // Long press of an IHU button has taken place.
-        if (millis() - lastIcomingEventTime > LAST_EVENT_IN_TIMEOUT) {
-            incomingEventCounter = 0;
-        }
-        incomingEventCounter++;
-        lastIcomingEventTime = millis();
-        switch (CAN_RxMsg.data[1]) {
-            case 0x45: // SEEK+ button long press on IHU
-                BT.bt_visible();
-                break;
-            case 0x46: // SEEK- button long press on IHU
-                BT.bt_invisible();
-                break;
-        }
-        return;
-    }
+    checkCanEvent(1);
     switch (CAN_RxMsg.data[1]) {
         case 0x24: // CDC = ON (CD/RDM button has been pressed twice)
             cdcActive = true;
@@ -238,27 +222,7 @@ void CDChandler::handleIhuButtons() {
  */
 
 void CDChandler::handleSteeringWheelButtons() {
-    if (!cdcActive) {
-        return;
-    }
-    boolean event = (CAN_RxMsg.data[0] == 0x80);
-    if ((!event) && (CAN_RxMsg.data[4]) != 0) { // Long press of a steering wheel button has taken place.
-        if (millis() - lastIcomingEventTime > LAST_EVENT_IN_TIMEOUT) {
-            incomingEventCounter = 0;
-        }
-        incomingEventCounter++;
-        lastIcomingEventTime = millis();
-        switch (CAN_RxMsg.data[4]) {
-            case 0x04: // Long press of NXT button on steering wheel
-                if (incomingEventCounter == 3) {
-                    BT.bt_vassistant();
-                }
-                break;
-            default:
-                break;
-        }
-        return;
-    }
+    checkCanEvent(4);
     switch (CAN_RxMsg.data[2]) {
         case 0x04: // NXT button on wheel
             //RN52.write(PLAYPAUSE);
@@ -402,4 +366,34 @@ void CDChandler::writeTextOnDisplay(char text[]) {
     CAN.send(&CAN_TxMsg);
     
     writeTextOnDisplayLastSendTime = millis();
+}
+
+void CDChandler::checkCanEvent(int frameElement) {
+    if (!cdcActive) {
+        return;
+    }
+    boolean event = (CAN_RxMsg.data[0] == 0x80);
+    if ((!event) && (CAN_RxMsg.data[frameElement]) != 0) { // Long press of a steering wheel button has taken place.
+        if (millis() - lastIcomingEventTime > LAST_EVENT_IN_TIMEOUT) {
+            incomingEventCounter = 0;
+        }
+        incomingEventCounter++;
+        lastIcomingEventTime = millis();
+        if (incomingEventCounter == 3) {
+            switch (CAN_RxMsg.data[frameElement]) {
+                case 0x04: // Long press of NXT button on steering wheel
+                    BT.bt_vassistant();
+                    break;
+                case 0x45: // SEEK+ button long press on IHU
+                    BT.bt_visible();
+                    break;
+                case 0x46: // SEEK- button long press on IHU
+                    BT.bt_invisible();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return;
 }
